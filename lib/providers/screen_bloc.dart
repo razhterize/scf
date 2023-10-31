@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scf_management/models/guild.dart';
 
 class ScreenBloc extends Bloc<ScreenEvent, ScreenState>{
-  ScreenBloc() : super(ScreenState()){
+  ScreenBloc() : super(const ScreenState()){
     on<ShowOverview>(_showOverview);
     on<ShowGuildDetails>(_showDetails);
   }
@@ -25,7 +25,7 @@ final class ScreenState extends Equatable{
   ScreenState copyWith({bool? showOverview, Guild? guild}){
     return ScreenState(
       showOverview: showOverview ?? this.showOverview,
-      guild: guild ?? null
+      guild: guild
     );
   }
   
