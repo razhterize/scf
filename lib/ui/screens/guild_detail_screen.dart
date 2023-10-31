@@ -24,30 +24,25 @@ class _GuildDetailsState extends State<GuildDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Column(
-        children: [
-          guild.members.isNotEmpty ? memberChart() : empty_member(),
-          BlocBuilder<ScreenBloc, ScreenState>(
-            builder: (context, state) {
-              return MaterialButton(
-                onPressed: () => BlocProvider.of<ScreenBloc>(context).add(ShowOverview()),
-                child: Text("Back"),
-              );
-            },
-          )
-        ],
-      ),
+    return Column(
+      children: [
+        guild.members.isNotEmpty ? memberChart() : emptyMember(),
+        BlocBuilder<ScreenBloc, ScreenState>(
+          builder: (context, state) {
+            return MaterialButton(
+              onPressed: () => BlocProvider.of<ScreenBloc>(context).add(ShowOverview()),
+              child: const Text("Back"),
+            );
+          },
+        ),
+      ],
     );
   }
 
   Hero memberChart() => Hero(tag: guild.name, child: MembersChart(members: guild.members, name: guild.fullName));
-  Hero empty_member() {
-    return Hero(
-      tag: "empty_member_${guild.name}",
-      child: Center(
-        child: Icon(Icons.warning_amber, color: Colors.red, size: MediaQuery.of(context).size.width / 8),
-      ),
+  Widget emptyMember() {
+    return Center(
+      child: Icon(Icons.warning_amber, color: Colors.red, size: MediaQuery.of(context).size.width / 8),
     );
   }
 }
