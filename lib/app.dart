@@ -50,6 +50,7 @@ class _SCFManagementState extends State<SCFManagement> {
       ],
       child: BlocBuilder<SettingBloc, SettingState>(
         builder: (context, state) {
+          BlocProvider.of<SettingBloc>(context).add(GetSettings());
           return MaterialApp(
             theme: state.lightMode ? ThemeData.light() : ThemeData.dark(),
             home: HomeScreen(pb: pb),
