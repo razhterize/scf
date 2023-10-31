@@ -1,4 +1,4 @@
-const Map<String, String> GuildNames = {
+const Map<String, String> guildNames = {
   'turu': 'Imperium of Turu',
   'kuru': 'Cult of Kuru',
   'tensura': 'TENSURA 【懸】',
