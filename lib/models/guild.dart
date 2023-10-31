@@ -3,12 +3,12 @@ import 'package:scf_management/models/member.dart';
 
 class Guild {
   final String name;
-  late final minScore;
+  late int minScore;
   late String fullName;
   List<Member>? _members;
 
   Guild({this.name = "", List<Member>? members}) {
-    fullName = GuildNames[name] ?? "";
+    fullName = guildNames[name] ?? "";
     _members = members;
   }
 
