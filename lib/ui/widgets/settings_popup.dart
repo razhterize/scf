@@ -22,6 +22,7 @@ class _SettingsPopupState extends State<SettingsPopup> {
               padding: const EdgeInsets.fromLTRB(4, 0, 10, 10),
               child: ElevatedButton.icon(
                 onPressed: () {
+                  if (databaseController.text == "") databaseController.text = state.databaseUrl;
                   BlocProvider.of<SettingBloc>(context).add(SetSettings(databaseUrl: databaseController.text));
                 },
                 icon: const Icon(Icons.save),
