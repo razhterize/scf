@@ -1,3 +1,5 @@
+import 'package:scf_management/constants/enums.dart';
+
 const Map<String, String> guildNames = {
   'turu': 'Imperium of Turu',
   'kuru': 'Cult of Kuru',
@@ -8,4 +10,12 @@ const Map<String, String> guildNames = {
   'arcadian': 'Arcadian',
   "turu_na": "Cult of Turu (NA)",
   "turu_eu": "Cult of Turu (EU)"
+};
+
+const Map<SiegeStatus, String> siegeStatus = {
+  SiegeStatus.above: "Above",
+  SiegeStatus.below: "Below",
+  SiegeStatus.noScore: "No Score",
+  SiegeStatus.notClear: "Not Clear",
+  SiegeStatus.pardoned: "Pardoned",
 };
