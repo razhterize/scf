@@ -1,8 +1,15 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:scf_management/constants/abbreviations.dart';
+import 'package:scf_management/constants/enums.dart';
 import 'package:scf_management/models/guild.dart';
+import 'package:scf_management/models/member.dart';
+import 'package:scf_management/providers/guild_bloc.dart';
 import 'package:scf_management/providers/screen_bloc.dart';
 import 'package:scf_management/ui/widgets/members_chart.dart';
+import 'package:toggle_switch/toggle_switch.dart';
 
 class GuildDetails extends StatefulWidget {
   const GuildDetails({super.key, required this.guild});
@@ -15,6 +22,7 @@ class GuildDetails extends StatefulWidget {
 
 class _GuildDetailsState extends State<GuildDetails> {
   late Guild guild;
+  List<Member> selectedMembers = [];
 
   @override
   void initState() {
@@ -24,25 +32,69 @@ class _GuildDetailsState extends State<GuildDetails> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        guild.members.isNotEmpty ? memberChart() : emptyMember(),
-        BlocBuilder<ScreenBloc, ScreenState>(
-          builder: (context, state) {
-            return MaterialButton(
-              onPressed: () => BlocProvider.of<ScreenBloc>(context).add(ShowOverview()),
-              child: const Text("Back"),
-            );
-          },
-        ),
-      ],
+    return ListView.builder(
+      itemCount: guild.members.length + 1,
+      itemBuilder: (context, index) {
+        if (index == 0) return memberChart();
+        return memberInfo(guild.members[index - 1]);
+      },
     );
   }
 
-  Hero memberChart() => Hero(tag: guild.name, child: MembersChart(members: guild.members, name: guild.fullName));
-  Widget emptyMember() {
-    return Center(
-      child: Icon(Icons.warning_amber, color: Colors.red, size: MediaQuery.of(context).size.width / 8),
+  Widget memberInfo(Member member) {
+    return ListTile(
+      leading: Checkbox(
+        value: member.selected,
+        onChanged: (value) {
+          setState(() {
+            member.selected = value!;
+          });
+        },
+      ),
+      // selected: true,
+      onTap: () => editMemberDialog(member),
+      title: Text(member.name!),
+      subtitle: Text("${member.pgrId}"),
+      trailing: ToggleSwitch(
+        animate: true,
+        animationDuration: 200,
+        initialLabelIndex: Random().nextInt(4),
+        changeOnTap: true,
+        labels: [for (var status in SiegeStatus.values) siegeStatus[status] ?? ""],
+        activeFgColor: Colors.blue,
+      ),
+    );
+  }
+
+  Widget memberChart() => MembersChart(members: guild.members, name: guild.fullName);
+  Widget emptyMember() => Center(
+        child: Icon(
+          Icons.warning_amber,
+          color: Colors.red,
+          size: MediaQuery.of(context).size.width / 8,
+        ),
+      );
+
+  int _axisCount() {
+    var orientation = MediaQuery.of(context).orientation;
+    if (orientation == Orientation.landscape) {
+      return 3;
+    }
+    return 1;
+  }
+
+  void editMemberDialog(Member member) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return ListView(
+          children: [
+            Form(
+              child: TextFormField(),
+            )
+          ],
+        );
+      },
     );
   }
 }
