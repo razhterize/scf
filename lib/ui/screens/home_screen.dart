@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:scf_management/constants/enums.dart';
@@ -22,6 +23,7 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   late final PocketBase pb;
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -31,23 +33,23 @@ class HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: _appBar(),
-      drawer: _drawer(),
-      body: BlocBuilder<LoginCubit, LoginState>(
-        builder: (context, loginState) {
-          if (loginState.loginStatus != LoginStatus.success) return const LoginScreen();
-          return BlocProvider(
+    return BlocBuilder<LoginCubit, LoginState>(
+      builder: (context, loginState) {
+        if (loginState.loginStatus != LoginStatus.success) return const LoginScreen();
+        return BlocProvider(
             create: (context) => ScreenBloc(),
             child: BlocBuilder<ScreenBloc, ScreenState>(
-              builder: (context, screenState) {
-                if (screenState.showOverview) return _body(loginState);
-                return GuildDetails(guild: screenState.guild!);
+              builder: (context, state) {
+                return Scaffold(
+                  key: _scaffoldKey,
+                  appBar: _appBar(state),
+                  drawer: _drawer(),
+                  floatingActionButton: _floatingActionButton(state),
+                  body: state.showOverview ? _body(loginState) : GuildDetails(guild: state.guild!),
+                );
               },
-            ),
-          );
-        },
-      ),
+            ));
+      },
     );
   }
 
@@ -76,11 +78,48 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  PreferredSizeWidget _appBar() {
+  Widget? _floatingActionButton(ScreenState state) {
+    if (!state.showOverview) {
+      return FloatingActionButton(
+        onPressed: () async {
+          var selectedMembers = state.guild?.members.where((element) => element.selected == true).toList();
+          String pingText = "";
+          for (var member in selectedMembers!) {
+            if (member.discordId == null || member.discordId == "-" || member.discordId == "<@>") {
+              pingText += member.discordUsername ?? "-\n";
+            } else {
+              pingText += "<@${member.discordId}>\n";
+            }
+          }
+          await Clipboard.setData(ClipboardData(text: pingText));
+        },
+        child: const Icon(
+          Icons.alternate_email,
+        ),
+      );
+    }
+    return null;
+  }
+
+  PreferredSizeWidget _appBar(ScreenState state) {
     return AppBar(
       title: const Text("Siege"),
       centerTitle: true,
+      automaticallyImplyLeading: false,
       toolbarHeight: 40,
+      leading: state.showOverview
+          ? IconButton(onPressed: (){
+            _scaffoldKey.currentState?.openDrawer();
+          }, icon: const Icon(Icons.menu),)
+          : BlocBuilder<ScreenBloc, ScreenState>(
+              builder: (context, state) {
+                return IconButton(
+                    onPressed: () {
+                      BlocProvider.of<ScreenBloc>(context).add(ShowOverview());
+                    },
+                    icon: Icon(Icons.arrow_back));
+              },
+            ),
       actions: [
         MaterialButton(
           onPressed: () {
@@ -102,6 +141,7 @@ class HomeScreenState extends State<HomeScreen> {
           SizedBox(height: 20),
           Expanded(flex: 3, child: _loggedInProfile()),
           Expanded(flex: 5, child: Placeholder()),
+          // TODO add logout button
           Padding(
             padding: const EdgeInsets.all(4.0),
             child: MaterialButton(
