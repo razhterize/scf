@@ -23,35 +23,29 @@ class _GuildOverviewState extends State<GuildOverview> {
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Card(
-        child: BlocBuilder<ScreenBloc, ScreenState>(
-          builder: (context, state) {
-            return InkWell(
-              onTap: () {
-                BlocProvider.of<ScreenBloc>(context).add(ShowGuildDetails(guild: guild));
-              },
-              child: guild.members.isNotEmpty ? _membersChart() : _emptyMembers(),
-            );
-          },
-        ),
+    return Card(
+      child: BlocBuilder<ScreenBloc, ScreenState>(
+        builder: (context, state) {
+          return InkWell(
+            onTap: () {
+              BlocProvider.of<ScreenBloc>(context).add(ShowGuildDetails(guild: guild));
+            },
+            child: guild.members.isNotEmpty ? _membersChart() : _emptyMembers(),
+          );
+        },
       ),
     );
   }
 
   Widget _membersChart() {
-    return Expanded(
-      child: MembersChart(members: guild.members, name: guild.fullName),
-    );
+    return MembersChart(members: guild.members, name: guild.fullName);
   }
 
   Widget _emptyMembers() {
-    return Expanded(
-      child: Icon(
-        Icons.warning_amber,
-        color: Colors.red,
-        size: MediaQuery.of(context).size.width / 8,
-      ),
+    return Icon(
+      Icons.warning_amber,
+      color: Colors.red,
+      size: MediaQuery.of(context).size.width / 8,
     );
   }
 }
