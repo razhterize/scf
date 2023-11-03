@@ -7,6 +7,7 @@ class Member extends RecordModel {
   String? discordId;
   String? discordUsername;
   MemberSiege? siege;
+  bool selected = false;
 
   MemberMaze? maze;
   Member({
@@ -37,8 +38,7 @@ class MemberSiege {
   MemberSiege({this.currentScore, this.pastScores, this.status});
 
   factory MemberSiege.empty() {
-    return MemberSiege(
-        currentScore: 0, pastScores: [], status: SiegeStatus.noScore);
+    return MemberSiege(currentScore: 0, pastScores: [], status: SiegeStatus.noScore);
   }
 
   factory MemberSiege.fromJson(Map<String, dynamic> json) {
