@@ -28,7 +28,7 @@ class _SCFManagementState extends State<SCFManagement> {
   void initState() {
     sharedPreferences = widget.sharedPreferences;
     pb = PocketBase(
-      sharedPreferences.getString("database_url") ?? dotenv.get("LOCAL_PB_URL"),
+      sharedPreferences.getString("databaseUrl")!,
       authStore: AsyncAuthStore(
         save: (String data) => sharedPreferences.setString('pb_auth', data),
         initial: sharedPreferences.getString('pb_auth'),
