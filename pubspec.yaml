@@ -42,10 +42,10 @@ dependencies:
   equatable: ^2.0.5
 
   # UI
-  side_navigation: ^1.0.4
   window_manager: ^0.3.6
   syncfusion_flutter_charts: ^23.1.39
   loading_animation_widget: ^1.2.0+4
+  toggle_switch: ^2.1.0
 
   # Auth
   pocketbase: ^0.15.1
