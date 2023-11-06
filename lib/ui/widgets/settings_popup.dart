@@ -47,12 +47,12 @@ class _SettingsPopupState extends State<SettingsPopup> {
     return ListView(
       children: [
         ListTile(
-          leading: state.lightMode ? Icon(Icons.light_mode) : Icon(Icons.dark_mode),
+          leading: state.lightMode ? const Icon(Icons.light_mode) : const Icon(Icons.dark_mode),
           title: const Text("Theme"),
           trailing: Padding(
             padding: const EdgeInsets.all(8.0),
             child: DropdownMenu(
-              label: Text("Theme"),
+              label: const Text("Theme"),
               initialSelection: state.lightMode,
               dropdownMenuEntries: const [
                 DropdownMenuEntry(value: false, label: "Dark"),
