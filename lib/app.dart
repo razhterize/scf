@@ -2,12 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pocketbase/pocketbase.dart';
-import 'package:scf_management/constants/enums.dart';
 import 'package:scf_management/providers/login_cubit.dart';
 import 'package:scf_management/providers/settings_bloc.dart';
-import 'package:scf_management/ui/screens/login_screen.dart';
 import 'package:scf_management/ui/screens/home_screen.dart';
-import 'package:scf_management/ui/widgets/settings_popup.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SCFManagement extends StatefulWidget {
@@ -28,7 +25,7 @@ class _SCFManagementState extends State<SCFManagement> {
   void initState() {
     sharedPreferences = widget.sharedPreferences;
     pb = PocketBase(
-      sharedPreferences.getString("databaseUrl")!,
+      sharedPreferences.getString("databaseUrl") ?? dotenv.get("LOCAL_PB_URL"),
       authStore: AsyncAuthStore(
         save: (String data) => sharedPreferences.setString('pb_auth', data),
         initial: sharedPreferences.getString('pb_auth'),
