@@ -35,7 +35,22 @@ class HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<LoginCubit, LoginState>(
       builder: (context, loginState) {
-        if (loginState.loginStatus != LoginStatus.success) return const LoginScreen();
+        if (loginState.loginStatus == LoginStatus.failed || loginState.loginStatus == LoginStatus.unknown) {
+          return const LoginScreen();
+        } else if (loginState.loginStatus == LoginStatus.processing) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                LoadingAnimationWidget.twoRotatingArc(color: Colors.blue, size: 50),
+                Text(
+                  "Waiting for Discord OAuth2...",
+                  style: TextStyle(color: Colors.white, fontSize: 15),
+                )
+              ],
+            ),
+          );
+        }
         return BlocProvider(
             create: (context) => ScreenBloc(),
             child: BlocBuilder<ScreenBloc, ScreenState>(
@@ -108,16 +123,19 @@ class HomeScreenState extends State<HomeScreen> {
       automaticallyImplyLeading: false,
       toolbarHeight: 40,
       leading: state.showOverview
-          ? IconButton(onPressed: (){
-            _scaffoldKey.currentState?.openDrawer();
-          }, icon: const Icon(Icons.menu),)
+          ? IconButton(
+              onPressed: () {
+                _scaffoldKey.currentState?.openDrawer();
+              },
+              icon: const Icon(Icons.menu),
+            )
           : BlocBuilder<ScreenBloc, ScreenState>(
               builder: (context, state) {
                 return IconButton(
                     onPressed: () {
                       BlocProvider.of<ScreenBloc>(context).add(ShowOverview());
                     },
-                    icon: Icon(Icons.arrow_back));
+                    icon: const Icon(Icons.arrow_back));
               },
             ),
       actions: [
@@ -125,10 +143,10 @@ class HomeScreenState extends State<HomeScreen> {
           onPressed: () {
             showDialog(
               context: context,
-              builder: (context) => SettingsPopup(),
+              builder: (context) => const SettingsPopup(),
             );
           },
-          child: Icon(Icons.settings),
+          child: const Icon(Icons.settings),
         ),
       ],
     );
@@ -138,9 +156,9 @@ class HomeScreenState extends State<HomeScreen> {
     return Drawer(
       child: Column(
         children: [
-          SizedBox(height: 20),
+          const SizedBox(height: 20),
           Expanded(flex: 3, child: _loggedInProfile()),
-          Expanded(flex: 5, child: Placeholder()),
+          const Expanded(flex: 5, child: Placeholder()),
           // TODO add logout button
           Padding(
             padding: const EdgeInsets.all(4.0),
@@ -148,10 +166,10 @@ class HomeScreenState extends State<HomeScreen> {
               onPressed: () {
                 showDialog(
                   context: context,
-                  builder: (context) => SettingsPopup(),
+                  builder: (context) => const SettingsPopup(),
                 );
               },
-              child: Icon(Icons.settings),
+              child: const Icon(Icons.settings),
             ),
           )
         ],
@@ -176,6 +194,14 @@ class HomeScreenState extends State<HomeScreen> {
             children: [
               CircleAvatar(radius: MediaQuery.of(context).size.width / 20, child: Image.network(url.toString())),
               Text(state.authModel!.record!.getStringValue('username'), style: const TextStyle(fontSize: 25)),
+              IconButton(
+                  onPressed: () {
+                    BlocProvider.of<LoginCubit>(context).logout();
+                  },
+                  icon: const Icon(
+                    Icons.logout,
+                    color: Colors.red,
+                  ))
             ],
           );
         }
@@ -185,6 +211,14 @@ class HomeScreenState extends State<HomeScreen> {
                 radius: MediaQuery.of(context).size.width / 20,
                 child: Icon(Icons.people, size: MediaQuery.of(context).size.width / 20)),
             Text(state.authModel!.record!.getStringValue('username'), style: const TextStyle(fontSize: 25)),
+            IconButton(
+                onPressed: () {
+                  BlocProvider.of<LoginCubit>(context).logout();
+                },
+                icon: const Icon(
+                  Icons.logout,
+                  color: Colors.red,
+                ))
           ],
         );
       },
