@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scf_management/constants/enums.dart';
 import 'package:scf_management/constants/theme.dart';
 import 'package:scf_management/models/member.dart';
-import 'package:scf_management/providers/screen_bloc.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class MembersChart extends StatefulWidget {
@@ -50,9 +48,9 @@ class _MembersChartState extends State<MembersChart> {
   List<ChartData> _chartData(List<Member> members) {
     List<ChartData> data = [];
     for (SiegeStatus status in SiegeStatus.values) {
-      var _tmp = members.where((element) => element.siege!.status == status).toList();
-      if (_tmp.isNotEmpty) {
-        data.add(ChartData(status: status.name, count: _tmp.length, color: darkChartColor[status]));
+      var tempMembers = members.where((element) => element.siege!.status == status).toList();
+      if (tempMembers.isNotEmpty) {
+        data.add(ChartData(status: status.name, count: tempMembers.length, color: darkChartColor[status]));
       }
     }
     return data;
