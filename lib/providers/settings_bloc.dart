@@ -4,7 +4,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingBloc extends Bloc<SettingEvent, SettingState> {
-  SettingBloc({required this.sharedPreferences}) : super(SettingState()) {
+  SettingBloc({required this.sharedPreferences}) : super(const SettingState()) {
     on<GetSettings>(fetchSettings);
     on<SetSettings>(setSettings);
   }
@@ -50,6 +50,6 @@ final class GetSettings extends SettingEvent {}
 
 final class SetSettings extends SettingEvent {
   SetSettings({this.lightMode = false, this.databaseUrl = ""});
-  bool lightMode;
-  String databaseUrl;
+  final bool lightMode;
+  final String databaseUrl;
 }
