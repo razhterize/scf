@@ -1,5 +1,3 @@
-// ignore_for_file: unused_local_variable
-
 import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocketbase/pocketbase.dart';
@@ -46,25 +44,33 @@ class LoginCubit extends Cubit<LoginState> {
     emit(state.copyWith(loginStatus: LoginStatus.failed));
   }
 
-  void loginWithDiscord() {
+  void loginWithDiscord() async {
+    emit(state.copyWith(loginStatus: LoginStatus.processing, authModel: null, authStore: null));
     if (_pb.authStore.isValid) {
-      emit(state.copyWith(loginStatus: LoginStatus.success, authStore: _pb.authStore));
+      var model = await _pb.collection("discord_auth").authRefresh();
+      emit(state.copyWith(loginStatus: LoginStatus.success, authStore: _pb.authStore, authModel: model));
       return;
     }
-    final authData = _pb.collection("discord_auth").authWithOAuth2(
-      "discord",
-      (url) async {
-        await launchUrl(url);
-        _pb.authStore.onChange.listen((event) {
-          if (_pb.authStore.isValid) {
-            emit(state.copyWith(loginStatus: LoginStatus.success, authStore: _pb.authStore));
-            return;
-          }
-        });
-      },
-      scopes: ['identify', 'guilds'],
-    );
-    emit(state.copyWith(loginStatus: LoginStatus.failed));
+    try {
+      final authData = _pb.collection("discord_auth").authWithOAuth2(
+        "discord",
+        (url) async {
+          await launchUrl(url);
+          _pb.authStore.onChange.listen(
+            (event) async {
+              if (_pb.authStore.isValid) {
+                emit(state.copyWith(loginStatus: LoginStatus.success, authStore: _pb.authStore));
+                return;
+              }
+            },
+          );
+        },
+        scopes: ['identify', 'guilds'],
+      );
+      emit(state.copyWith(loginStatus: LoginStatus.processing, authModel: null, authStore: null));
+    } catch (e) {
+      emit(state.copyWith(loginStatus: LoginStatus.failed));
+    }
   }
 
   late final PocketBase _pb;
