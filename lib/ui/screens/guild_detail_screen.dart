@@ -1,13 +1,10 @@
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scf_management/constants/abbreviations.dart';
 import 'package:scf_management/constants/enums.dart';
 import 'package:scf_management/models/guild.dart';
 import 'package:scf_management/models/member.dart';
-import 'package:scf_management/providers/guild_bloc.dart';
-import 'package:scf_management/providers/screen_bloc.dart';
 import 'package:scf_management/ui/widgets/members_chart.dart';
 import 'package:toggle_switch/toggle_switch.dart';
 
@@ -74,14 +71,6 @@ class _GuildDetailsState extends State<GuildDetails> {
           size: MediaQuery.of(context).size.width / 8,
         ),
       );
-
-  int _axisCount() {
-    var orientation = MediaQuery.of(context).orientation;
-    if (orientation == Orientation.landscape) {
-      return 3;
-    }
-    return 1;
-  }
 
   void editMemberDialog(Member member) {
     showModalBottomSheet(
