@@ -25,7 +25,7 @@ class _SCFManagementState extends State<SCFManagement> {
     sharedPreferences = widget.sharedPreferences;
     String? dbUrl = sharedPreferences.getString("databaseUrl");
     if (dbUrl == "" || dbUrl == null) {
-      dbUrl = dotenv.get("LOCAL_PB_URL");
+      dbUrl = dotenv.get("PB_URL");
     }
     pb =  PocketBase(
       dbUrl,
