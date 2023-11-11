@@ -3,28 +3,29 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:scf_management/constants/enums.dart';
 import 'package:url_launcher/url_launcher.dart';
+// import 'package:http/http.dart' as http;
 
 class LoginState extends Equatable {
-  const LoginState({required this.loginStatus, this.authStore, this.authModel});
+  const LoginState({required this.loginStatus, required this.pb, this.authModel});
 
   final LoginStatus loginStatus;
-  final AuthStore? authStore;
+  final PocketBase pb;
   final RecordAuth? authModel;
 
-  LoginState copyWith({LoginStatus? loginStatus, AuthStore? authStore, RecordAuth? authModel}) {
+  LoginState copyWith({LoginStatus? loginStatus, PocketBase? pb, RecordAuth? authModel}) {
     return LoginState(
       loginStatus: loginStatus ?? this.loginStatus,
-      authStore: authStore ?? this.authStore,
+      pb: pb ?? this.pb,
       authModel: authModel ?? this.authModel,
     );
   }
 
   @override
-  List<Object?> get props => [loginStatus, authStore];
+  List<Object?> get props => [loginStatus, pb];
 }
 
 class LoginCubit extends Cubit<LoginState> {
-  LoginCubit(PocketBase pb) : super(const LoginState(loginStatus: LoginStatus.unknown)) {
+  LoginCubit({required PocketBase pb}) : super(LoginState(loginStatus: LoginStatus.unknown, pb: pb)) {
     _pb = pb;
     if (_pb.authStore.isValid) {
       authRefresh(pb);
@@ -36,7 +37,7 @@ class LoginCubit extends Cubit<LoginState> {
 
   Future<void> authRefresh(PocketBase pb) async {
     var model = await pb.collection("discord_auth").authRefresh();
-    emit(state.copyWith(authModel: model, loginStatus: LoginStatus.success, authStore: pb.authStore));
+    emit(state.copyWith(authModel: model, loginStatus: LoginStatus.success));
   }
 
   void logout() {
@@ -45,29 +46,27 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   void loginWithDiscord() async {
-    emit(state.copyWith(loginStatus: LoginStatus.processing, authModel: null, authStore: null));
+    emit(state.copyWith(loginStatus: LoginStatus.processing));
     if (_pb.authStore.isValid) {
       var model = await _pb.collection("discord_auth").authRefresh();
-      emit(state.copyWith(loginStatus: LoginStatus.success, authStore: _pb.authStore, authModel: model));
+      emit(state.copyWith(loginStatus: LoginStatus.success, pb: _pb, authModel: model));
       return;
     }
     try {
-      final authData = _pb.collection("discord_auth").authWithOAuth2(
+      _pb.authStore.onChange.listen((event) async {
+        if (_pb.authStore.isValid) {
+          emit(state.copyWith(loginStatus: LoginStatus.success, pb: _pb));
+          return;
+        }
+      });
+      await _pb.collection("discord_auth").authWithOAuth2(
         "discord",
         (url) async {
           await launchUrl(url);
-          _pb.authStore.onChange.listen(
-            (event) async {
-              if (_pb.authStore.isValid) {
-                emit(state.copyWith(loginStatus: LoginStatus.success, authStore: _pb.authStore));
-                return;
-              }
-            },
-          );
         },
         scopes: ['identify', 'guilds'],
       );
-      emit(state.copyWith(loginStatus: LoginStatus.processing, authModel: null, authStore: null));
+      emit(state.copyWith(loginStatus: LoginStatus.processing));
     } catch (e) {
       emit(state.copyWith(loginStatus: LoginStatus.failed));
     }
