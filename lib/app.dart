@@ -17,18 +17,22 @@ class SCFManagement extends StatefulWidget {
 }
 
 class _SCFManagementState extends State<SCFManagement> {
-  int navBarIndex = 0;
   late final SharedPreferences sharedPreferences;
   late final PocketBase pb;
 
   @override
   void initState() {
     sharedPreferences = widget.sharedPreferences;
-    pb = PocketBase(
-      sharedPreferences.getString("databaseUrl") ?? dotenv.get("LOCAL_PB_URL"),
+    String? dbUrl = sharedPreferences.getString("databaseUrl");
+    if (dbUrl == "" || dbUrl == null) {
+      dbUrl = dotenv.get("LOCAL_PB_URL");
+    }
+    pb =  PocketBase(
+      dbUrl,
       authStore: AsyncAuthStore(
         save: (String data) => sharedPreferences.setString('pb_auth', data),
         initial: sharedPreferences.getString('pb_auth'),
+        clear: () => sharedPreferences.setString("pb_auth", ""),
       ),
     );
     super.initState();
@@ -39,7 +43,7 @@ class _SCFManagementState extends State<SCFManagement> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => LoginCubit(pb),
+          create: (context) => LoginCubit(pb: pb),
         ),
         BlocProvider(
           create: (context) => SettingBloc(sharedPreferences: sharedPreferences),
@@ -49,6 +53,7 @@ class _SCFManagementState extends State<SCFManagement> {
         builder: (context, state) {
           BlocProvider.of<SettingBloc>(context).add(GetSettings());
           return MaterialApp(
+            debugShowCheckedModeBanner: false,
             theme: state.lightMode ? ThemeData.light() : ThemeData.dark(),
             home: HomeScreen(pb: pb),
           );
