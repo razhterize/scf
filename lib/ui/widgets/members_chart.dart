@@ -16,7 +16,6 @@ class MembersChart extends StatefulWidget {
 
 class _MembersChartState extends State<MembersChart> {
   late final List<Member> members;
-  List<String> headers = ["Above", "Below", "Not Clear", "No Score", "Pardoned"];
 
   @override
   void initState() {
@@ -29,17 +28,20 @@ class _MembersChartState extends State<MembersChart> {
     return Padding(
       padding: const EdgeInsets.all(2.0),
       child: SfCircularChart(
-        title: ChartTitle(text: widget.name),
-        legend:
-            const Legend(isVisible: true, position: LegendPosition.bottom, overflowMode: LegendItemOverflowMode.wrap),
+        legend: const Legend(
+          isVisible: true,
+          position: LegendPosition.bottom,
+          overflowMode: LegendItemOverflowMode.wrap,
+        ),
         series: <CircularSeries>[
           PieSeries<ChartData, String>(
-              animationDuration: 0,
-              dataSource: _chartData(members),
-              pointColorMapper: (ChartData data, _) => data.color,
-              xValueMapper: (ChartData data, _) => data.status,
-              yValueMapper: (ChartData data, _) => data.count,
-              name: widget.name)
+            animationDuration: 0,
+            dataSource: _chartData(members),
+            pointColorMapper: (ChartData data, _) => data.color,
+            xValueMapper: (ChartData data, _) => data.status,
+            yValueMapper: (ChartData data, _) => data.count,
+            name: widget.name,
+          ),
         ],
       ),
     );
