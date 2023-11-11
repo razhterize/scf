@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:scf_management/constants/enums.dart';
 import 'package:scf_management/providers/guild_bloc.dart';
 import 'package:scf_management/providers/login_cubit.dart';
-import 'package:scf_management/providers/screen_bloc.dart';
-import 'package:scf_management/ui/screens/guild_detail_screen.dart';
 import 'package:scf_management/ui/screens/login_screen.dart';
 import 'package:scf_management/ui/widgets/guild_overview.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -43,7 +40,7 @@ class HomeScreenState extends State<HomeScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 LoadingAnimationWidget.twoRotatingArc(color: Colors.blue, size: 50),
-                Text(
+                const Text(
                   "Waiting for Discord OAuth2...",
                   style: TextStyle(color: Colors.white, fontSize: 15),
                 )
@@ -51,17 +48,21 @@ class HomeScreenState extends State<HomeScreen> {
             ),
           );
         }
-        return BlocProvider(
-            create: (context) => ScreenBloc(),
-            child: BlocBuilder<ScreenBloc, ScreenState>(
+        return Scaffold(
+            key: _scaffoldKey,
+            appBar: AppBar(
+              title: const Text("Siege"),
+              centerTitle: true,
+            ),
+            drawer: _drawer(),
+            body: BlocBuilder<LoginCubit, LoginState>(
               builder: (context, state) {
-                return Scaffold(
-                  key: _scaffoldKey,
-                  appBar: _appBar(state),
-                  drawer: _drawer(),
-                  floatingActionButton: _floatingActionButton(state),
-                  body: state.showOverview ? _body(loginState) : GuildDetails(guild: state.guild!),
-                );
+                if (state.loginStatus == LoginStatus.success) {
+                  return _body(state);
+                } else if (state.loginStatus == LoginStatus.processing) {
+                  return LoadingAnimationWidget.threeArchedCircle(color: Colors.white, size: 50);
+                }
+                return const LoginScreen();
               },
             ));
       },
@@ -69,7 +70,7 @@ class HomeScreenState extends State<HomeScreen> {
   }
 
   GridView _body(LoginState state) {
-    var managedGuilds = state.authStore?.model.data['managed_guilds'];
+    var managedGuilds = state.pb.authStore.model.data['managed_guilds'];
     return GridView.builder(
       itemCount: managedGuilds.length ?? 0,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: maxWidget()),
@@ -77,78 +78,19 @@ class HomeScreenState extends State<HomeScreen> {
         return BlocProvider(
           create: (context) => GuildBloc(pb: pb, name: managedGuilds[index]),
           child: BlocBuilder<GuildBloc, GuildState>(
-            builder: (context, state) {
+            builder: (context, guildState) {
               BlocProvider.of<GuildBloc>(context).add(FetchGuild());
-              if (state.status == GuildStatus.notReady) {
+              if (guildState.status == GuildStatus.notReady) {
                 return LoadingAnimationWidget.threeArchedCircle(color: Colors.blue, size: 50);
-              } else if (state.status == GuildStatus.error) {
-                return Center(child: Text("Error fetching guild ${state.guild?.fullName}"));
+              } else if (guildState.status == GuildStatus.error) {
+                return Center(child: Text("Error fetching guild ${guildState.guild?.fullName}"));
               } else {
-                return GuildOverview(guild: state.guild!);
+                return GuildOverview(pb: state.pb, guild: guildState.guild!);
               }
             },
           ),
         );
       },
-    );
-  }
-
-  Widget? _floatingActionButton(ScreenState state) {
-    if (!state.showOverview) {
-      return FloatingActionButton(
-        onPressed: () async {
-          var selectedMembers = state.guild?.members.where((element) => element.selected == true).toList();
-          String pingText = "";
-          for (var member in selectedMembers!) {
-            if (member.discordId == null || member.discordId == "-" || member.discordId == "<@>") {
-              pingText += member.discordUsername ?? "-\n";
-            } else {
-              pingText += "<@${member.discordId}>\n";
-            }
-          }
-          await Clipboard.setData(ClipboardData(text: pingText));
-        },
-        child: const Icon(
-          Icons.alternate_email,
-        ),
-      );
-    }
-    return null;
-  }
-
-  PreferredSizeWidget _appBar(ScreenState state) {
-    return AppBar(
-      title: const Text("Siege"),
-      centerTitle: true,
-      automaticallyImplyLeading: false,
-      toolbarHeight: 40,
-      leading: state.showOverview
-          ? IconButton(
-              onPressed: () {
-                _scaffoldKey.currentState?.openDrawer();
-              },
-              icon: const Icon(Icons.menu),
-            )
-          : BlocBuilder<ScreenBloc, ScreenState>(
-              builder: (context, state) {
-                return IconButton(
-                    onPressed: () {
-                      BlocProvider.of<ScreenBloc>(context).add(ShowOverview());
-                    },
-                    icon: const Icon(Icons.arrow_back));
-              },
-            ),
-      actions: [
-        MaterialButton(
-          onPressed: () {
-            showDialog(
-              context: context,
-              builder: (context) => const SettingsPopup(),
-            );
-          },
-          child: const Icon(Icons.settings),
-        ),
-      ],
     );
   }
 
@@ -159,7 +101,6 @@ class HomeScreenState extends State<HomeScreen> {
           const SizedBox(height: 20),
           Expanded(flex: 3, child: _loggedInProfile()),
           const Expanded(flex: 5, child: Placeholder()),
-          // TODO add logout button
           Padding(
             padding: const EdgeInsets.all(4.0),
             child: MaterialButton(
@@ -180,7 +121,7 @@ class HomeScreenState extends State<HomeScreen> {
   Widget _loggedInProfile() {
     return BlocBuilder<LoginCubit, LoginState>(
       builder: (context, state) {
-        if (!state.authStore!.isValid) {
+        if (!state.pb.authStore.isValid) {
           return Column(
             children: [
               Icon(Icons.login, color: Colors.green, size: MediaQuery.of(context).size.width / 20),
