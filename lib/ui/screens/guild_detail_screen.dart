@@ -5,11 +5,11 @@ import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:scf_management/constants/abbreviations.dart';
 import 'package:scf_management/constants/enums.dart';
+import 'package:scf_management/constants/theme.dart';
 import 'package:scf_management/models/guild.dart';
 import 'package:scf_management/models/member.dart';
 import 'package:scf_management/providers/guild_bloc.dart';
 import 'package:scf_management/ui/widgets/members_chart.dart';
-import 'package:toggle_switch/toggle_switch.dart';
 
 class GuildDetails extends StatefulWidget {
   const GuildDetails({super.key, required this.guild, required this.pb});
@@ -76,7 +76,17 @@ class _GuildDetailsState extends State<GuildDetails> {
 
   Widget memberFilter() {
     return ListTile(
-      leading: const Icon(Icons.search),
+      leading: searchController.text.isEmpty
+          ? const Icon(Icons.search)
+          : IconButton(
+              onPressed: () {
+                setState(() {
+                  searchController.clear();
+                });
+                BlocProvider.of<GuildBloc>(context)
+                    .add(FilterMember(searchValue: searchController.text, siegeStatus: statusFilter));
+              },
+              icon: const Icon(Icons.close_rounded)),
       title: TextField(
         decoration: const InputDecoration(label: Text("Member Name or ID"), border: InputBorder.none),
         controller: searchController,
@@ -95,9 +105,7 @@ class _GuildDetailsState extends State<GuildDetails> {
           for (var status in SiegeStatus.values) DropdownMenuItem(value: status, child: Text(siegeStatus[status]!)),
         ],
         onChanged: (value) {
-          setState(() {
-            statusFilter = value;
-          });
+          statusFilter = value;
           BlocProvider.of<GuildBloc>(context).add(FilterMember(searchValue: searchController.text, siegeStatus: statusFilter));
         },
       ),
@@ -109,6 +117,10 @@ class _GuildDetailsState extends State<GuildDetails> {
       label: const Text("Mention"),
       icon: const Icon(Icons.alternate_email),
       onPressed: () {
+        if (selectedMembers.isEmpty) {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("No users are selected")));
+          return;
+        }
         String mention = "";
         var mentioned = guild.members.where((member) => member.selected == true).toList();
         for (var member in mentioned) {
@@ -125,28 +137,40 @@ class _GuildDetailsState extends State<GuildDetails> {
   }
 
   AppBar appBar() => AppBar(
-        centerTitle: true,
         title: Text(guild.fullName),
         actions: [
           IconButton(
             // add new member
+            tooltip: "Add New Member",
             onPressed: () {
               newMemberDialog();
             },
             icon: const Icon(Icons.add),
           ),
-          IconButton(
-            // delete member on press
-            onPressed: () {
-              // do something fancy to delete selected member
+          BlocBuilder<GuildBloc, GuildState>(
+            builder: (context, state) {
+              return IconButton(
+                tooltip: "Delete Selected Members",
+                // delete member on press
+                onPressed: () async {
+                  // do something fancy to delete selected member
+                  for (var member in state.filteredMembers.where((member) => member.selected == true)) {
+                    await widget.pb.collection("members").delete(member.id);
+                    setState(() {
+                      state.guild?.members.remove(member);
+                    });
+                  }
+                },
+                icon: const Icon(Icons.delete),
+              );
             },
-            icon: const Icon(Icons.restore_from_trash),
           ),
           IconButton(
+            tooltip: "Select All",
             onPressed: () {
-              // select all members
+              // select all filtered members
               setState(() {
-                for (var member in guild.members) {
+                for (var member in BlocProvider.of<GuildBloc>(context).state.filteredMembers) {
                   member.selected = true;
                 }
               });
@@ -154,13 +178,16 @@ class _GuildDetailsState extends State<GuildDetails> {
             icon: const Icon(Icons.check_box),
           ),
           IconButton(
+            tooltip: "Unselect All",
             onPressed: () {
-              // select all members
+              // deselect all filtered members
               setState(() {
-                for (var member in guild.members) {
+                for (var member in BlocProvider.of<GuildBloc>(context).state.filteredMembers) {
                   member.selected = false;
                 }
               });
+              BlocProvider.of<GuildBloc>(context)
+                  .add(FilterMember(searchValue: searchController.text, siegeStatus: statusFilter));
             },
             icon: const Icon(Icons.check_box_outline_blank),
           )
@@ -206,25 +233,34 @@ class _GuildDetailsState extends State<GuildDetails> {
   }
 
   Widget statusSelection(Member member) {
-    return ToggleSwitch(
-      activeBgColors: const [
-        [Colors.blue],
-        [Colors.yellow],
-        [Colors.orangeAccent],
-        [Colors.purple],
-        [Colors.red]
-      ],
-      fontSize: 12,
-      animate: true,
-      animationDuration: 200,
-      onToggle: (index) {
-        debugPrint(index.toString());
-        member.siege?.status = SiegeStatus.values[index!];
-        member.update(widget.pb);
-      },
-      initialLabelIndex: member.siege?.status?.index,
-      changeOnTap: true,
-      labels: [for (var status in SiegeStatus.values) siegeStatus[status] ?? ""],
+    return SizedBox(
+      width: MediaQuery.of(context).size.width / 2,
+      child: Wrap(
+        alignment: WrapAlignment.end,
+        spacing: 5,
+        children: [
+          for (var status in SiegeStatus.values)
+            ChoiceChip(
+              visualDensity: VisualDensity.compact,
+              label: Text(
+                siegeStatus[status]!,
+                style: TextStyle(
+                  color: member.siege?.status == status ? Colors.black : Colors.white,
+                ),
+              ),
+              selected: (member.siege?.status == status),
+              selectedColor: darkChartColor[status],
+              onSelected: (value) {
+                BlocProvider.of<GuildBloc>(context)
+                    .add(FilterMember(searchValue: searchController.text, siegeStatus: statusFilter));
+                setState(() {
+                  member.siege?.status = status;
+                  member.update(widget.pb);
+                });
+              },
+            )
+        ],
+      ),
     );
   }
 
@@ -342,6 +378,7 @@ class _GuildDetailsState extends State<GuildDetails> {
   }
 
   void newMemberDialog() {
+    // TODO Known Issue: Member does not automatically updated after adding new one
     final nameController = TextEditingController();
     final pgrIdController = TextEditingController();
     final discIdController = TextEditingController();
@@ -372,10 +409,16 @@ class _GuildDetailsState extends State<GuildDetails> {
             "total_points": [0, 0, 0]
           }
         };
-        await widget.pb.collection("members").create(body: data);
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("New member ${nameController.text} has been added")));
-        setState(() {});
+        await widget.pb.collection("members").create(body: data).then((newMember) async {
+          var _guild = await widget.pb.collection("guilds").getList(filter: "name = '${guild.name}'");
+          if (_guild.items.isNotEmpty) {
+            await widget.pb.collection("guilds").update(_guild.items.first.id, body: {"members+": newMember.id});
+          }
+        });
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("New member ${nameController.text} has been added")));
+        BlocProvider.of<GuildBloc>(context).add(RefetchGuild());
+        BlocProvider.of<GuildBloc>(context).add(FilterMember(searchValue: searchController.text, siegeStatus: statusFilter));
       }
     }
 
