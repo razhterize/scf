@@ -7,12 +7,5 @@ final Map<SiegeStatus, dynamic> darkChartColor = {
   SiegeStatus.noScore: Colors.red[900],
   SiegeStatus.notClear: Colors.orange,
   SiegeStatus.pardoned: Colors.deepPurple,
-};
-
-final Map<SiegeStatus, dynamic> lightChartColor = {
-  SiegeStatus.above: Colors.lightBlue,
-  SiegeStatus.below: const Color.fromARGB(255, 231, 194, 31),
-  SiegeStatus.noScore: Colors.red[900],
-  SiegeStatus.notClear: Colors.orange,
-  SiegeStatus.pardoned: const Color.fromARGB(255, 67, 0, 184),
+  SiegeStatus.newMember: Colors.green
 };
