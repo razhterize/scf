@@ -18,4 +18,5 @@ const Map<SiegeStatus, String> siegeStatus = {
   SiegeStatus.noScore: "No Score",
   SiegeStatus.notClear: "Not Clear",
   SiegeStatus.pardoned: "Pardoned",
+  SiegeStatus.newMember: "New",
 };
