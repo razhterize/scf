@@ -20,7 +20,6 @@ class HomeScreen extends StatefulWidget {
 
 class HomeScreenState extends State<HomeScreen> {
   late final PocketBase pb;
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -32,24 +31,10 @@ class HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<LoginCubit, LoginState>(
       builder: (context, loginState) {
-        if (loginState.loginStatus == LoginStatus.failed || loginState.loginStatus == LoginStatus.unknown) {
+        if (loginState.loginStatus != LoginStatus.success) {
           return const LoginScreen();
-        } else if (loginState.loginStatus == LoginStatus.processing) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                LoadingAnimationWidget.twoRotatingArc(color: Colors.blue, size: 50),
-                const Text(
-                  "Waiting for Discord OAuth2...",
-                  style: TextStyle(color: Colors.white, fontSize: 15),
-                )
-              ],
-            ),
-          );
         }
         return Scaffold(
-            key: _scaffoldKey,
             appBar: AppBar(
               title: const Text("Siege"),
               centerTitle: true,
@@ -69,7 +54,7 @@ class HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  GridView _body(LoginState state) {
+  Widget _body(LoginState state) {
     var managedGuilds = state.pb.authStore.model.data['managed_guilds'];
     return GridView.builder(
       itemCount: managedGuilds.length ?? 0,
@@ -79,11 +64,25 @@ class HomeScreenState extends State<HomeScreen> {
           create: (context) => GuildBloc(pb: pb, name: managedGuilds[index]),
           child: BlocBuilder<GuildBloc, GuildState>(
             builder: (context, guildState) {
-              BlocProvider.of<GuildBloc>(context).add(FetchGuild());
               if (guildState.status == GuildStatus.notReady) {
+                BlocProvider.of<GuildBloc>(context).add(FetchGuild());
                 return LoadingAnimationWidget.threeArchedCircle(color: Colors.blue, size: 50);
               } else if (guildState.status == GuildStatus.error) {
-                return Center(child: Text("Error fetching guild ${guildState.guild?.fullName}"));
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Error fetching guild ${guildState.guild?.fullName}"),
+                      ElevatedButton.icon(
+                        onPressed: () {
+                          BlocProvider.of<GuildBloc>(context).add(FetchGuild());
+                        },
+                        icon: const Icon(Icons.replay),
+                        label: const Text("Retry"),
+                      )
+                    ],
+                  ),
+                );
               } else {
                 return GuildOverview(pb: state.pb, guild: guildState.guild!);
               }
@@ -100,7 +99,28 @@ class HomeScreenState extends State<HomeScreen> {
         children: [
           const SizedBox(height: 20),
           Expanded(flex: 3, child: _loggedInProfile()),
-          const Expanded(flex: 5, child: Placeholder()),
+          Expanded(
+              flex: 5,
+              child: Column(
+                children: [
+                  ListTile(
+                    leading: const Icon(Icons.flag),
+                    title: const Text("Siege"),
+                    onTap: () {
+                      Navigator.pop(context);
+                      // Open Siege page?
+                    },
+                  ),
+                  ListTile(
+                    leading: const Icon(Icons.account_box),
+                    title: const Text("Maze (WIP)"),
+                    onTap: () {
+                      Navigator.pop(context);
+                      // Open maze page here
+                    },
+                  ),
+                ],
+              )),
           Padding(
             padding: const EdgeInsets.all(4.0),
             child: MaterialButton(

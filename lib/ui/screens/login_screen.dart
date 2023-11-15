@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:scf_management/constants/enums.dart';
 import 'package:scf_management/providers/login_cubit.dart';
 
@@ -15,28 +16,33 @@ class _LoginScreenState extends State<LoginScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<LoginCubit, LoginState>(
       builder: (context, state) {
-        return Center(
-          child: MaterialButton(
-              onPressed: () {
-                if (state.loginStatus != LoginStatus.success) {
-                  BlocProvider.of<LoginCubit>(context).loginWithDiscord();
-                }
-              },
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    Icons.login,
-                    color: Colors.green,
-                  ),
-                  Padding(
-                    padding: EdgeInsets.all(8.0),
-                    child: Text("Login with Discord"),
-                  )
-                ],
-              )),
+        return Scaffold(
+          body: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.people,
+                  size: 50,
+                ),
+                FloatingActionButton.extended(
+                  onPressed: () {
+                    BlocProvider.of<LoginCubit>(context).loginWithDiscord();
+                  },
+                  icon: state.loginStatus != LoginStatus.processing ? const Icon(Icons.mail) : LoadingAnimationWidget.newtonCradle(color: Colors.black, size: 50),
+                  label: const Text("Discord Login"),
+                )
+              ],
+            ),
+          ),
         );
       },
     );
+  }
+
+  void loginAsAdmin() {
+    // fancy stuff to login as admin
+    var pb = BlocProvider.of<LoginCubit>(context).state.pb;
+    pb.admins.authWithPassword("", "");
   }
 }
