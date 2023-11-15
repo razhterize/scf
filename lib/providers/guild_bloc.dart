@@ -12,13 +12,13 @@ class GuildBloc extends Bloc<GuildEvent, GuildState> {
   GuildBloc({required this.pb, required this.name}) : super(const GuildState()) {
     on<FetchGuild>(_fetchGuild);
     on<FilterMember>(_filterMembers);
+    on<RefetchGuild>(_refetchGuild);
   }
 
   Future<void> _fetchGuild(FetchGuild event, Emitter<GuildState> emit) async {
     if (state.status == GuildStatus.ready) return;
     try {
       var guilds = await pb.collection('guilds').getList(filter: "name = '$name'", expand: "members");
-      // TODO only subsribe to members in a guild, otherwise index error
       if (guilds.items.isNotEmpty) {
         var guild = guilds.items.first;
         final members = guilds.items.first.expand['members']?.map((e) => Member.fromRecord(e)).toList();
@@ -28,7 +28,9 @@ class GuildBloc extends Bloc<GuildEvent, GuildState> {
           switch (e.action) {
             case "create":
               debugPrint("Realtime update: Create. Record id: ${e.record?.id}");
-              state.guild?.members.add(Member.fromRecord(e.record!));
+              var currentMembers = state.guild?.members;
+              currentMembers?.add(Member.fromRecord(e.record!));
+              emit(state.copyWith(guild: Guild(name: name, members: currentMembers)));
               break;
             case "update":
               // update existing member
@@ -60,7 +62,8 @@ class GuildBloc extends Bloc<GuildEvent, GuildState> {
       if (event.searchValue != null || event.searchValue == "") {
         filteredMembers = state.guild!.members
             .where((member) =>
-                (member.name!.toLowerCase().contains(event.searchValue!) || member.pgrId.toString().contains(event.searchValue!)) &&
+                (member.name!.toLowerCase().contains(event.searchValue!) ||
+                    member.pgrId.toString().contains(event.searchValue!)) &&
                 member.siege?.status == event.siegeStatus)
             .toList();
         return emit(state.copyWith(filteredMembers: filteredMembers));
@@ -68,14 +71,34 @@ class GuildBloc extends Bloc<GuildEvent, GuildState> {
       filteredMembers = state.guild!.members.where((member) => member.siege?.status == event.siegeStatus).toList();
       return emit(state.copyWith(filteredMembers: filteredMembers));
     }
-    if (event.siegeStatus == null && event.searchValue != "" && event.searchValue != null ) {
+    if (event.siegeStatus == null && event.searchValue != "" && event.searchValue != null) {
       filteredMembers = state.guild!.members
           .where((member) =>
-              member.name!.toLowerCase().contains(event.searchValue!) || member.pgrId.toString().contains(event.searchValue!))
+              member.name!.toLowerCase().contains(event.searchValue!) ||
+              member.pgrId.toString().contains(event.searchValue!))
           .toList();
       return emit(state.copyWith(filteredMembers: filteredMembers));
     }
     return emit(state.copyWith(filteredMembers: state.guild!.members));
+  }
+
+  void _refetchGuild(RefetchGuild event, Emitter<GuildState> emit) async {
+    emit(state.copyWith(status: GuildStatus.notReady, guild: null));
+    try {
+      var guilds = await pb.collection('guilds').getList(filter: "name = '$name'", expand: "members");
+      if (guilds.items.isEmpty) {
+        return emit(state.copyWith(status: GuildStatus.error));
+      }
+      final members = guilds.items.first.expand['members']?.map((e) => Member.fromRecord(e)).toList();
+      Guild guild = Guild(
+        name: guilds.items.first.data['name'],
+        members: guilds.items.first.expand['members']?.map((e) => Member.fromRecord(e)).toList(),
+        minScore: guilds.items.first.data['min_score'] ?? 0,
+      );
+      emit(state.copyWith(status: GuildStatus.ready, guild: guild));
+    } catch (e) {
+      emit(state.copyWith(status: GuildStatus.error));
+    }
   }
 
   final PocketBase pb;
@@ -106,6 +129,8 @@ sealed class GuildEvent extends Equatable {
 }
 
 final class FetchGuild extends GuildEvent {}
+
+final class RefetchGuild extends GuildEvent {}
 
 final class FilterMember extends GuildEvent {
   FilterMember({this.siegeStatus, this.searchValue});
