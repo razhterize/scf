@@ -46,7 +46,9 @@ class _GuildOverviewState extends State<GuildOverview> {
                   ),
                 ));
               },
-              child: guild.members.isNotEmpty ? _membersChart() : _emptyMembers(),
+              child: AbsorbPointer(
+                child: guild.members.isNotEmpty ? _membersChart() : _emptyMembers(),
+              ),
             ),
           ),
         ],
