@@ -1,11 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scf_management/constants/enums.dart';
 import 'package:scf_management/constants/theme.dart';
 import 'package:scf_management/models/member.dart';
-import 'package:scf_management/providers/guild_bloc.dart';
-import 'package:scf_management/providers/login_cubit.dart';
-import 'package:scf_management/ui/screens/guild_detail_screen.dart';
 import 'package:syncfusion_flutter_charts/charts.dart';
 
 class MembersChart extends StatefulWidget {
@@ -32,18 +28,6 @@ class _MembersChartState extends State<MembersChart> {
     return Padding(
       padding: const EdgeInsets.all(2.0),
       child: SfCircularChart(
-        onChartTouchInteractionDown: (tapArgs) {
-          Navigator.of(context).push(MaterialPageRoute(
-            builder: (_) => BlocProvider.value(
-              value: BlocProvider.of<GuildBloc>(context),
-              child: BlocBuilder<GuildBloc, GuildState>(
-                builder: (context, state) {
-                  return GuildDetails(guild: state.guild!, pb: BlocProvider.of<LoginCubit>(context).pb);
-                },
-              ),
-            ),
-          ));
-        },
         legend: const Legend(
           isVisible: true,
           position: LegendPosition.bottom,
@@ -57,6 +41,17 @@ class _MembersChartState extends State<MembersChart> {
             xValueMapper: (ChartData data, _) => data.status,
             yValueMapper: (ChartData data, _) => data.count,
             name: widget.name,
+
+            // Navigator.of(context).push(MaterialPageRoute(
+            //   builder: (_) => BlocProvider.value(
+            //     value: BlocProvider.of<GuildBloc>(context),
+            //     child: BlocBuilder<GuildBloc, GuildState>(
+            //       builder: (context, state) {
+            //         return GuildDetails(guild: state.guild!, pb: BlocProvider.of<LoginCubit>(context).pb);
+            //       },
+            //     ),
+            //   ),
+            // ));
           ),
         ],
       ),
