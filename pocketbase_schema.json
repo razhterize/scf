@@ -1,0 +1,295 @@
+[
+    {
+        "id": "j9e5qkgu19x8nn2",
+        "name": "discord_auth",
+        "type": "auth",
+        "system": false,
+        "schema": [
+            {
+                "id": "v5scxao2",
+                "name": "avatar",
+                "type": "file",
+                "system": false,
+                "required": false,
+                "options": {
+                    "maxSelect": 1,
+                    "maxSize": 5242880,
+                    "mimeTypes": [],
+                    "thumbs": [],
+                    "protected": false
+                }
+            },
+            {
+                "id": "jivpfvk6",
+                "name": "managed_guilds",
+                "type": "select",
+                "system": false,
+                "required": false,
+                "options": {
+                    "maxSelect": 9,
+                    "values": [
+                        "turu",
+                        "kuru",
+                        "tensura",
+                        "crepe",
+                        "ancient_weapon",
+                        "avarice_echo",
+                        "arcadian",
+                        "turu_eu",
+                        "turu_na"
+                    ]
+                }
+            },
+            {
+                "id": "cpck4huc",
+                "name": "admin",
+                "type": "bool",
+                "system": false,
+                "required": false,
+                "options": {}
+            }
+        ],
+        "indexes": [],
+        "listRule": "(id = @request.auth.id && @request.auth.verified = true)",
+        "viewRule": "(id = @request.auth.id && @request.auth.verified = true)",
+        "createRule": "",
+        "updateRule": "(id = @request.auth.id && @request.auth.verified = true && @request.auth.admin = true)",
+        "deleteRule": "(id = @request.auth.id && @request.auth.verified = true && @request.auth.admin = true)",
+        "options": {
+            "allowEmailAuth": false,
+            "allowOAuth2Auth": true,
+            "allowUsernameAuth": false,
+            "exceptEmailDomains": [],
+            "manageRule": "(id = @request.auth.id && @request.auth.verified = true && @request.auth.admin = true)",
+            "minPasswordLength": 8,
+            "onlyEmailDomains": [],
+            "requireEmail": false
+        }
+    },
+    {
+        "id": "nxi3qi275rqc9tl",
+        "name": "guilds",
+        "type": "base",
+        "system": false,
+        "schema": [
+            {
+                "id": "opsnu62a",
+                "name": "name",
+                "type": "text",
+                "system": false,
+                "required": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
+                }
+            },
+            {
+                "id": "sigrteci",
+                "name": "min_score",
+                "type": "number",
+                "system": false,
+                "required": false,
+                "options": {
+                    "min": null,
+                    "max": null
+                }
+            },
+            {
+                "id": "ciyukjcz",
+                "name": "members",
+                "type": "relation",
+                "system": false,
+                "required": false,
+                "options": {
+                    "collectionId": "er6hkhy4kh7s6hn",
+                    "cascadeDelete": false,
+                    "minSelect": null,
+                    "maxSelect": null,
+                    "displayFields": null
+                }
+            }
+        ],
+        "indexes": [],
+        "listRule": "(@request.auth.id != \"\" && @request.auth.managed_guilds ~ name && @request.auth.verified = true) || (@request.auth.id != \"\" && @request.auth.admin = true)",
+        "viewRule": "(@request.auth.id != \"\" && @request.auth.managed_guilds ~ name && @request.auth.verified = true) || (@request.auth.id != \"\" && @request.auth.admin = true)",
+        "createRule": "(@request.auth.id != \"\" && @request.auth.managed_guilds ~ name && @request.auth.verified = true) || (@request.auth.id != \"\" && @request.auth.admin = true)",
+        "updateRule": "(@request.auth.id != \"\" && @request.auth.managed_guilds ~ name && @request.auth.verified = true) || (@request.auth.id != \"\" && @request.auth.admin = true)",
+        "deleteRule": "(@request.auth.id != \"\" && @request.auth.admin = true)",
+        "options": {}
+    },
+    {
+        "id": "er6hkhy4kh7s6hn",
+        "name": "members",
+        "type": "base",
+        "system": false,
+        "schema": [
+            {
+                "id": "zfymhb4w",
+                "name": "name",
+                "type": "text",
+                "system": false,
+                "required": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
+                }
+            },
+            {
+                "id": "i6sfxgxs",
+                "name": "discord_username",
+                "type": "text",
+                "system": false,
+                "required": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
+                }
+            },
+            {
+                "id": "vryymbdx",
+                "name": "discord_id",
+                "type": "text",
+                "system": false,
+                "required": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
+                }
+            },
+            {
+                "id": "0wa1l77x",
+                "name": "pgr_id",
+                "type": "number",
+                "system": false,
+                "required": false,
+                "options": {
+                    "min": null,
+                    "max": null
+                }
+            },
+            {
+                "id": "8ilsmzqf",
+                "name": "warnings",
+                "type": "number",
+                "system": false,
+                "required": false,
+                "options": {
+                    "min": null,
+                    "max": null
+                }
+            },
+            {
+                "id": "dzkhrxzj",
+                "name": "guild",
+                "type": "select",
+                "system": false,
+                "required": false,
+                "options": {
+                    "maxSelect": 2,
+                    "values": [
+                        "turu",
+                        "kuru",
+                        "crepe",
+                        "tensura",
+                        "avarice_echo",
+                        "ancient_weapon",
+                        "arcadian",
+                        "turu_na",
+                        "turu_eu"
+                    ]
+                }
+            },
+            {
+                "id": "ziae8fav",
+                "name": "siege",
+                "type": "json",
+                "system": false,
+                "required": false,
+                "options": {}
+            },
+            {
+                "id": "bpglljrh",
+                "name": "maze",
+                "type": "json",
+                "system": false,
+                "required": false,
+                "options": {}
+            }
+        ],
+        "indexes": [],
+        "listRule": "(@request.auth.id != \"\" && @request.auth.managed_guilds ~ guild:each && @request.auth.verified = true) || (@request.auth.id != \"\" && @request.auth.admin = true)",
+        "viewRule": "(@request.auth.id != \"\" && @request.auth.managed_guilds ~ guild:each && @request.auth.verified = true) || (@request.auth.id != \"\" && @request.auth.admin = true)",
+        "createRule": "(@request.auth.id != \"\" && @request.auth.managed_guilds ~ guild:each && @request.auth.verified = true) || (@request.auth.id != \"\" && @request.auth.admin = true)",
+        "updateRule": "(@request.auth.id != \"\" && @request.auth.managed_guilds ~ guild:each && @request.auth.verified = true) || (@request.auth.id != \"\" && @request.auth.admin = true)",
+        "deleteRule": "(@request.auth.id != \"\" && @request.auth.managed_guilds ~ guild:each && @request.auth.verified = true) || (@request.auth.id != \"\" && @request.auth.admin = true)",
+        "options": {}
+    },
+    {
+        "id": "l1qx4rprhahmmdu",
+        "name": "kidnapping_list",
+        "type": "base",
+        "system": false,
+        "schema": [
+            {
+                "id": "dznbok1w",
+                "name": "name",
+                "type": "text",
+                "system": false,
+                "required": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
+                }
+            },
+            {
+                "id": "imet7emb",
+                "name": "guild",
+                "type": "text",
+                "system": false,
+                "required": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
+                }
+            },
+            {
+                "id": "kghtladh",
+                "name": "pgr_id",
+                "type": "number",
+                "system": false,
+                "required": false,
+                "options": {
+                    "min": null,
+                    "max": null
+                }
+            },
+            {
+                "id": "ofgdnfbw",
+                "name": "profile",
+                "type": "file",
+                "system": false,
+                "required": false,
+                "options": {
+                    "maxSelect": 99,
+                    "maxSize": 5242880,
+                    "mimeTypes": [],
+                    "thumbs": [],
+                    "protected": false
+                }
+            }
+        ],
+        "indexes": [],
+        "listRule": "(@request.auth.id != \"\" && @request.auth.managed_guilds >= 1 && @request.auth.verified = true) || (@request.auth.id != \"\" && @request.auth.admin = true)",
+        "viewRule": "(@request.auth.id != \"\" && @request.auth.managed_guilds >= 1 && @request.auth.verified = true) || (@request.auth.id != \"\" && @request.auth.admin = true)",
+        "createRule": "(@request.auth.id != \"\" && @request.auth.managed_guilds >= 1 && @request.auth.verified = true) || (@request.auth.id != \"\" && @request.auth.admin = true)",
+        "updateRule": "(@request.auth.id != \"\" && @request.auth.managed_guilds >= 1 && @request.auth.verified = true) || (@request.auth.id != \"\" && @request.auth.admin = true)",
+        "deleteRule": "(@request.auth.id != \"\" && @request.auth.managed_guilds >= 1 && @request.auth.verified = true) || (@request.auth.id != \"\" && @request.auth.admin = true)",
+        "options": {}
+    }
+]
