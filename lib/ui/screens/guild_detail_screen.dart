@@ -9,7 +9,8 @@ import 'package:scf_management/constants/theme.dart';
 import 'package:scf_management/models/guild.dart';
 import 'package:scf_management/models/member.dart';
 import 'package:scf_management/providers/guild_bloc.dart';
-import 'package:scf_management/ui/widgets/members_chart.dart';
+import 'package:scf_management/ui/widgets/member_detail.dart';
+import 'package:scf_management/ui/widgets/guild_chart.dart';
 
 class GuildDetails extends StatefulWidget {
   const GuildDetails({super.key, required this.guild, required this.pb});
@@ -91,7 +92,8 @@ class _GuildDetailsState extends State<GuildDetails> {
         decoration: const InputDecoration(label: Text("Member Name or ID"), border: InputBorder.none),
         controller: searchController,
         onChanged: (value) {
-          BlocProvider.of<GuildBloc>(context).add(FilterMember(searchValue: searchController.text, siegeStatus: statusFilter));
+          BlocProvider.of<GuildBloc>(context)
+              .add(FilterMember(searchValue: searchController.text, siegeStatus: statusFilter));
         },
       ),
       trailing: DropdownButton(
@@ -106,7 +108,8 @@ class _GuildDetailsState extends State<GuildDetails> {
         ],
         onChanged: (value) {
           statusFilter = value;
-          BlocProvider.of<GuildBloc>(context).add(FilterMember(searchValue: searchController.text, siegeStatus: statusFilter));
+          BlocProvider.of<GuildBloc>(context)
+              .add(FilterMember(searchValue: searchController.text, siegeStatus: statusFilter));
         },
       ),
     );
@@ -266,7 +269,7 @@ class _GuildDetailsState extends State<GuildDetails> {
 
   Widget memberChart() => Hero(
         tag: guild.name,
-        child: MembersChart(members: guild.members, name: guild.fullName),
+        child: GuildClearChart(members: guild.members, name: guild.fullName),
       );
   Widget emptyMember() => Center(
         child: Icon(
@@ -277,102 +280,12 @@ class _GuildDetailsState extends State<GuildDetails> {
       );
 
   void editMemberDialog(Member member) {
-    final nameController = TextEditingController(text: member.name);
-    final pgrIdController = TextEditingController(text: member.pgrId.toString());
-    final discIdController = TextEditingController(text: member.discordId);
-    final discUsernameController = TextEditingController(text: member.discordUsername);
-    final formKey = GlobalKey<FormState>();
-
-    validate() {
-      if (formKey.currentState!.validate()) {
-        member.discordId = discIdController.text;
-        member.discordUsername = discUsernameController.text;
-        member.name = nameController.text;
-        member.pgrId = int.tryParse(pgrIdController.text);
-        member.update(widget.pb);
-        setState(() {});
-      }
-    }
-
     showModalBottomSheet<dynamic>(
       isScrollControlled: true,
       useSafeArea: true,
       context: context,
       builder: (context) {
-        return Wrap(
-          children: [
-            Form(
-              key: formKey,
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    TextFormField(
-                      decoration: InputDecoration(hintText: member.name, label: const Text("Name")),
-                      controller: nameController,
-                      onFieldSubmitted: (value) {
-                        validate();
-                      },
-                      validator: (value) {
-                        if (value == null || value == "") return "Name cannot be empty";
-                        return null;
-                      },
-                    ),
-                    TextFormField(
-                      decoration: InputDecoration(hintText: "${member.pgrId}", label: const Text("PGR ID")),
-                      controller: pgrIdController,
-                      onFieldSubmitted: (value) {
-                        validate();
-                      },
-                      validator: (value) {
-                        if (value!.length != 8) return "PGR ID must be 8 digits long";
-                        return null;
-                      },
-                    ),
-                    TextFormField(
-                      decoration:
-                          InputDecoration(hintText: member.discordUsername, label: const Text("Discord Username")),
-                      controller: discUsernameController,
-                      onFieldSubmitted: (value) {
-                        validate();
-                      },
-                    ),
-                    TextFormField(
-                      decoration: InputDecoration(hintText: member.discordId, label: const Text("Discord ID")),
-                      controller: discIdController,
-                      onFieldSubmitted: (value) {
-                        validate();
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: MaterialButton(
-                      onPressed: () {
-                        Navigator.pop(context);
-                      },
-                      child: const Text("Cancel"),
-                    ),
-                  ),
-                  Expanded(
-                    child: MaterialButton(
-                      onPressed: () {
-                        validate();
-                      },
-                      child: const Text("Save"),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        );
+        return MemberDetails(member: member);
       },
     );
   }
@@ -416,9 +329,11 @@ class _GuildDetailsState extends State<GuildDetails> {
           }
         });
         Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("New member ${nameController.text} has been added")));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text("New member ${nameController.text} has been added")));
         BlocProvider.of<GuildBloc>(context).add(RefetchGuild());
-        BlocProvider.of<GuildBloc>(context).add(FilterMember(searchValue: searchController.text, siegeStatus: statusFilter));
+        BlocProvider.of<GuildBloc>(context)
+            .add(FilterMember(searchValue: searchController.text, siegeStatus: statusFilter));
       }
     }
 

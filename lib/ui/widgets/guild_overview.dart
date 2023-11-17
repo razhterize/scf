@@ -3,8 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:scf_management/models/guild.dart';
 import 'package:scf_management/providers/guild_bloc.dart';
+import 'package:scf_management/providers/login_cubit.dart';
 import 'package:scf_management/ui/screens/guild_detail_screen.dart';
-import 'package:scf_management/ui/widgets/members_chart.dart';
+import 'package:scf_management/ui/widgets/guild_chart.dart';
 
 class GuildOverview extends StatefulWidget {
   const GuildOverview({super.key, required this.guild, required this.pb});
@@ -40,8 +41,15 @@ class _GuildOverviewState extends State<GuildOverview> {
             child: InkWell(
               onTap: () {
                 Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => BlocProvider.value(
-                    value: BlocProvider.of<GuildBloc>(context),
+                  builder: (_) => MultiBlocProvider(
+                    providers: [
+                      BlocProvider.value(
+                        value: BlocProvider.of<GuildBloc>(context),
+                      ),
+                      BlocProvider.value(
+                        value: BlocProvider.of<LoginCubit>(context),
+                      ),
+                    ],
                     child: GuildDetails(guild: guild, pb: widget.pb),
                   ),
                 ));
@@ -59,7 +67,7 @@ class _GuildOverviewState extends State<GuildOverview> {
   Widget _membersChart() {
     return Hero(
       tag: guild.name,
-      child: MembersChart(members: guild.members, name: guild.fullName),
+      child: GuildClearChart(members: guild.members, name: guild.fullName),
     );
   }
 
