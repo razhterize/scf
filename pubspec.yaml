@@ -52,6 +52,9 @@ dependencies:
   url_launcher: ^6.1.14
   shared_preferences: ^2.2.1
 
+  # Web
+  fetch_client: ^1.0.2
+
 dev_dependencies:
   flutter_test:
     sdk: flutter
