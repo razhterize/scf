@@ -11,7 +11,7 @@ class SettingBloc extends Bloc<SettingEvent, SettingState> {
 
   void fetchSettings(GetSettings event, Emitter<SettingState> emit) {
     bool lightMode =  sharedPreferences.getBool('lightMode') ?? false;
-    String databaseUrl = sharedPreferences.getString('databaseUrl') ?? dotenv.get("LOCAL_PB_URL");
+    String databaseUrl = sharedPreferences.getString('databaseUrl') ?? dotenv.get("PB_URL");
     return emit(state.copyWith(lightMode: lightMode, databaseUrl: databaseUrl));
   }
 

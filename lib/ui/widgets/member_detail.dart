@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scf_management/models/member.dart';
-import 'package:scf_management/providers/guild_bloc.dart';
 import 'package:scf_management/providers/login_cubit.dart';
 
 class MemberDetails extends StatefulWidget {
