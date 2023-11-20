@@ -9,6 +9,7 @@ import 'package:scf_management/constants/theme.dart';
 import 'package:scf_management/models/guild.dart';
 import 'package:scf_management/models/member.dart';
 import 'package:scf_management/providers/guild_bloc.dart';
+import 'package:scf_management/providers/settings_bloc.dart';
 import 'package:scf_management/ui/widgets/member_detail.dart';
 import 'package:scf_management/ui/widgets/guild_chart.dart';
 
@@ -248,7 +249,13 @@ class _GuildDetailsState extends State<GuildDetails> {
               label: Text(
                 siegeStatus[status]!,
                 style: TextStyle(
-                  color: member.siege?.status == status ? Colors.black : Colors.white,
+                  color: BlocProvider.of<SettingBloc>(context).state.lightMode
+                      ? member.siege?.status == status
+                          ? Colors.white
+                          : Colors.black
+                      : member.siege?.status == status
+                          ? Colors.black
+                          : Colors.white,
                 ),
               ),
               selected: (member.siege?.status == status),
