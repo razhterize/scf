@@ -50,6 +50,7 @@ class GuildBloc extends Bloc<GuildEvent, GuildState> {
             filteredMembers: members));
       }
     } catch (e) {
+      debugPrint(e.toString());
       return emit(state.copyWith(status: GuildStatus.error));
     }
   }
