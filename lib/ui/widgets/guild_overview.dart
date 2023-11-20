@@ -4,6 +4,7 @@ import 'package:pocketbase/pocketbase.dart';
 import 'package:scf_management/models/guild.dart';
 import 'package:scf_management/providers/guild_bloc.dart';
 import 'package:scf_management/providers/login_cubit.dart';
+import 'package:scf_management/providers/settings_bloc.dart';
 import 'package:scf_management/ui/screens/guild_detail_screen.dart';
 import 'package:scf_management/ui/widgets/guild_chart.dart';
 
@@ -48,6 +49,9 @@ class _GuildOverviewState extends State<GuildOverview> {
                       ),
                       BlocProvider.value(
                         value: BlocProvider.of<LoginCubit>(context),
+                      ),
+                      BlocProvider.value(
+                        value: BlocProvider.of<SettingBloc>(context),
                       ),
                     ],
                     child: GuildDetails(guild: guild, pb: widget.pb),
