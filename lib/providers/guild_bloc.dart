@@ -12,19 +12,19 @@ class GuildBloc extends Bloc<GuildEvent, GuildState> {
   GuildBloc({required this.pb, required this.name}) : super(const GuildState()) {
     on<FetchGuild>(_fetchGuild);
     on<FilterMember>(_filterMembers);
-    on<RefetchGuild>(_refetchGuild);
   }
 
   Future<void> _fetchGuild(FetchGuild event, Emitter<GuildState> emit) async {
-    if (state.status == GuildStatus.ready) return;
+    // if (state.status == GuildStatus.ready) return;
     try {
       var guilds = await pb.collection('guilds').getList(filter: "name = '$name'", expand: "members");
       if (guilds.items.isNotEmpty) {
         var guild = guilds.items.first;
         final members = guilds.items.first.expand['members']?.map((e) => Member.fromRecord(e)).toList();
-        membersSubcscription = pb.collection('members').subscribe("*", (e) {
+        pb.collection('members').subscribe("*", (e) {
           // TODO realtime sync event
           if (e.record?.data['guild'] != state.guild?.name) return;
+          emit(state.copyWith(status: GuildStatus.notReady));
           switch (e.action) {
             case "create":
               debugPrint("Realtime update: Create. Record id: ${e.record?.id}");
@@ -40,7 +40,8 @@ class GuildBloc extends Bloc<GuildEvent, GuildState> {
               emit(state.copyWith(status: GuildStatus.ready, guild: state.guild));
               break;
             case "delete":
-              // remove member from guild
+              state.guild?.members.removeWhere((member) => member.id == e.record?.id);
+              emit(state.copyWith(status: GuildStatus.ready, guild: state.guild));
               break;
           }
         });
@@ -83,26 +84,7 @@ class GuildBloc extends Bloc<GuildEvent, GuildState> {
     return emit(state.copyWith(filteredMembers: state.guild!.members));
   }
 
-  void _refetchGuild(RefetchGuild event, Emitter<GuildState> emit) async {
-    emit(state.copyWith(status: GuildStatus.notReady, guild: null));
-    try {
-      var guilds = await pb.collection('guilds').getList(filter: "name = '$name'", expand: "members");
-      if (guilds.items.isEmpty) {
-        return emit(state.copyWith(status: GuildStatus.error));
-      }
-      Guild guild = Guild(
-        name: guilds.items.first.data['name'],
-        members: guilds.items.first.expand['members']?.map((e) => Member.fromRecord(e)).toList(),
-        minScore: guilds.items.first.data['min_score'] ?? 0,
-      );
-      emit(state.copyWith(status: GuildStatus.ready, guild: guild));
-    } catch (e) {
-      emit(state.copyWith(status: GuildStatus.error));
-    }
-  }
-
   final PocketBase pb;
-  late final membersSubcscription;
   final String name;
 }
 
@@ -130,13 +112,9 @@ sealed class GuildEvent extends Equatable {
 
 final class FetchGuild extends GuildEvent {}
 
-final class RefetchGuild extends GuildEvent {}
-
 final class FilterMember extends GuildEvent {
   FilterMember({this.siegeStatus, this.searchValue});
 
   final SiegeStatus? siegeStatus;
   final String? searchValue;
 }
-
-final class GuildUpdated extends GuildEvent {}
