@@ -237,6 +237,32 @@ class _GuildDetailsState extends State<GuildDetails> {
   }
 
   Widget statusSelection(Member member) {
+    if (MediaQuery.of(context).orientation == Orientation.portrait) {
+      return DropdownMenu(
+        initialSelection: member.siege?.status,
+        controller: TextEditingController(text: siegeStatus[member.siege?.status]),
+        menuStyle: MenuStyle(
+          backgroundColor: MaterialStateProperty.resolveWith((states) {
+            return darkChartColor[member.siege?.status];
+          }),
+        ),
+        dropdownMenuEntries: [
+          for (var status in SiegeStatus.values)
+            DropdownMenuEntry(
+              value: status,
+              label: siegeStatus[status]!,
+            )
+        ],
+        onSelected: (value) {
+          setState(() {
+            member.siege?.status = value;
+            member.update(widget.pb);
+          });
+          BlocProvider.of<GuildBloc>(context)
+              .add(FilterMember(searchValue: searchController.text, siegeStatus: statusFilter));
+        },
+      );
+    }
     return SizedBox(
       width: MediaQuery.of(context).size.width / 2,
       child: Wrap(
