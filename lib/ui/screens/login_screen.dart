@@ -29,7 +29,13 @@ class _LoginScreenState extends State<LoginScreen> {
                   onPressed: () {
                     BlocProvider.of<LoginCubit>(context).loginWithDiscord();
                   },
-                  icon: state.loginStatus != LoginStatus.processing ? const Icon(Icons.mail) : LoadingAnimationWidget.newtonCradle(color: Colors.black, size: 50),
+                  icon: state.loginStatus != LoginStatus.processing
+                      ? SizedBox(
+                          width: 25,
+                          height: 25,
+                          child: Image.asset("assets/discord.png"),
+                        )
+                      : LoadingAnimationWidget.newtonCradle(color: Colors.black, size: 50),
                   label: const Text("Discord Login"),
                 )
               ],

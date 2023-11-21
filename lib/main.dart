@@ -13,7 +13,7 @@ void main(List<String> args) async {
       await windowManager.setTitle("PGR Guild Management");
     });
   }
-  await dotenv.load(fileName: "env");
+  await dotenv.load(fileName: "assets/env");
   var prefs = await SharedPreferences.getInstance();
   runApp(SCFManagement(sharedPreferences: prefs));
   // runApp(const Example());
