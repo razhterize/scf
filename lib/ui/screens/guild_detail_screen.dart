@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -116,27 +118,28 @@ class _GuildDetailsState extends State<GuildDetails> {
     );
   }
 
-  FloatingActionButton floatingActionButton() {
+  Widget? floatingActionButton() {
+    var _members = BlocProvider.of<GuildBloc>(context).state.guild?.members;
+    if (_members!.where((member) => member.selected).toList().isEmpty) {
+      return null;
+    }
     return FloatingActionButton.extended(
-      label: const Text("Mention"),
-      icon: const Icon(Icons.alternate_email),
       onPressed: () {
-        if (selectedMembers.isEmpty) {
-          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("No users are selected")));
-          return;
-        }
-        String mention = "";
-        var mentioned = guild.members.where((member) => member.selected == true).toList();
-        for (var member in mentioned) {
-          if (member.discordId != "" && member.discordId != "-" && member.discordId != "<@>") {
-            mention += "<@${member.discordId}>\n";
+        String mentionText = "";
+        for (var member in _members.where((member) => member.selected == true)) {
+          if (member.discordId != "" && member.discordId != "-" && member.discordId != null) {
+            mentionText += "<@${member.discordId}>\n";
+          } else if (member.discordUsername != "" && member.discordUsername != null) {
+            mentionText += "@${member.discordUsername}";
           } else {
-            mention += "@${member.discordUsername}\n";
+            mentionText += "@${member.name}";
           }
         }
-        Clipboard.setData(ClipboardData(text: mention));
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Selected users mention copied")));
+        Clipboard.setData(ClipboardData(text: mentionText));
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Selected members mention copied")));
       },
+      icon: const Icon(Icons.alternate_email),
+      label: const Text("Mention"),
     );
   }
 
@@ -158,11 +161,14 @@ class _GuildDetailsState extends State<GuildDetails> {
                 // delete member on press
                 onPressed: () async {
                   // do something fancy to delete selected member
-                  for (var member in state.filteredMembers.where((member) => member.selected == true)) {
+                  // var _selectedMembers = state.guild!.members.where((member) => member.selected == true);
+                  for (var member in state.guild!.members.where((member) => member.selected == true).toList()) {
                     await widget.pb.collection("members").delete(member.id);
                     setState(() {
                       state.guild?.members.remove(member);
                     });
+                    BlocProvider.of<GuildBloc>(context)
+                        .add(FilterMember(searchValue: searchController.text, siegeStatus: statusFilter));
                   }
                 },
                 icon: const Icon(Icons.delete),
@@ -360,13 +366,15 @@ class _GuildDetailsState extends State<GuildDetails> {
           if (_guild.items.isNotEmpty) {
             await widget.pb.collection("guilds").update(_guild.items.first.id, body: {"members+": newMember.id});
           }
+        }).then((value) {
+          BlocProvider.of<GuildBloc>(context).add(FetchGuild());
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("New member ${nameController.text} has been added")));
         });
         Navigator.pop(context);
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text("New member ${nameController.text} has been added")));
-        BlocProvider.of<GuildBloc>(context).add(RefetchGuild());
-        BlocProvider.of<GuildBloc>(context)
-            .add(FilterMember(searchValue: searchController.text, siegeStatus: statusFilter));
+        BlocProvider.of<GuildBloc>(context).add(FilterMember(searchValue: searchController.text, siegeStatus: statusFilter));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Something went wrong, or you entered invalid data, either way, it didn't success")));
       }
     }
 
