@@ -130,9 +130,9 @@ class _GuildDetailsState extends State<GuildDetails> {
           if (member.discordId != "" && member.discordId != "-" && member.discordId != null) {
             mentionText += "<@${member.discordId}>\n";
           } else if (member.discordUsername != "" && member.discordUsername != null) {
-            mentionText += "@${member.discordUsername}";
+            mentionText += "@${member.discordUsername}\n";
           } else {
-            mentionText += "@${member.name}";
+            mentionText += "@${member.name}\n";
           }
         }
         Clipboard.setData(ClipboardData(text: mentionText));
