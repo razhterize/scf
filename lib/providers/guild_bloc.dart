@@ -90,7 +90,6 @@ class GuildBloc extends Bloc<GuildEvent, GuildState> {
       if (guilds.items.isEmpty) {
         return emit(state.copyWith(status: GuildStatus.error));
       }
-      final members = guilds.items.first.expand['members']?.map((e) => Member.fromRecord(e)).toList();
       Guild guild = Guild(
         name: guilds.items.first.data['name'],
         members: guilds.items.first.expand['members']?.map((e) => Member.fromRecord(e)).toList(),
@@ -139,3 +138,5 @@ final class FilterMember extends GuildEvent {
   final SiegeStatus? siegeStatus;
   final String? searchValue;
 }
+
+final class GuildUpdated extends GuildEvent {}
