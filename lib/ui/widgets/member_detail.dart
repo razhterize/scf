@@ -114,9 +114,9 @@ class _MemberDetailsState extends State<MemberDetails> {
       member.discordUsername = discUsernameController.text;
       member.name = nameController.text;
       member.pgrId = int.tryParse(pgrIdController.text);
-      member.update(BlocProvider.of<LoginCubit>(context).pb);
-      setState(() {});
-      Navigator.pop(context);
+      await member.update(BlocProvider.of<LoginCubit>(context).pb).then((value) {
+        Navigator.pop(context);
+      });
     }
   }
 }
