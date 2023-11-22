@@ -35,7 +35,7 @@ class _GuildClearChartState extends State<GuildClearChart> {
         ),
         series: <CircularSeries>[
           PieSeries<GuildChartData, String>(
-            animationDuration: 0,
+            animationDuration: 1,
             dataSource: _chartData(members),
             pointColorMapper: (GuildChartData data, _) => data.color,
             xValueMapper: (GuildChartData data, _) => data.status,
