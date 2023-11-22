@@ -1,5 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -244,29 +246,48 @@ class _GuildDetailsState extends State<GuildDetails> {
 
   Widget statusSelection(Member member) {
     if (MediaQuery.of(context).orientation == Orientation.portrait) {
-      return DropdownMenu(
-        initialSelection: member.siege?.status,
-        controller: TextEditingController(text: siegeStatus[member.siege?.status]),
-        menuStyle: MenuStyle(
-          backgroundColor: MaterialStateProperty.resolveWith((states) {
-            return darkChartColor[member.siege?.status];
-          }),
+      return Padding(
+        padding: const EdgeInsets.all(2.0),
+        child: Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: darkChartColor[member.siege!.status],
+            // border: Border.all()
+          ),
+          // color: darkChartColor[member.siege!.status],
+          child: DropdownButton(
+            value: member.siege!.status ?? SiegeStatus.noScore,
+            // initialSelection: member.siege?.status,
+            // controller: TextEditingController(text: siegeStatus[member.siege?.status]),
+            items: [
+              for (var status in SiegeStatus.values)
+                DropdownMenuItem(
+                  value: status,
+                  child: Text(
+                    siegeStatus[status]!,
+                    style: TextStyle(
+                      color: BlocProvider.of<SettingBloc>(context).state.lightMode
+                          ? member.siege?.status == status
+                              ? Colors.white
+                              : Colors.black
+                          : member.siege?.status == status
+                              ? Colors.black
+                              : Colors.white,
+                    ),
+                  ),
+                )
+            ],
+            onChanged: (value) async {
+              setState(() {
+                member.siege?.status = value;
+              });
+              await member.update(widget.pb);
+              BlocProvider.of<GuildBloc>(context).add(
+                FilterMember(searchValue: searchController.text, siegeStatus: statusFilter),
+              );
+            },
+          ),
         ),
-        dropdownMenuEntries: [
-          for (var status in SiegeStatus.values)
-            DropdownMenuEntry(
-              value: status,
-              label: siegeStatus[status]!,
-            )
-        ],
-        onSelected: (value) {
-          setState(() {
-            member.siege?.status = value;
-            member.update(widget.pb);
-          });
-          BlocProvider.of<GuildBloc>(context)
-              .add(FilterMember(searchValue: searchController.text, siegeStatus: statusFilter));
-        },
       );
     }
     return SizedBox(
@@ -306,9 +327,13 @@ class _GuildDetailsState extends State<GuildDetails> {
     );
   }
 
-  Widget memberChart() => Hero(
-        tag: guild.name,
-        child: GuildClearChart(members: guild.members, name: guild.fullName),
+  Widget memberChart() => BlocBuilder<GuildBloc, GuildState>(
+        builder: (context, state) {
+          return Hero(
+            tag: guild.name,
+            child: GuildClearChart(members: state.guild!.members, name: state.guild!.fullName),
+          );
+        },
       );
   Widget emptyMember() => Center(
         child: Icon(
@@ -326,10 +351,16 @@ class _GuildDetailsState extends State<GuildDetails> {
       builder: (context) {
         return MemberDetails(member: member);
       },
-    );
+    ).whenComplete(() {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Member info has been updated")));
+      BlocProvider.of<GuildBloc>(context).add(FetchGuild());
+      BlocProvider.of<GuildBloc>(context)
+          .add(FilterMember(searchValue: searchController.text, siegeStatus: statusFilter));
+    });
   }
 
   void newMemberDialog() {
+    bool processing = false;
     // TODO Known Issue: Member does not automatically updated after adding new one
     final nameController = TextEditingController();
     final pgrIdController = TextEditingController();
@@ -337,8 +368,14 @@ class _GuildDetailsState extends State<GuildDetails> {
     final discUsernameController = TextEditingController();
     final formKey = GlobalKey<FormState>();
 
-    validate() async {
+    Future<void> validate() async {
+      setState(() {
+        processing = true;
+      });
       if (formKey.currentState!.validate()) {
+        setState(() {
+          processing = true;
+        });
         var data = {
           "name": nameController.text,
           "pgr_id": int.tryParse(pgrIdController.text),
@@ -368,14 +405,22 @@ class _GuildDetailsState extends State<GuildDetails> {
           }
         }).then((value) {
           BlocProvider.of<GuildBloc>(context).add(FetchGuild());
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("New member ${nameController.text} has been added")));
+          Navigator.pop(context);
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text("New member ${nameController.text} has been added")));
         });
-        Navigator.pop(context);
-        BlocProvider.of<GuildBloc>(context).add(FilterMember(searchValue: searchController.text, siegeStatus: statusFilter));
+        BlocProvider.of<GuildBloc>(context)
+            .add(FilterMember(searchValue: searchController.text, siegeStatus: statusFilter));
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-            content: Text("Something went wrong, or you entered invalid data, either way, it didn't success")));
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("Something went wrong, or you entered invalid data, either way, it didn't success"),
+          ),
+        );
       }
+      setState(() {
+        processing = false;
+      });
     }
 
     showModalBottomSheet<dynamic>(
@@ -436,20 +481,26 @@ class _GuildDetailsState extends State<GuildDetails> {
               child: Row(
                 children: [
                   Expanded(
-                    child: MaterialButton(
+                    child: ElevatedButton.icon(
                       onPressed: () {
                         Navigator.pop(context);
                       },
-                      child: const Text("Cancel"),
+                      icon: const Icon(Icons.cancel_outlined),
+                      label: const Text("Cancel"),
                     ),
                   ),
                   Expanded(
-                    child: MaterialButton(
-                      onPressed: () async {
-                        await validate();
-                        Navigator.pop(context);
-                      },
-                      child: const Text("Save"),
+                    child: ElevatedButton.icon(
+                      onPressed: processing
+                          ? null
+                          : () async {
+                              await validate();
+                              Navigator.pop(context);
+                            },
+                      icon: processing
+                          ? LoadingAnimationWidget.horizontalRotatingDots(color: Colors.white, size: 25)
+                          : const Icon(Icons.save),
+                      label: const Text("Save"),
                     ),
                   ),
                 ],
