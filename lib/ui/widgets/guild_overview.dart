@@ -41,25 +41,30 @@ class _GuildOverviewState extends State<GuildOverview> {
           Expanded(
             child: InkWell(
               onTap: () {
-                Navigator.of(context).push(MaterialPageRoute(
-                  builder: (_) => MultiBlocProvider(
-                    providers: [
-                      BlocProvider.value(
-                        value: BlocProvider.of<GuildBloc>(context),
-                      ),
-                      BlocProvider.value(
-                        value: BlocProvider.of<LoginCubit>(context),
-                      ),
-                      BlocProvider.value(
-                        value: BlocProvider.of<SettingBloc>(context),
-                      ),
-                    ],
-                    child: GuildDetails(guild: guild, pb: widget.pb),
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (_) => MultiBlocProvider(
+                      providers: [
+                        BlocProvider.value(value: BlocProvider.of<GuildBloc>(context)),
+                        BlocProvider.value(value: BlocProvider.of<LoginCubit>(context)),
+                        BlocProvider.value(value: BlocProvider.of<SettingBloc>(context)),
+                      ],
+                      child: GuildDetails(guild: guild, pb: widget.pb),
+                    ),
                   ),
-                ));
+                );
               },
               child: AbsorbPointer(
-                child: guild.members.isNotEmpty ? _membersChart() : _emptyMembers(),
+                child: guild.members.isNotEmpty
+                    ? BlocBuilder<GuildBloc, GuildState>(
+                        builder: (context, state) {
+                          if (state.guild!.members.isEmpty) {
+                            return _emptyMembers();
+                          }
+                          return _membersChart();
+                        },
+                      )
+                    : _emptyMembers(),
               ),
             ),
           ),
