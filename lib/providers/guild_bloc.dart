@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:pocketbase/pocketbase.dart';
@@ -10,41 +12,17 @@ enum GuildStatus { ready, notReady, error }
 
 class GuildBloc extends Bloc<GuildEvent, GuildState> {
   GuildBloc({required this.pb, required this.name}) : super(const GuildState()) {
+    debugPrint("new instansce of bloc: $name");
     on<FetchGuild>(_fetchGuild);
     on<FilterMember>(_filterMembers);
   }
 
   Future<void> _fetchGuild(FetchGuild event, Emitter<GuildState> emit) async {
-    // if (state.status == GuildStatus.ready) return;
     try {
       var guilds = await pb.collection('guilds').getList(filter: "name = '$name'", expand: "members");
       if (guilds.items.isNotEmpty) {
         var guild = guilds.items.first;
         final members = guilds.items.first.expand['members']?.map((e) => Member.fromRecord(e)).toList();
-        pb.collection('members').subscribe("*", (e) {
-          // TODO realtime sync event
-          if (e.record?.data['guild'] != state.guild?.name) return;
-          emit(state.copyWith(status: GuildStatus.notReady));
-          switch (e.action) {
-            case "create":
-              debugPrint("Realtime update: Create. Record id: ${e.record?.id}");
-              var currentMembers = state.guild?.members;
-              currentMembers?.add(Member.fromRecord(e.record!));
-              emit(state.copyWith(guild: Guild(name: name, members: currentMembers)));
-              break;
-            case "update":
-              // update existing member
-              debugPrint("Realtime update: Update. Record id: ${e.record?.id}");
-              int? oldIndex = state.guild?.members.indexWhere((member) => member.id == e.record?.id);
-              state.guild?.members[oldIndex!] = Member.fromRecord(e.record!);
-              emit(state.copyWith(status: GuildStatus.ready, guild: state.guild));
-              break;
-            case "delete":
-              state.guild?.members.removeWhere((member) => member.id == e.record?.id);
-              emit(state.copyWith(status: GuildStatus.ready, guild: state.guild));
-              break;
-          }
-        });
         return emit(state.copyWith(
             status: GuildStatus.ready,
             guild: Guild(name: guild.data['name'], members: members),
@@ -59,13 +37,12 @@ class GuildBloc extends Bloc<GuildEvent, GuildState> {
   // event, state, and function to return filtered members
   void _filterMembers(FilterMember event, Emitter<GuildState> emit) {
     List<Member> filteredMembers = [];
-    debugPrint("Search: ${event.searchValue} | Status: ${event.siegeStatus}");
     if (event.siegeStatus != null) {
       if (event.searchValue != null || event.searchValue == "") {
         filteredMembers = state.guild!.members
             .where((member) =>
-                (member.name!.toLowerCase().contains(event.searchValue!) ||
-                    member.pgrId.toString().contains(event.searchValue!)) &&
+                (member.name!.toLowerCase().contains(event.searchValue!.toLowerCase()) ||
+                    member.pgrId.toString().contains(event.searchValue!.toLowerCase())) &&
                 member.siege?.status == event.siegeStatus)
             .toList();
         return emit(state.copyWith(filteredMembers: filteredMembers));
@@ -76,8 +53,8 @@ class GuildBloc extends Bloc<GuildEvent, GuildState> {
     if (event.siegeStatus == null && event.searchValue != "" && event.searchValue != null) {
       filteredMembers = state.guild!.members
           .where((member) =>
-              member.name!.toLowerCase().contains(event.searchValue!) ||
-              member.pgrId.toString().contains(event.searchValue!))
+              member.name!.toLowerCase().contains(event.searchValue!.toLowerCase()) ||
+              member.pgrId.toString().contains(event.searchValue!.toLowerCase()))
           .toList();
       return emit(state.copyWith(filteredMembers: filteredMembers));
     }
