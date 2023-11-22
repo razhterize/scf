@@ -15,6 +15,7 @@ class Member extends RecordModel {
   int? pgrId;
   String? discordId;
   String? discordUsername;
+  List? guild;
   MemberSiege? siege;
   MemberMaze? maze;
   bool selected = false;
@@ -27,6 +28,7 @@ class Member extends RecordModel {
     this.pgrId,
     this.discordId,
     this.discordUsername,
+    this.guild,
     this.siege,
     this.maze,
   });
@@ -40,12 +42,13 @@ class Member extends RecordModel {
         pgrId: record.data['pgr_id'],
         discordId: record.data['discord_id'],
         discordUsername: record.data['discord_username'],
+        guild: record.data['guild'],
         siege: MemberSiege.fromJson(record.data['siege']),
         maze: MemberMaze.fromJson(record.data['maze']));
   }
 
-  void update(PocketBase pb) {
-    pb.collection(collectionId).update(id, body: {
+  Future<void> update(PocketBase pb) async {
+    await pb.collection(collectionId).update(id, body: {
       "name": name,
       "discord_username": discordUsername,
       "discord_id": discordId,
