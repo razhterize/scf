@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scf_management/models/member.dart';
-import 'package:scf_management/providers/login_cubit.dart';
+import 'package:scf_management/blocs/guild_bloc.dart';
 
 class MemberDetails extends StatefulWidget {
   const MemberDetails({super.key, required this.member});
@@ -114,9 +114,12 @@ class _MemberDetailsState extends State<MemberDetails> {
       member.discordUsername = discUsernameController.text;
       member.name = nameController.text;
       member.pgrId = int.tryParse(pgrIdController.text);
-      await member.update(BlocProvider.of<LoginCubit>(context).pb).then((value) {
-        Navigator.pop(context);
-      });
+      BlocProvider.of<GuildBloc>(context).add(UpdateMember(member));
+      Navigator.pop(context);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Member info has been updated"),
+        duration: Duration(seconds: 2),
+      ));
     }
   }
 }
