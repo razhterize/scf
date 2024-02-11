@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:scf_management/models/guild.dart';
-import 'package:scf_management/providers/guild_bloc.dart';
-import 'package:scf_management/providers/login_cubit.dart';
-import 'package:scf_management/providers/settings_bloc.dart';
+import 'package:scf_management/blocs/guild_bloc.dart';
+import 'package:scf_management/blocs/login_cubit.dart';
+import 'package:scf_management/blocs/settings_bloc.dart';
 import 'package:scf_management/ui/screens/guild_detail_screen.dart';
 import 'package:scf_management/ui/widgets/guild_chart.dart';
 
@@ -58,7 +58,7 @@ class _GuildOverviewState extends State<GuildOverview> {
                 child: guild.members.isNotEmpty
                     ? BlocBuilder<GuildBloc, GuildState>(
                         builder: (context, state) {
-                          if (state.guild!.members.isEmpty) {
+                          if (state.guild.members.isEmpty) {
                             return _emptyMembers();
                           }
                           return _membersChart();
@@ -76,7 +76,7 @@ class _GuildOverviewState extends State<GuildOverview> {
   Widget _membersChart() {
     return Hero(
       tag: guild.name,
-      child: GuildClearChart(members: guild.members, name: guild.fullName),
+      child: const GuildClearChart(),
     );
   }
 
