@@ -3,18 +3,25 @@ import 'package:scf_management/models/member.dart';
 import 'package:equatable/equatable.dart';
 
 class Guild extends Equatable {
+  final String id;
   final String name;
   final int minScore;
   late final String fullName;
-  late final List<Member>? _members;
+  final List<Member> members;
 
-  Guild({this.name = "", List<Member>? members, this.minScore = 0}) {
+  Guild({this.id = "", this.name = "", this.members = const [], this.minScore = 0}) {
     fullName = guildNames[name] ?? "";
-    _members = members;
   }
 
-  List<Member> get members => _members ?? [];
+  Guild copy({String? id, String? name, List<Member>? members, int? minScore}) {
+    return Guild(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      members: members ?? this.members,
+      minScore: minScore ?? this.minScore,
+    );
+  }
 
   @override
-  List<Object?> get props => [name, members];
+  List<Object?> get props => [id, name, members];
 }
