@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:scf_management/providers/settings_bloc.dart';
+import 'package:scf_management/blocs/settings_bloc.dart';
 
 class SettingsPopup extends StatefulWidget {
   const SettingsPopup({super.key});
