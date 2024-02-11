@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:scf_management/constants/enums.dart';
-import 'package:scf_management/providers/guild_bloc.dart';
-import 'package:scf_management/providers/login_cubit.dart';
+import 'package:scf_management/blocs/guild_bloc.dart';
+import 'package:scf_management/blocs/login_cubit.dart';
 import 'package:scf_management/ui/screens/login_screen.dart';
 import 'package:scf_management/ui/widgets/guild_overview.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
@@ -72,7 +72,7 @@ class HomeScreenState extends State<HomeScreen> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Text("Error fetching guild ${guildState.guild?.fullName}"),
+                      Text("Error fetching guild ${guildState.guild.fullName}"),
                       ElevatedButton.icon(
                         onPressed: () {
                           BlocProvider.of<GuildBloc>(context).add(FetchGuild());
@@ -84,7 +84,7 @@ class HomeScreenState extends State<HomeScreen> {
                   ),
                 );
               } else {
-                return GuildOverview(pb: state.pb, guild: guildState.guild!);
+                return GuildOverview(pb: state.pb, guild: guildState.guild);
               }
             },
           ),
@@ -143,10 +143,7 @@ class HomeScreenState extends State<HomeScreen> {
       builder: (context, state) {
         if (!state.pb.authStore.isValid) {
           return Column(
-            children: [
-              Icon(Icons.login, color: Colors.green, size: MediaQuery.of(context).size.width / 20),
-              const Text("Login")
-            ],
+            children: [Icon(Icons.login, color: Colors.green, size: MediaQuery.of(context).size.width / 20), const Text("Login")],
           );
         }
         if (state.authModel?.record?.data['avatar'] != "") {
@@ -168,9 +165,7 @@ class HomeScreenState extends State<HomeScreen> {
         }
         return Column(
           children: [
-            CircleAvatar(
-                radius: MediaQuery.of(context).size.width / 20,
-                child: Icon(Icons.people, size: MediaQuery.of(context).size.width / 20)),
+            CircleAvatar(radius: MediaQuery.of(context).size.width / 20, child: Icon(Icons.people, size: MediaQuery.of(context).size.width / 20)),
             Text(state.authModel!.record!.getStringValue('username'), style: const TextStyle(fontSize: 25)),
             IconButton(
                 onPressed: () {
