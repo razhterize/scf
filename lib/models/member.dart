@@ -1,3 +1,5 @@
+// ignore_for_file: overridden_fields
+
 import 'package:pocketbase/pocketbase.dart';
 import 'package:scf_management/constants/enums.dart';
 
@@ -18,7 +20,6 @@ class Member extends RecordModel {
   List? guild;
   MemberSiege? siege;
   MemberMaze? maze;
-  bool selected = false;
 
   Member({
     required this.id,
@@ -47,15 +48,16 @@ class Member extends RecordModel {
         maze: MemberMaze.fromJson(record.data['maze']));
   }
 
-  Future<void> update(PocketBase pb) async {
-    await pb.collection(collectionId).update(id, body: {
-      "name": name,
-      "discord_username": discordUsername,
-      "discord_id": discordId,
-      "pgr_id": pgrId,
-      "maze": maze?.toJson() ?? {},
-      "siege": siege?.toJson() ?? {}
-    });
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'pgr_id': pgrId,
+      'discord_id': discordId,
+      'discord_username': discordUsername,
+      'maze': maze?.toJson() ?? {},
+      'siege': siege?.toJson(),
+      'guild': guild,
+    };
   }
 }
 
@@ -105,11 +107,7 @@ class MemberMaze {
 
   factory MemberMaze.fromJson(Map<String, dynamic> json) {
     if (json == {}) return MemberMaze();
-    return MemberMaze(
-        energyUsed: json['energy_used'],
-        totalPoints: json['total_points'],
-        energyOvercap: json['energy_overcap'],
-        energyWrongNode: json['energy_wrong_node']);
+    return MemberMaze(energyUsed: json['energy_used'], totalPoints: json['total_points'], energyOvercap: json['energy_overcap'], energyWrongNode: json['energy_wrong_node']);
   }
 
   Map<String, dynamic> toJson() {
