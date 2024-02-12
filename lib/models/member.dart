@@ -48,6 +48,21 @@ class Member extends RecordModel {
         maze: MemberMaze.fromJson(record.data['maze']));
   }
 
+  Member copy({String? name, int? pgrId, String? discordId, String? discordUsername, List? guild, MemberSiege? siege, MemberMaze? maze}) {
+    return Member(
+      id: id,
+      collectionId: collectionId,
+      collectionName: collectionName,
+      name: name ?? this.name,
+      pgrId: pgrId ?? this.pgrId,
+      discordId: discordId ?? this.discordId,
+      discordUsername: discordUsername ?? this.discordUsername,
+      guild: guild ?? this.guild,
+      siege: siege ?? this.siege,
+      maze: maze ?? this.maze,
+    );
+  }
+
   Map<String, dynamic> toMap() {
     return {
       'name': name,
@@ -62,11 +77,11 @@ class Member extends RecordModel {
 }
 
 class MemberSiege {
-  int? currentScore;
-  List<dynamic>? pastScores = [];
-  SiegeStatus? status;
+  int currentScore;
+  List<dynamic> pastScores;
+  SiegeStatus status;
 
-  MemberSiege({this.currentScore, this.pastScores, this.status});
+  MemberSiege({this.currentScore = 0, this.pastScores = const [], this.status = SiegeStatus.noScore});
 
   factory MemberSiege.empty() {
     return MemberSiege(currentScore: 0, pastScores: [], status: SiegeStatus.noScore);
@@ -80,14 +95,14 @@ class MemberSiege {
     );
   }
 
-  void addSiegeScore(double score) => pastScores!.add(score);
-  void removeSiegeScore(int index) => pastScores!.removeAt(index);
+  void addSiegeScore(double score) => pastScores.add(score);
+  void removeSiegeScore(int index) => pastScores.removeAt(index);
 
   Map<String, dynamic> toJson() {
     return {
-      "current_score": currentScore ?? 0,
-      "past_scores": pastScores ?? [],
-      "status": status?.name ?? SiegeStatus.noScore.name,
+      "current_score": currentScore,
+      "past_scores": pastScores,
+      "status": status.name,
     };
   }
 }
