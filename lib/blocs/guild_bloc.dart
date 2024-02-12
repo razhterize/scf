@@ -13,12 +13,15 @@ enum GuildStatus { ready, notReady, error }
 class GuildBloc extends Bloc<GuildEvent, GuildState> {
   GuildBloc({required this.pb, required this.name}) : super(GuildState(guild: Guild())) {
     logger.i("Guild Bloc init: $name");
+    pb.collection("members").subscribe('*', (e) => add(MemberSubscription(e)));
     on<FetchGuild>(_fetchGuild);
     on<FilterMember>(_filterMembers);
     on<AddMember>(_newMember);
     on<UpdateMember>(_updateMember);
     on<DeleteMember>(_deleteMember);
     on<Busy>(_setBusyStatus);
+    on<BatchStatus>(_batchStatusChange);
+    on<MemberSubscription>(_subscriptionHandler);
   }
 
   Future<void> _fetchGuild(FetchGuild event, Emitter<GuildState> emit) async {
@@ -82,8 +85,31 @@ class GuildBloc extends Bloc<GuildEvent, GuildState> {
     emit(state.copyWith(operation: event.value));
   }
 
+  Future<void> _batchStatusChange(BatchStatus event, Emitter<GuildState> emit) async {
+    for (var member in event.members) {
+      await pb.collection(member.collectionId).update(member.id, body: {"siege": member.siege!.toJson()});
+    }
+  }
+
+  void _subscriptionHandler(MemberSubscription event, Emitter<GuildState> emit) {
+    var member = Member.fromRecord(event.e.record!);
+    if (!member.guild!.contains(state.guild.name)) return;
+    switch (event.e.action) {
+      case 'create':
+        return emit(state.copyWith(guild: state.guild.copy(members: state.guild.members.toList()..add(member))));
+      case 'update':
+        var members = state.guild.members.toList();
+        members[members.indexWhere((element) => element.id == member.id)] = member;
+        return emit(state.copyWith(guild: state.guild.copy(members: members)));
+      case 'delete':
+        var members = state.guild.members.toList()..removeWhere((element) => element.id == member.id);
+        return emit(state.copyWith(guild: state.guild.copy(members: members)));
+    }
+  }
+
   final PocketBase pb;
   final String name;
+  // late final subscription;
 }
 
 final class GuildState extends Equatable {
@@ -135,7 +161,18 @@ final class DeleteMember extends GuildEvent {
   DeleteMember(this.member);
 }
 
+final class BatchStatus extends GuildEvent {
+  final List<Member> members;
+  final GuildStatus status;
+  BatchStatus(this.members, this.status);
+}
+
 final class Busy extends GuildEvent {
   final bool value;
   Busy(this.value);
+}
+
+final class MemberSubscription extends GuildEvent {
+  final RecordSubscriptionEvent e;
+  MemberSubscription(this.e);
 }
