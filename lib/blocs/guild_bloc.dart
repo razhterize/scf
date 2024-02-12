@@ -12,7 +12,7 @@ enum GuildStatus { ready, notReady, error }
 
 class GuildBloc extends Bloc<GuildEvent, GuildState> {
   GuildBloc({required this.pb, required this.name}) : super(GuildState(guild: Guild())) {
-    logger.i("Guild Bloc init: $name");
+    logger.d("Guild Bloc: $name");
     pb.collection("members").subscribe('*', (e) => add(MemberSubscription(e)));
     on<FetchGuild>(_fetchGuild);
     on<FilterMember>(_filterMembers);
@@ -59,31 +59,22 @@ class GuildBloc extends Bloc<GuildEvent, GuildState> {
 
   Future<void> _newMember(AddMember event, Emitter<GuildState> emit) async {
     var newRecord = await pb.collection("members").create(body: event.member);
-    var members = state.guild.members.toList()..add(Member.fromRecord(newRecord));
     await pb.collection("guilds").update(state.guild.id, body: {"members+": newRecord.id});
-    return emit(state.copyWith(guild: Guild(name: state.guild.name, members: members), filteredMembers: members));
   }
 
   Future<void> _deleteMember(DeleteMember event, Emitter<GuildState> emit) async {
     logger.d("Delete Event for ${event.member.name} start");
     await pb.collection(event.member.collectionId).delete(event.member.id);
-    var newMembers = state.filteredMembers.toList()..removeWhere((element) => element.id == event.member.id);
-    emit(state.copyWith(guild: state.guild.copy(members: newMembers)));
     logger.d("Delete Event for ${event.member.name} ends");
   }
 
   void _updateMember(UpdateMember event, Emitter<GuildState> emit) async {
     logger.d("Update Event for ${event.member.name} start");
-    var newMembers = state.guild.members.toList();
-    var newMember = await pb.collection(event.member.collectionId).update(event.member.id, body: event.member.toMap());
-    newMembers[newMembers.indexWhere((element) => element.id == event.member.id)] = Member.fromRecord(newMember);
+    await pb.collection(event.member.collectionId).update(event.member.id, body: event.member.toMap());
     logger.d("Update Event for ${event.member.name} ends");
-    emit(state.copyWith(guild: state.guild.copy(members: newMembers), filteredMembers: newMembers));
   }
 
-  void _setBusyStatus(Busy event, Emitter<GuildState> emit) {
-    emit(state.copyWith(operation: event.value));
-  }
+  void _setBusyStatus(Busy event, Emitter<GuildState> emit) => emit(state.copyWith(operation: event.value));
 
   Future<void> _batchStatusChange(BatchStatus event, Emitter<GuildState> emit) async {
     for (var member in event.members) {
@@ -96,15 +87,19 @@ class GuildBloc extends Bloc<GuildEvent, GuildState> {
     if (!member.guild!.contains(state.guild.name)) return;
     switch (event.e.action) {
       case 'create':
-        return emit(state.copyWith(guild: state.guild.copy(members: state.guild.members.toList()..add(member))));
+        emit(state.copyWith(guild: state.guild.copy(members: state.guild.members.toList()..add(member))));
+        break;
       case 'update':
         var members = state.guild.members.toList();
         members[members.indexWhere((element) => element.id == member.id)] = member;
-        return emit(state.copyWith(guild: state.guild.copy(members: members)));
+        emit(state.copyWith(guild: state.guild.copy(members: members)));
+        break;
       case 'delete':
         var members = state.guild.members.toList()..removeWhere((element) => element.id == member.id);
-        return emit(state.copyWith(guild: state.guild.copy(members: members)));
+        emit(state.copyWith(guild: state.guild.copy(members: members)));
+        break;
     }
+    add(FilterMember());
   }
 
   final PocketBase pb;
@@ -129,7 +124,7 @@ final class GuildState extends Equatable {
   }
 
   @override
-  List<Object?> get props => [status, operation, guild.name, filteredMembers];
+  List<Object?> get props => [status, operation, guild.name, guild.members, filteredMembers];
 }
 
 sealed class GuildEvent extends Equatable {
