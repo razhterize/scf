@@ -108,12 +108,14 @@ class MemberSiege {
 }
 
 class MemberMaze {
+  MazeStatus? status;
   List<dynamic>? energyUsed;
   List<dynamic>? totalPoints;
   List<dynamic>? energyOvercap;
   List<dynamic>? energyWrongNode;
 
   MemberMaze({
+    this.status = MazeStatus.unknown,
     this.energyUsed = const [],
     this.totalPoints = const [],
     this.energyOvercap = const [[]],
@@ -122,11 +124,18 @@ class MemberMaze {
 
   factory MemberMaze.fromJson(Map<String, dynamic> json) {
     if (json == {}) return MemberMaze();
-    return MemberMaze(energyUsed: json['energy_used'], totalPoints: json['total_points'], energyOvercap: json['energy_overcap'], energyWrongNode: json['energy_wrong_node']);
+    return MemberMaze(
+      status: MazeStatus.values.byName(json['status'] ?? "unknown"),
+      energyUsed: json['energy_used'],
+      totalPoints: json['total_points'],
+      energyOvercap: json['energy_overcap'],
+      energyWrongNode: json['energy_wrong_node'],
+    );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      "status": status?.name ?? MazeStatus.unknown.name,
       "energy_used": energyUsed,
       "total_points": totalPoints,
       "energy_overcap": energyOvercap,
