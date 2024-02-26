@@ -9,3 +9,9 @@ final Map<SiegeStatus, dynamic> darkChartColor = {
   SiegeStatus.pardoned: Colors.deepPurple,
   SiegeStatus.newMember: Colors.green
 };
+
+final Map<MazeStatus, dynamic> mazeChartColor = {
+  MazeStatus.unknown: Colors.grey,
+  MazeStatus.overcap: Colors.red,
+  MazeStatus.safe: Colors.green,
+};

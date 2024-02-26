@@ -20,3 +20,9 @@ const Map<SiegeStatus, String> siegeStatus = {
   SiegeStatus.pardoned: "Pardoned",
   SiegeStatus.newMember: "New",
 };
+
+const Map<MazeStatus, String> mazeStatus = {
+  MazeStatus.unknown: "Unknown",
+  MazeStatus.safe: "Safe",
+  MazeStatus.overcap: "Overcap",
+};
