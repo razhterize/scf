@@ -94,6 +94,7 @@ class _NewMemberDialogState extends State<NewMemberDialog> {
         "guild": BlocProvider.of<GuildBloc>(context).state.guild.name,
         "siege": {"status": "noScore", "current_score": 0, "past_scores": []},
         "maze": {
+          "status": "unknown",
           "energy_overcap": [
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
             [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
