@@ -1,7 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -180,19 +178,14 @@ class _GuildDetailsState extends State<GuildDetails> {
               if (!state.selectAll) {
                 return IconButton(
                   tooltip: "Select All",
-                  onPressed: () {
-                    // SelectedBloc SelectAll event
-                    BlocProvider.of<SelectBloc>(context).add(SelectAll());
-                  },
+                  onPressed: () => BlocProvider.of<SelectBloc>(context).add(SelectAll()),
                   icon: const Icon(Icons.check_box),
                 );
               }
               return IconButton(
                 tooltip: "Unselect All",
-                onPressed: () {
-                  // SelectedBloc DeselectAll event
-                  BlocProvider.of<SelectBloc>(context).add(DeselectAll());
-                },
+                // SelectedBloc DeselectAll event
+                onPressed: () => BlocProvider.of<SelectBloc>(context).add(DeselectAll()),
                 icon: const Icon(Icons.check_box_outline_blank),
               );
             },
@@ -306,7 +299,7 @@ class _GuildDetailsState extends State<GuildDetails> {
             onChanged: (value) async {
               var selectedMembers = BlocProvider.of<SelectBloc>(context).state.selectedMembers.toList();
               if (selectedMembers.isNotEmpty && selectedMembers.length >= 2) {
-                await selectedMemberStatus(value!);
+                BlocProvider.of<GuildBloc>(context).add(BatchStatus(selectedMembers, value!));
                 BlocProvider.of<GuildBloc>(context).add(FilterMember(siegeStatus: statusFilter));
                 return;
               }
@@ -345,13 +338,12 @@ class _GuildDetailsState extends State<GuildDetails> {
                   onSelected: (value) async {
                     var selectedMembers = BlocProvider.of<SelectBloc>(context).state.selectedMembers.toList();
                     if (selectedMembers.isNotEmpty && selectedMembers.length >= 2) {
-                      await selectedMemberStatus(status);
+                      BlocProvider.of<GuildBloc>(context).add(BatchStatus(selectedMembers, status));
                       BlocProvider.of<GuildBloc>(context).add(FilterMember(siegeStatus: statusFilter));
                       return;
                     }
                     member.siege?.status = status;
                     BlocProvider.of<GuildBloc>(context).add(UpdateMember(member));
-                    BlocProvider.of<GuildBloc>(context).add(FilterMember(siegeStatus: statusFilter));
                   },
                 )
             ],
@@ -385,14 +377,5 @@ class _GuildDetailsState extends State<GuildDetails> {
     ).whenComplete(() {
       BlocProvider.of<GuildBloc>(context).add(FilterMember(searchValue: searchController.text, siegeStatus: statusFilter));
     });
-  }
-
-  Future<void> selectedMemberStatus(SiegeStatus status) async {
-    logger.i("batch member status");
-
-    for (var selectedMember in BlocProvider.of<SelectBloc>(context).state.selectedMembers.toList()) {
-      selectedMember.siege?.status = status;
-      BlocProvider.of<GuildBloc>(context).add(UpdateMember(selectedMember));
-    }
   }
 }
