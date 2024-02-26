@@ -78,6 +78,7 @@ class GuildBloc extends Bloc<GuildEvent, GuildState> {
 
   Future<void> _batchStatusChange(BatchStatus event, Emitter<GuildState> emit) async {
     for (var member in event.members) {
+      member.siege!.status = event.status;
       await pb.collection(member.collectionId).update(member.id, body: {"siege": member.siege!.toJson()});
     }
   }
@@ -158,7 +159,7 @@ final class DeleteMember extends GuildEvent {
 
 final class BatchStatus extends GuildEvent {
   final List<Member> members;
-  final GuildStatus status;
+  final SiegeStatus status;
   BatchStatus(this.members, this.status);
 }
 
