@@ -8,7 +8,6 @@ import 'package:pocketbase/pocketbase.dart';
 import 'package:scf_management/constants/abbreviations.dart';
 import 'package:scf_management/constants/enums.dart';
 import 'package:scf_management/constants/theme.dart';
-import 'package:scf_management/logger.dart';
 import 'package:scf_management/models/guild.dart';
 import 'package:scf_management/models/member.dart';
 import 'package:scf_management/blocs/guild_bloc.dart';
@@ -299,7 +298,7 @@ class _GuildDetailsState extends State<GuildDetails> {
             onChanged: (value) async {
               var selectedMembers = BlocProvider.of<SelectBloc>(context).state.selectedMembers.toList();
               if (selectedMembers.isNotEmpty && selectedMembers.length >= 2) {
-                BlocProvider.of<GuildBloc>(context).add(BatchStatus(selectedMembers, value!));
+                BlocProvider.of<GuildBloc>(context).add(BatchSiegeStatus(selectedMembers, value!));
                 BlocProvider.of<GuildBloc>(context).add(FilterMember(siegeStatus: statusFilter));
                 return;
               }
@@ -338,7 +337,7 @@ class _GuildDetailsState extends State<GuildDetails> {
                   onSelected: (value) async {
                     var selectedMembers = BlocProvider.of<SelectBloc>(context).state.selectedMembers.toList();
                     if (selectedMembers.isNotEmpty && selectedMembers.length >= 2) {
-                      BlocProvider.of<GuildBloc>(context).add(BatchStatus(selectedMembers, status));
+                      BlocProvider.of<GuildBloc>(context).add(BatchSiegeStatus(selectedMembers, status));
                       BlocProvider.of<GuildBloc>(context).add(FilterMember(siegeStatus: statusFilter));
                       return;
                     }
