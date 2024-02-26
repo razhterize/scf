@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pocketbase/pocketbase.dart';
-import 'package:scf_management/providers/login_cubit.dart';
-import 'package:scf_management/providers/settings_bloc.dart';
-import 'package:scf_management/ui/screens/home_screen.dart';
+import 'package:scf_management/blocs/login_cubit.dart';
+import 'package:scf_management/blocs/screen_bloc.dart';
+import 'package:scf_management/blocs/settings_bloc.dart';
+import 'package:scf_management/ui/screens/siege_screen.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:fetch_client/fetch_client.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
@@ -51,16 +52,29 @@ class _SCFManagementState extends State<SCFManagement> {
         BlocProvider(
           create: (context) => SettingBloc(sharedPreferences: sharedPreferences),
         ),
+        BlocProvider(create: (context) => ScreenBloc())
       ],
       child: BlocBuilder<SettingBloc, SettingState>(
         builder: (context, state) {
           BlocProvider.of<SettingBloc>(context).add(GetSettings());
           return MaterialApp(
-            title: kIsWeb ? "SCF Management" : "",
-            debugShowCheckedModeBanner: false,
-            theme: state.lightMode ? ThemeData.light() : ThemeData.dark(),
-            home: HomeScreen(pb: pb),
-          );
+              title: kIsWeb ? "SCF Management" : "",
+              debugShowCheckedModeBanner: false,
+              theme: state.lightMode ? ThemeData.light() : ThemeData.dark(),
+              home: BlocConsumer<LoginCubit, LoginState>(
+                listener: (context, state) {
+                  if (state.pb.authStore.isValid) {
+                    BlocProvider.of<ScreenBloc>(context).add(ChangeScreen(const SiegeScreen()));
+                  }
+                },
+                builder: (context, state) {
+                  return BlocBuilder<ScreenBloc, ScreenState>(
+                    builder: (context, state) {
+                      return state.screen;
+                    },
+                  );
+                },
+              ));
         },
       ),
     );
