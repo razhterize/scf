@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:scf_management/blocs/selected_bloc.dart';
 import 'package:scf_management/constants/enums.dart';
 import 'package:scf_management/logger.dart';
 import 'package:scf_management/models/guild.dart';
@@ -12,15 +13,15 @@ enum GuildStatus { ready, notReady, error }
 
 class GuildBloc extends Bloc<GuildEvent, GuildState> {
   GuildBloc({required this.pb, required this.name}) : super(GuildState(guild: Guild())) {
-    logger.d("Guild Bloc: $name");
-    pb.collection("members").subscribe('*', (e) => add(MemberSubscription(e)));
+    // logger.d("New Guild Bloc: $name");
     on<FetchGuild>(_fetchGuild);
     on<FilterMember>(_filterMembers);
     on<AddMember>(_newMember);
     on<UpdateMember>(_updateMember);
     on<DeleteMember>(_deleteMember);
     on<Busy>(_setBusyStatus);
-    on<BatchStatus>(_batchStatusChange);
+    on<BatchSiegeStatus>(_batchSiegeStatusChange);
+    on<BatchMazeStatus>(_batchMazeStatusChange);
     on<MemberSubscription>(_subscriptionHandler);
   }
 
@@ -42,16 +43,23 @@ class GuildBloc extends Bloc<GuildEvent, GuildState> {
   void _filterMembers(FilterMember event, Emitter<GuildState> emit) {
     List<Member> filteredMembers = [];
     if (event.siegeStatus != null) {
-      if (event.searchValue != null || event.searchValue == "") {
+      if (event.searchValue == "") {
         filteredMembers =
-            state.guild.members.where((member) => (member.name!.toLowerCase().contains(event.searchValue!.toLowerCase()) || member.pgrId.toString().contains(event.searchValue!.toLowerCase())) && member.siege?.status == event.siegeStatus).toList();
-        return emit(state.copyWith(filteredMembers: filteredMembers));
+            state.guild.members.where((member) => (member.name!.toLowerCase().contains(event.searchValue.toLowerCase()) || member.pgrId.toString().contains(event.searchValue.toLowerCase())) && member.siege?.status == event.siegeStatus).toList();
+        return emit(state.copyWith(filteredMembers: filteredMembers, siegeFilter: event.siegeStatus));
       }
       filteredMembers = state.guild.members.where((member) => member.siege?.status == event.siegeStatus).toList();
       return emit(state.copyWith(filteredMembers: filteredMembers));
-    }
-    if (event.siegeStatus == null && event.searchValue != "" && event.searchValue != null) {
-      filteredMembers = state.guild.members.where((member) => member.name!.toLowerCase().contains(event.searchValue!.toLowerCase()) || member.pgrId.toString().contains(event.searchValue!.toLowerCase())).toList();
+    } else if (event.mazeStatus != null) {
+      if (event.searchValue == "") {
+        filteredMembers =
+            state.guild.members.where((member) => (member.name!.toLowerCase().contains(event.searchValue.toLowerCase()) || member.pgrId.toString().contains(event.searchValue.toLowerCase())) && member.maze?.status == event.mazeStatus).toList();
+        return emit(state.copyWith(filteredMembers: filteredMembers, mazeFilter: event.mazeStatus));
+      }
+      filteredMembers = state.guild.members.where((member) => member.maze?.status == event.mazeStatus).toList();
+      return emit(state.copyWith(filteredMembers: filteredMembers));
+    } else if (event.siegeStatus == null && event.mazeStatus == null && event.searchValue != "") {
+      filteredMembers = state.guild.members.where((member) => member.name!.toLowerCase().contains(event.searchValue.toLowerCase()) || member.pgrId.toString().contains(event.searchValue.toLowerCase())).toList();
       return emit(state.copyWith(filteredMembers: filteredMembers));
     }
     return emit(state.copyWith(filteredMembers: state.guild.members));
@@ -76,16 +84,25 @@ class GuildBloc extends Bloc<GuildEvent, GuildState> {
 
   void _setBusyStatus(Busy event, Emitter<GuildState> emit) => emit(state.copyWith(operation: event.value));
 
-  Future<void> _batchStatusChange(BatchStatus event, Emitter<GuildState> emit) async {
+  Future<void> _batchSiegeStatusChange(BatchSiegeStatus event, Emitter<GuildState> emit) async {
     for (var member in event.members) {
       member.siege!.status = event.status;
       await pb.collection(member.collectionId).update(member.id, body: {"siege": member.siege!.toJson()});
     }
   }
 
+  Future<void> _batchMazeStatusChange(BatchMazeStatus event, Emitter<GuildState> emit) async {
+    for (var member in event.members) {
+      member.maze!.status = event.status;
+      await pb.collection(member.collectionId).update(member.id, body: {"siege": member.siege!.toJson()});
+    }
+  }
+
   void _subscriptionHandler(MemberSubscription event, Emitter<GuildState> emit) {
+    // logger.d("Subscription for ${event.e.record!.data["guild"]}");
     var member = Member.fromRecord(event.e.record!);
     if (!member.guild!.contains(state.guild.name)) return;
+    logger.d("Subscription Event for ${event.e.record!.data['name']}");
     switch (event.e.action) {
       case 'create':
         emit(state.copyWith(guild: state.guild.copy(members: state.guild.members.toList()..add(member))));
@@ -100,27 +117,30 @@ class GuildBloc extends Bloc<GuildEvent, GuildState> {
         emit(state.copyWith(guild: state.guild.copy(members: members)));
         break;
     }
-    add(FilterMember());
   }
 
   final PocketBase pb;
   final String name;
-  // late final subscription;
+  late final StreamController pbSubcsciption;
 }
 
 final class GuildState extends Equatable {
-  const GuildState({this.status = GuildStatus.notReady, required this.guild, this.filteredMembers = const [], this.operation = false});
+  const GuildState({this.status = GuildStatus.notReady, required this.guild, this.filteredMembers = const [], this.operation = false, this.siegeFilter, this.mazeFilter});
   final bool operation;
   final GuildStatus status;
   final Guild guild;
   final List<Member> filteredMembers;
+  final SiegeStatus? siegeFilter;
+  final MazeStatus? mazeFilter;
 
-  GuildState copyWith({GuildStatus? status, Guild? guild, List<Member>? filteredMembers, bool? operation}) {
+  GuildState copyWith({GuildStatus? status, Guild? guild, List<Member>? filteredMembers, bool? operation, SiegeStatus? siegeFilter, MazeStatus? mazeFilter}) {
     return GuildState(
       status: status ?? this.status,
       guild: guild ?? this.guild,
       operation: operation ?? this.operation,
       filteredMembers: filteredMembers ?? this.filteredMembers,
+      siegeFilter: siegeFilter ?? this.siegeFilter,
+      mazeFilter: mazeFilter ?? this.mazeFilter,
     );
   }
 
@@ -136,10 +156,13 @@ sealed class GuildEvent extends Equatable {
 final class FetchGuild extends GuildEvent {}
 
 final class FilterMember extends GuildEvent {
-  FilterMember({this.siegeStatus, this.searchValue});
+  FilterMember({this.siegeStatus, this.searchValue = "", this.mazeStatus}) {
+    logger.d("Filters: $searchValue, $siegeStatus, $mazeStatus");
+  }
 
   final SiegeStatus? siegeStatus;
-  final String? searchValue;
+  final MazeStatus? mazeStatus;
+  final String searchValue;
 }
 
 final class AddMember extends GuildEvent {
@@ -157,10 +180,16 @@ final class DeleteMember extends GuildEvent {
   DeleteMember(this.member);
 }
 
-final class BatchStatus extends GuildEvent {
+final class BatchSiegeStatus extends GuildEvent {
   final List<Member> members;
   final SiegeStatus status;
-  BatchStatus(this.members, this.status);
+  BatchSiegeStatus(this.members, this.status);
+}
+
+final class BatchMazeStatus extends GuildEvent {
+  final List<Member> members;
+  final MazeStatus status;
+  BatchMazeStatus(this.members, this.status);
 }
 
 final class Busy extends GuildEvent {
