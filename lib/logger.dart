@@ -1,7 +1,7 @@
 import 'package:logger/logger.dart';
 import 'dart:developer' as developer;
 
-const bool _debug = true;
+const bool _debug = false;
 
 final Logger logger = Logger(printer: Printer(), filter: Filter(), output: Output());
 
