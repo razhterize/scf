@@ -1,8 +1,6 @@
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:scf_management/logger.dart';
-
 import 'package:scf_management/models/member.dart';
 import 'package:scf_management/models/guild.dart';
 
