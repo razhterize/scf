@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scf_management/constants/enums.dart';
 
-final Map<SiegeStatus, dynamic> darkChartColor = {
+final Map<SiegeStatus, dynamic> siegeChartColor = {
   SiegeStatus.above: Colors.blue[800],
   SiegeStatus.below: Colors.yellow,
   SiegeStatus.noScore: Colors.red[900],
