@@ -6,7 +6,7 @@ import 'package:scf_management/blocs/guild_bloc.dart';
 import 'package:scf_management/blocs/login_cubit.dart';
 import 'package:scf_management/blocs/settings_bloc.dart';
 import 'package:scf_management/ui/screens/siege_detail_screen.dart';
-import 'package:scf_management/ui/widgets/guild_chart.dart';
+import 'package:scf_management/ui/widgets/chart.dart';
 
 class GuildOverview extends StatefulWidget {
   const GuildOverview({super.key, required this.guild, required this.pb});
@@ -76,7 +76,8 @@ class _GuildOverviewState extends State<GuildOverview> {
   Widget _membersChart() {
     return Hero(
       tag: guild.name,
-      child: const GuildClearChart(),
+      child: const Chart(type: ChartType.siege),
+      // child: const GuildClearChart(),
     );
   }
 

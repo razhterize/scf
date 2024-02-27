@@ -12,7 +12,7 @@ import 'package:scf_management/models/member.dart';
 import 'package:scf_management/blocs/guild_bloc.dart';
 import 'package:scf_management/blocs/selected_bloc.dart';
 import 'package:scf_management/blocs/settings_bloc.dart';
-import 'package:scf_management/ui/widgets/maze_chart.dart';
+import 'package:scf_management/ui/widgets/chart.dart';
 import 'package:scf_management/ui/widgets/member_detail.dart';
 import 'package:scf_management/ui/widgets/new_member_dialog.dart';
 
@@ -336,7 +336,7 @@ class _MazeDetailsState extends State<MazeDetails> {
     );
   }
 
-  Widget memberChart() => const MazeClearChart();
+  Widget memberChart() => const Chart(type: ChartType.maze);
   Widget emptyMember() => Center(
         child: Icon(
           Icons.warning_amber,

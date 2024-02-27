@@ -13,8 +13,8 @@ import 'package:scf_management/models/member.dart';
 import 'package:scf_management/blocs/guild_bloc.dart';
 import 'package:scf_management/blocs/selected_bloc.dart';
 import 'package:scf_management/blocs/settings_bloc.dart';
+import 'package:scf_management/ui/widgets/chart.dart';
 import 'package:scf_management/ui/widgets/member_detail.dart';
-import 'package:scf_management/ui/widgets/guild_chart.dart';
 import 'package:scf_management/ui/widgets/new_member_dialog.dart';
 
 class GuildDetails extends StatefulWidget {
@@ -269,7 +269,7 @@ class _GuildDetailsState extends State<GuildDetails> {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
-            color: darkChartColor[member.siege!.status],
+            color: siegeChartColor[member.siege!.status],
             // border: Border.all()
           ),
           // color: darkChartColor[member.siege!.status],
@@ -333,7 +333,7 @@ class _GuildDetailsState extends State<GuildDetails> {
                     ),
                   ),
                   selected: (member.siege?.status == status),
-                  selectedColor: darkChartColor[status],
+                  selectedColor: siegeChartColor[status],
                   onSelected: (value) async {
                     var selectedMembers = BlocProvider.of<SelectBloc>(context).state.selectedMembers.toList();
                     if (selectedMembers.isNotEmpty && selectedMembers.length >= 2) {
@@ -352,7 +352,7 @@ class _GuildDetailsState extends State<GuildDetails> {
     );
   }
 
-  Widget memberChart() => const GuildClearChart();
+  Widget memberChart() => const Chart(type: ChartType.siege);
   Widget emptyMember() => Center(
         child: Icon(
           Icons.warning_amber,

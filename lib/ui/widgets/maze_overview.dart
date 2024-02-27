@@ -6,7 +6,7 @@ import 'package:scf_management/blocs/guild_bloc.dart';
 import 'package:scf_management/blocs/login_cubit.dart';
 import 'package:scf_management/blocs/settings_bloc.dart';
 import 'package:scf_management/ui/screens/maze_detail_screen.dart';
-import 'package:scf_management/ui/widgets/maze_chart.dart';
+import 'package:scf_management/ui/widgets/chart.dart';
 
 class MazeOverview extends StatefulWidget {
   const MazeOverview({super.key, required this.guild, required this.pb});
@@ -75,10 +75,9 @@ class _MazeOverviewState extends State<MazeOverview> {
   }
 
   Widget _membersChart() {
-    return Hero(
-      tag: guild.name,
-      child: const MazeClearChart(),
-    );
+    return Hero(tag: guild.name, child: const Chart(type: ChartType.maze)
+        // child: const MazeClearChart(),
+        );
   }
 
   Widget _emptyMembers() {
