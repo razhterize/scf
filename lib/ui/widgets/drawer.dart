@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:scf_management/blocs/login_cubit.dart';
+import 'package:scf_management/blocs/login_bloc.dart';
 import 'package:scf_management/blocs/screen_bloc.dart';
 import 'package:scf_management/ui/screens/maze_screen.dart';
 import 'package:scf_management/ui/screens/siege_screen.dart';
@@ -53,7 +53,7 @@ Widget drawer(BuildContext context) {
 }
 
 Widget loggedInProfile() {
-  return BlocBuilder<LoginCubit, LoginState>(
+  return BlocBuilder<LoginBloc, LoginState>(
     builder: (context, state) {
       if (!state.pb.authStore.isValid) {
         return Column(
@@ -68,7 +68,7 @@ Widget loggedInProfile() {
             Text(state.authModel!.record!.getStringValue('username'), style: const TextStyle(fontSize: 25)),
             IconButton(
                 onPressed: () {
-                  BlocProvider.of<LoginCubit>(context).logout();
+                  BlocProvider.of<LoginBloc>(context).add(Logout());
                 },
                 icon: const Icon(
                   Icons.logout,
@@ -83,7 +83,7 @@ Widget loggedInProfile() {
           Text(state.authModel!.record!.getStringValue('username'), style: const TextStyle(fontSize: 25)),
           IconButton(
               onPressed: () {
-                BlocProvider.of<LoginCubit>(context).logout();
+                BlocProvider.of<LoginBloc>(context).add(Logout());
               },
               icon: const Icon(
                 Icons.logout,

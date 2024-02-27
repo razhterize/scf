@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:scf_management/constants/enums.dart';
-import 'package:scf_management/blocs/login_cubit.dart';
+import 'package:scf_management/blocs/login_bloc.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -14,7 +14,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LoginCubit, LoginState>(
+    return BlocBuilder<LoginBloc, LoginState>(
       builder: (context, state) {
         return Scaffold(
           body: Center(
@@ -27,7 +27,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
                 FloatingActionButton.extended(
                   onPressed: () {
-                    BlocProvider.of<LoginCubit>(context).loginWithDiscord();
+                    BlocProvider.of<LoginBloc>(context).add(DiscordLogin());
                   },
                   icon: state.loginStatus != LoginStatus.processing
                       ? SizedBox(
@@ -48,7 +48,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void loginAsAdmin() {
     // fancy stuff to login as admin
-    var pb = BlocProvider.of<LoginCubit>(context).state.pb;
+    var pb = BlocProvider.of<LoginBloc>(context).state.pb;
     pb.admins.authWithPassword("", "");
   }
 }

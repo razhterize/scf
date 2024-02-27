@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scf_management/blocs/guild_bloc.dart';
-import 'package:scf_management/blocs/login_cubit.dart';
+import 'package:scf_management/blocs/login_bloc.dart';
 import 'package:scf_management/ui/widgets/drawer.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:scf_management/ui/widgets/maze_overview.dart';
@@ -27,13 +27,13 @@ class MazeScreenState extends State<MazeScreen> {
   }
 
   Widget _body() {
-    var managedGuilds = BlocProvider.of<LoginCubit>(context).pb.authStore.model.data['managed_guilds'];
+    var managedGuilds = BlocProvider.of<LoginBloc>(context).pb.authStore.model.data['managed_guilds'];
     return GridView.builder(
       itemCount: managedGuilds.length ?? 0,
       gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(crossAxisCount: maxWidget()),
       itemBuilder: (context, index) {
         return BlocProvider(
-          create: (context) => GuildBloc(pb: BlocProvider.of<LoginCubit>(context).state.pb, name: managedGuilds[index]),
+          create: (context) => GuildBloc(pb: BlocProvider.of<LoginBloc>(context).state.pb, name: managedGuilds[index]),
           child: BlocBuilder<GuildBloc, GuildState>(
             builder: (context, guildState) {
               if (guildState.status == GuildStatus.notReady) {
@@ -56,7 +56,7 @@ class MazeScreenState extends State<MazeScreen> {
                   ),
                 );
               } else {
-                return MazeOverview(guild: guildState.guild, pb: BlocProvider.of<LoginCubit>(context).pb);
+                return MazeOverview(guild: guildState.guild, pb: BlocProvider.of<LoginBloc>(context).pb);
                 // return GuildOverview(pb: state.pb, guild: guildState.guild);
               }
             },

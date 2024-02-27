@@ -24,27 +24,24 @@ class LoginState extends Equatable {
   List<Object?> get props => [loginStatus, pb];
 }
 
-class LoginCubit extends Cubit<LoginState> {
-  LoginCubit({required this.pb}) : super(LoginState(loginStatus: LoginStatus.unknown, pb: pb)) {
-    if (pb.authStore.isValid) {
-      authRefresh();
-      return;
-    } else {
-      emit(state.copyWith(loginStatus: LoginStatus.failed));
-    }
+class LoginBloc extends Bloc<LoginEvent, LoginState> {
+  LoginBloc({required this.pb}) : super(LoginState(loginStatus: LoginStatus.unknown, pb: pb)) {
+    on<DiscordLogin>(loginWithDiscord);
+    on<AuthRefresh>(authRefresh);
+    on<Logout>(logout);
   }
 
-  Future<void> authRefresh() async {
+  Future<void> authRefresh(AuthRefresh event, Emitter<LoginState> emit) async {
     var model = await pb.collection("discord_auth").authRefresh();
     emit(state.copyWith(authModel: model, loginStatus: LoginStatus.success));
   }
 
-  void logout() {
+  void logout(Logout event, Emitter<LoginState> emit) {
     pb.authStore.clear();
     emit(state.copyWith(loginStatus: LoginStatus.failed));
   }
 
-  void loginWithDiscord() async {
+  void loginWithDiscord(DiscordLogin event, Emitter<LoginState> emit) async {
     emit(state.copyWith(loginStatus: LoginStatus.processing));
     if (pb.authStore.isValid) {
       var model = await pb.collection("discord_auth").authRefresh();
@@ -60,7 +57,7 @@ class LoginCubit extends Cubit<LoginState> {
         scopes: ['identify', 'guilds'],
       ).then((value) {
         if (pb.authStore.isValid) {
-          authRefresh();
+          add(AuthRefresh());
         }
       });
     } catch (e) {
@@ -70,3 +67,14 @@ class LoginCubit extends Cubit<LoginState> {
 
   final PocketBase pb;
 }
+
+final class LoginEvent extends Equatable {
+  @override
+  List<Object?> get props => [];
+}
+
+final class DiscordLogin extends LoginEvent {}
+
+final class AuthRefresh extends LoginEvent {}
+
+final class Logout extends LoginEvent {}

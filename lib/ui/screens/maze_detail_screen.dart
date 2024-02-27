@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:scf_management/blocs/login_cubit.dart';
+import 'package:scf_management/blocs/login_bloc.dart';
 import 'package:scf_management/constants/abbreviations.dart';
 import 'package:scf_management/constants/enums.dart';
 import 'package:scf_management/constants/theme.dart';
@@ -33,7 +33,7 @@ class _MazeDetailsState extends State<MazeDetails> {
   Widget build(BuildContext context) {
     return BlocBuilder<GuildBloc, GuildState>(
       builder: (context, state) {
-        BlocProvider.of<LoginCubit>(context).state.pb.collection('members').subscribe("*", (e) {
+        BlocProvider.of<LoginBloc>(context).state.pb.collection('members').subscribe("*", (e) {
           BlocProvider.of<GuildBloc>(context).add(MemberSubscription(e));
         });
         if (state.status == GuildStatus.ready) {

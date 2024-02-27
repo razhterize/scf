@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:scf_management/models/guild.dart';
 import 'package:scf_management/blocs/guild_bloc.dart';
-import 'package:scf_management/blocs/login_cubit.dart';
+import 'package:scf_management/blocs/login_bloc.dart';
 import 'package:scf_management/blocs/settings_bloc.dart';
 import 'package:scf_management/ui/screens/siege_detail_screen.dart';
 import 'package:scf_management/ui/widgets/chart.dart';
@@ -46,7 +46,7 @@ class _GuildOverviewState extends State<GuildOverview> {
                     builder: (_) => MultiBlocProvider(
                       providers: [
                         BlocProvider.value(value: BlocProvider.of<GuildBloc>(context)),
-                        BlocProvider.value(value: BlocProvider.of<LoginCubit>(context)),
+                        BlocProvider.value(value: BlocProvider.of<LoginBloc>(context)),
                         BlocProvider.value(value: BlocProvider.of<SettingBloc>(context)),
                       ],
                       child: GuildDetails(guild: guild, pb: widget.pb),

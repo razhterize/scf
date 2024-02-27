@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:pocketbase/pocketbase.dart';
-import 'package:scf_management/blocs/login_cubit.dart';
+import 'package:scf_management/blocs/login_bloc.dart';
 import 'package:scf_management/blocs/screen_bloc.dart';
 import 'package:scf_management/blocs/settings_bloc.dart';
 import 'package:scf_management/ui/screens/siege_screen.dart';
@@ -47,7 +47,7 @@ class _SCFManagementState extends State<SCFManagement> {
     return MultiBlocProvider(
       providers: [
         BlocProvider(
-          create: (context) => LoginCubit(pb: pb),
+          create: (context) => LoginBloc(pb: pb),
         ),
         BlocProvider(
           create: (context) => SettingBloc(sharedPreferences: sharedPreferences),
@@ -61,7 +61,7 @@ class _SCFManagementState extends State<SCFManagement> {
               title: kIsWeb ? "SCF Management" : "",
               debugShowCheckedModeBanner: false,
               theme: state.lightMode ? ThemeData.light() : ThemeData.dark(),
-              home: BlocConsumer<LoginCubit, LoginState>(
+              home: BlocConsumer<LoginBloc, LoginState>(
                 listener: (context, state) {
                   if (state.pb.authStore.isValid) {
                     BlocProvider.of<ScreenBloc>(context).add(ChangeScreen(const SiegeScreen()));
