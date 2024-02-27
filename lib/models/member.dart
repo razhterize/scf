@@ -115,11 +115,11 @@ class MemberMaze {
   List<dynamic>? energyWrongNode;
 
   MemberMaze({
-    this.status = MazeStatus.unknown,
-    this.energyUsed = const [],
-    this.totalPoints = const [],
-    this.energyOvercap = const [[]],
-    this.energyWrongNode = const [[]],
+    this.status,
+    this.energyUsed,
+    this.totalPoints,
+    this.energyOvercap,
+    this.energyWrongNode,
   });
 
   factory MemberMaze.fromJson(Map<String, dynamic> json) {
@@ -135,7 +135,7 @@ class MemberMaze {
 
   Map<String, dynamic> toJson() {
     return {
-      "status": status?.name ?? MazeStatus.unknown.name,
+      "status": status == null ? "unknown" : status!.name,
       "energy_used": energyUsed,
       "total_points": totalPoints,
       "energy_overcap": energyOvercap,
