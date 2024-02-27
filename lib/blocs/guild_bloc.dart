@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:equatable/equatable.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:scf_management/blocs/selected_bloc.dart';
 import 'package:scf_management/constants/enums.dart';
 import 'package:scf_management/logger.dart';
 import 'package:scf_management/models/guild.dart';
