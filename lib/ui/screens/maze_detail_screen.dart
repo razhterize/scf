@@ -47,12 +47,26 @@ class _MazeDetailsState extends State<MazeDetails> {
                     return FloatingActionButton.extended(
                       onPressed: () {
                         // Selected Bloc here, mentioned text copied on cliek
-                        BlocProvider.of<SelectBloc>(context).add(PingSelected());
-                        Clipboard.setData(ClipboardData(text: BlocProvider.of<SelectBloc>(context).state.mentionText));
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text("Mention text has been copied to clipboard"),
-                          duration: Duration(seconds: 2),
-                        ));
+                        // BlocProvider.of<SelectBloc>(context).add(PingSelected());
+                        if (state.selectedMembers.isNotEmpty) {
+                          String mentionText = "";
+                          for (var member in state.selectedMembers) {
+                            if (member.discordId != "" && member.discordId != "-" && member.discordId != null) {
+                              mentionText += "<@${member.discordId}>\n";
+                            } else if (member.discordUsername != "" && member.discordUsername != null) {
+                              mentionText += "@${member.discordUsername}\n";
+                            } else {
+                              mentionText += "@${member.name}\n";
+                            }
+                          }
+                          Clipboard.setData(ClipboardData(text: mentionText));
+                          if (mentionText != "") {
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                              content: Text("Mention text has been copied to clipboard"),
+                              duration: Duration(seconds: 2),
+                            ));
+                          }
+                        }
                       },
                       icon: const Icon(Icons.alternate_email),
                       label: const Text("Mention"),
@@ -119,19 +133,6 @@ class _MazeDetailsState extends State<MazeDetails> {
           BlocProvider.of<GuildBloc>(context).add(FilterMember(mazeStatus: value));
         },
       ),
-    );
-  }
-
-  FloatingActionButton floatingActionButton() {
-    return FloatingActionButton.extended(
-      onPressed: () {
-        // Selected Bloc here, mentioned text copied on cliek
-        BlocProvider.of<SelectBloc>(context).add(PingSelected());
-        Clipboard.setData(ClipboardData(text: BlocProvider.of<SelectBloc>(context).state.mentionText));
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Mention text has been copied to clipboard")));
-      },
-      icon: const Icon(Icons.alternate_email),
-      label: const Text("Mention"),
     );
   }
 

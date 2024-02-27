@@ -57,12 +57,25 @@ class _GuildDetailsState extends State<GuildDetails> {
                     return FloatingActionButton.extended(
                       onPressed: () {
                         // Selected Bloc here, mentioned text copied on cliek
-                        BlocProvider.of<SelectBloc>(context).add(PingSelected());
-                        Clipboard.setData(ClipboardData(text: BlocProvider.of<SelectBloc>(context).state.mentionText));
-                        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                          content: Text("Mention text has been copied to clipboard"),
-                          duration: Duration(seconds: 2),
-                        ));
+                        if (state.selectedMembers.isNotEmpty) {
+                          String mentionText = "";
+                          for (var member in state.selectedMembers) {
+                            if (member.discordId != "" && member.discordId != "-" && member.discordId != null) {
+                              mentionText += "<@${member.discordId}>\n";
+                            } else if (member.discordUsername != "" && member.discordUsername != null) {
+                              mentionText += "@${member.discordUsername}\n";
+                            } else {
+                              mentionText += "@${member.name}\n";
+                            }
+                          }
+                          Clipboard.setData(ClipboardData(text: mentionText));
+                          if (mentionText != "") {
+                            ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                              content: Text("Mention text has been copied to clipboard"),
+                              duration: Duration(seconds: 2),
+                            ));
+                          }
+                        }
                       },
                       icon: const Icon(Icons.alternate_email),
                       label: const Text("Mention"),
@@ -135,19 +148,6 @@ class _GuildDetailsState extends State<GuildDetails> {
           BlocProvider.of<GuildBloc>(context).add(FilterMember(searchValue: searchController.text, siegeStatus: statusFilter));
         },
       ),
-    );
-  }
-
-  FloatingActionButton floatingActionButton() {
-    return FloatingActionButton.extended(
-      onPressed: () {
-        // Selected Bloc here, mentioned text copied on cliek
-        BlocProvider.of<SelectBloc>(context).add(PingSelected());
-        Clipboard.setData(ClipboardData(text: BlocProvider.of<SelectBloc>(context).state.mentionText));
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text("Mention text has been copied to clipboard")));
-      },
-      icon: const Icon(Icons.alternate_email),
-      label: const Text("Mention"),
     );
   }
 

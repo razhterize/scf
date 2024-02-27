@@ -1,3 +1,4 @@
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:scf_management/logger.dart';
@@ -15,23 +16,6 @@ class SelectBloc extends Bloc<SelectEvent, SelectState> {
     on<SelectRange>(_selectRange);
     on<DeselectAll>(_deselectAll);
     on<InvertSelection>(_invertSelction);
-    on<PingSelected>(_mentionSelected);
-  }
-
-  void _mentionSelected(PingSelected event, Emitter<SelectState> emit) {
-    if (state.selectedMembers.isNotEmpty) {
-      String mentionText = "";
-      for (var member in state.selectedMembers) {
-        if (member.discordId != "" && member.discordId != "-" && member.discordId != null) {
-          mentionText += "<@${member.discordId}>\n";
-        } else if (member.discordUsername != "" && member.discordUsername != null) {
-          mentionText += "@${member.discordUsername}\n";
-        } else {
-          mentionText += "@${member.name}\n";
-        }
-      }
-      return emit(state.copyWith(mentionText: mentionText));
-    }
   }
 
   void _addSelected(AddSelected event, Emitter<SelectState> emit) {
@@ -119,5 +103,3 @@ final class SelectRange extends SelectEvent {
 final class DeselectAll extends SelectEvent {}
 
 final class InvertSelection extends SelectEvent {}
-
-final class PingSelected extends SelectEvent {}
