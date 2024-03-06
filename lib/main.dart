@@ -10,7 +10,6 @@ import 'blocs/login_bloc.dart';
 import 'ui/screens/login_screen.dart';
 import 'ui/screens/main_screen.dart';
 
-import 'configs.dart';
 
 void main(List<String> args) async {
   Logger.root
@@ -20,9 +19,6 @@ void main(List<String> args) async {
     });
   WidgetsFlutterBinding.ensureInitialized();
   HydratedBloc.storage = await HydratedStorage.build(storageDirectory: await getApplicationDocumentsDirectory());
-  // PocketBase pb = PocketBase(databaseUrl);
-  // if (!pb.authStore.isValid) await pb.admins.authWithPassword(adminLogin['username']!, adminLogin['password']!);
-  // runApp(App(pb: pb));
   runApp(const App());
 }
 
