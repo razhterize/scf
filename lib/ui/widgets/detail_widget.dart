@@ -6,7 +6,6 @@ import '../../blocs/guild_bloc.dart';
 import '../../blocs/login_bloc.dart';
 import '../../blocs/switch_cubit.dart';
 
-
 import 'views.dart';
 
 class DetailWidget extends StatefulWidget {
@@ -38,20 +37,13 @@ class _DetailWidgetState extends State<DetailWidget> {
           child: Stack(
             children: [
               BlocBuilder<GuildBloc, GuildState>(builder: (context, state) => state.busy ? _loading() : Container()),
-              Column(
-                children: [
-                  _topBar(),
-                  Expanded(child: Views()),
-                ],
-              ),
+              const Expanded(child: Views()),
             ],
           ),
         );
       },
     );
   }
-
-  Widget _topBar() => const Placeholder();
 
   Widget _loading() => LoadingAnimationWidget.twistingDots(size: 50, leftDotColor: Colors.green, rightDotColor: Colors.blue);
 }
