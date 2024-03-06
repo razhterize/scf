@@ -1,5 +1,5 @@
-enum SiegeStatus { above, below, pardoned, newMember, notClear, noScore }
+enum SiegeStatus { above, below, notClear, noScore, pardoned, newMember }
 
 enum MazeStatus { safe, overcap, unknown }
 
-enum ManagementMode {siege, maze, members}
+enum ManagementMode { siege, maze, members }
