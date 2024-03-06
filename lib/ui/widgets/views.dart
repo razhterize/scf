@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:scf_new/blocs/switch_cubit.dart';
-import 'package:scf_new/constants.dart';
-import 'package:scf_new/enums.dart';
 
+import '../../blocs/switch_cubit.dart';
+import '../../constants.dart';
+import '../../enums.dart';
 import '../../blocs/guild_bloc.dart';
 import '../../models/member_model.dart';
 
@@ -21,6 +21,7 @@ class _ViewsState extends State<Views> {
   Widget build(BuildContext context) {
     return Column(
       children: [
+        topBar(),
         Expanded(
           child: BlocBuilder<GuildBloc, GuildState>(
             builder: (context, state) {
@@ -80,6 +81,46 @@ class _ViewsState extends State<Views> {
                   ),
                 ),
             ],
+    );
+  }
+
+  Widget topBar() {
+    return BlocBuilder<SwitchCubit, SwitchState>(
+      builder: (context, state) {
+        if (state.mode == ManagementMode.siege) {
+          return Row(
+            children: [
+              for (var status in SiegeStatus.values)
+                Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: MaterialButton(
+                    onPressed: () {},
+                    color: statusColors[status],
+                    child: Text(
+                      "${siegeStatus[status]}: ${context.read<GuildBloc>().state.guild.members.where((element) => element.siegeStatus == status).length}",
+                    ),
+                  ),
+                )
+            ],
+          );
+        } else if (state.mode == ManagementMode.maze) {
+          return Row(
+            children: [
+              for (var status in MazeStatus.values)
+                Padding(
+                  padding: const EdgeInsets.all(2.0),
+                  child: MaterialButton(
+                    onPressed: () {},
+                    child: Text(
+                      "${mazeStatus[status]}: ${context.read<GuildBloc>().state.guild.members.where((element) => element.mazeStatus == status).length}",
+                    ),
+                  ),
+                )
+            ],
+          );
+        }
+        return Container();
+      },
     );
   }
 
