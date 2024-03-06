@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 import 'enums.dart';
 
 const Map<String, String> guildNames = {
@@ -25,4 +27,16 @@ const Map<MazeStatus, String> mazeStatus = {
   MazeStatus.unknown: "Unknown",
   MazeStatus.safe: "Safe",
   MazeStatus.overcap: "Overcap",
+};
+
+const Map statusColors = {
+  SiegeStatus.above: Colors.blueAccent,
+  SiegeStatus.below: Colors.yellow,
+  SiegeStatus.pardoned: Colors.purple,
+  SiegeStatus.noScore: Colors.red,
+  SiegeStatus.notClear: Colors.orange,
+  SiegeStatus.newMember: Colors.greenAccent,
+  MazeStatus.safe: Colors.blue,
+  MazeStatus.overcap: Colors.red,
+  MazeStatus.unknown: Colors.grey
 };
