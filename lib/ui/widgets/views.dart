@@ -97,7 +97,7 @@ class _ViewsState extends State<Views> {
                     onPressed: () {},
                     color: statusColors[status],
                     child: Text(
-                      "${siegeStatus[status]}: ${context.read<GuildBloc>().state.guild.members.where((element) => element.siegeStatus == status).length}",
+                      "${siegeStatus[status]}: ${context.read<GuildBloc>().state.guild.members.where((element) => element.siegeStatus == status).toList().length}",
                     ),
                   ),
                 )
@@ -112,7 +112,7 @@ class _ViewsState extends State<Views> {
                   child: MaterialButton(
                     onPressed: () {},
                     child: Text(
-                      "${mazeStatus[status]}: ${context.read<GuildBloc>().state.guild.members.where((element) => element.mazeStatus == status).length}",
+                      "${mazeStatus[status]}: ${context.read<GuildBloc>().state.guild.members.where((element) => element.mazeStatus == status).toList().length}",
                     ),
                   ),
                 )
