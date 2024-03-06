@@ -1,0 +1,43 @@
+name: scf_new
+description: "Remake of SCF Management"
+
+publish_to: "none"
+
+version: 1.1.0+0
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # UI
+  cupertino_icons: ^1.0.6
+  loading_animation_widget: ^1.2.0+4
+  scroll_snap_list: ^0.9.1
+
+  # Blocs
+  equatable: ^2.0.5
+  flutter_bloc: ^8.1.4
+  hydrated_bloc: ^9.1.4
+
+  # Database
+  fetch_client: ^1.0.2
+  pocketbase: ^0.18.1
+  url_launcher: ^6.2.5
+
+  # Misc
+  path_provider: ^2.1.2
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0
+  logging: ^1.2.0
+
+flutter:
+  uses-material-design: true
+
+  assets:
+    - assets/discord.png
