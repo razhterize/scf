@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:scf_new/blocs/login_bloc.dart';
-import 'package:scf_new/blocs/switch_cubit.dart';
-import 'package:scf_new/enums.dart';
 
-import '../../blocs/guild_bloc.dart';
+import '../../blocs/login_bloc.dart';
+import '../../blocs/switch_cubit.dart';
 import '../widgets/detail_widget.dart';
 
 class MainScreen extends StatefulWidget {
