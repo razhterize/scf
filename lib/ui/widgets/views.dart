@@ -48,45 +48,20 @@ class _ViewsState extends State<Views> {
       title: Text(member.name),
       subtitle: Text("${member.pgrId}"),
       selected: selectedMembers.contains(member),
-      trailing: lStatusSelection(member),
-    );
-  }
-
-  Widget lStatusSelection(Member member) {
-    return Wrap(
-      children: context.read<SwitchCubit>().state.mode == ManagementMode.siege
-          ? [
-              for (var status in SiegeStatus.values)
-                Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: ChoiceChip(
-                      label: Text(statusNames[status] ?? status.name),
-                      selected: member.siegeStatus == status,
-                      onSelected: (value) {
-                        member.siegeStatus = status;
-                        context.read<GuildBloc>().add(UpdateMember(member));
-                      }),
-                )
-            ]
-          : [
-              for (var status in MazeStatus.values)
-                Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: ChoiceChip(
-                    label: Text(statusNames[status] ?? status.name),
-                    selected: member.mazeStatus == status,
-                    onSelected: (value) {
-                      member.mazeStatus = status;
-                      context.read<GuildBloc>().add(UpdateMember(member));
-                    },
-                  ),
-                ),
-            ],
+      trailing: Wrap(
+        children: context.read<SwitchCubit>().state.mode == ManagementMode.siege
+            ? statusSelection(member, SiegeStatus.values)
+            : statusSelection(member, MazeStatus.values),
+      ),
     );
   }
 
   Widget topBar() {
     return Container(
+      decoration: BoxDecoration(
+        border: Border.all(color: const Color.fromARGB(255, 97, 255, 215)),
+        borderRadius: BorderRadius.circular(5)
+      ),
       margin: const EdgeInsets.fromLTRB(4, 0, 4, 0),
       child: BlocBuilder<SwitchCubit, SwitchState>(
         builder: (context, state) {
@@ -120,7 +95,9 @@ class _ViewsState extends State<Views> {
                   builder: (context, state) {
                     return Text(
                       "${statusNames[status]}: ${state.guild.members.where(
-                            (element) => (SiegeStatus.values.contains(status) ? element.siegeStatus == status : element.mazeStatus == status),
+                            (element) => (SiegeStatus.values.contains(status)
+                                ? element.siegeStatus == status
+                                : element.mazeStatus == status),
                           ).toList().length}",
                       style: const TextStyle(color: Colors.black),
                     );
@@ -129,6 +106,26 @@ class _ViewsState extends State<Views> {
               ],
             ),
           ),
+        )
+    ];
+  }
+
+  List<Widget> statusSelection(Member member, List statuses) {
+    return [
+      for (var status in statuses)
+        Padding(
+          padding: const EdgeInsets.all(2.0),
+          child: ChoiceChip(
+              label: Text(statusNames[status] ?? status.name),
+              selected: member.siegeStatus == status,
+              onSelected: (value) {
+                if (SiegeStatus.values.contains(status)) {
+                  member.siegeStatus = status;
+                } else if (MazeStatus.values.contains(status)) {
+                  member.mazeStatus = status;
+                }
+                context.read<GuildBloc>().add(UpdateMember(member));
+              }),
         )
     ];
   }
