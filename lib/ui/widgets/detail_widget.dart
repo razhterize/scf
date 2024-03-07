@@ -16,34 +16,24 @@ class DetailWidget extends StatefulWidget {
 }
 
 class _DetailWidgetState extends State<DetailWidget> {
-  // late final Map<ManagementMode, Widget> views;
-
-  @override
-  void initState() {
-    // views = {
-    //   ManagementMode.maze: _mazeView(),
-    //   ManagementMode.members: _memberManage(),
-    //   ManagementMode.siege: const SiegeView(),
-    // };
-    super.initState();
-  }
-
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<SwitchCubit, SwitchState>(
-      builder: (context, state) {
-        return BlocProvider(
-          create: (context) => GuildBloc(context.read<LoginBloc>().pb, state.name),
-          child: Stack(
-            children: [
-              BlocBuilder<GuildBloc, GuildState>(builder: (context, state) => state.busy ? _loading() : Container()),
-              const Expanded(child: Views()),
-            ],
-          ),
-        );
-      },
+    return BlocProvider(
+      create: (context) => GuildBloc(
+        context.read<LoginBloc>().pb,
+        context.read<SwitchCubit>().state.name,
+      ),
+      child: Stack(
+        children: [
+          Center(child: BlocBuilder<GuildBloc, GuildState>(builder: (context, state) => state.busy ? _loading() : Container())),
+          Expanded(
+              child: BlocBuilder<SwitchCubit, SwitchState>(
+            builder: (context, state) => const Views(),
+          )),
+        ],
+      ),
     );
   }
 
-  Widget _loading() => LoadingAnimationWidget.twistingDots(size: 50, leftDotColor: Colors.green, rightDotColor: Colors.blue);
+  Widget _loading() => LoadingAnimationWidget.hexagonDots(color: Colors.cyanAccent, size: 40);
 }
