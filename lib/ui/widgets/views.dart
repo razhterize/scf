@@ -86,19 +86,22 @@ class _ViewsState extends State<Views> {
   }
 
   Widget topBar() {
-    return BlocBuilder<SwitchCubit, SwitchState>(
-      builder: (context, state) {
-        if (state.mode == ManagementMode.siege) {
-          return Row(
-            children: filterButtons(SiegeStatus.values),
-          );
-        } else if (state.mode == ManagementMode.maze) {
-          return Row(
-            children: filterButtons(MazeStatus.values),
-          );
-        }
-        return Container();
-      },
+    return Container(
+      margin:const EdgeInsets.fromLTRB(4, 0, 4, 0),
+      child: BlocBuilder<SwitchCubit, SwitchState>(
+        builder: (context, state) {
+          if (state.mode == ManagementMode.siege) {
+            return Row(
+              children: filterButtons(SiegeStatus.values),
+            );
+          } else if (state.mode == ManagementMode.maze) {
+            return Row(
+              children: filterButtons(MazeStatus.values),
+            );
+          }
+          return Container();
+        },
+      ),
     );
   }
 
@@ -112,9 +115,12 @@ class _ViewsState extends State<Views> {
             onPressed: () => setState(() => selectedFilter != status ? selectedFilter = status : selectedFilter = null),
             child: BlocBuilder<GuildBloc, GuildState>(
               builder: (context, state) {
-                return Text("${statusNames[status]}: ${state.guild.members.where(
-                      (element) => (SiegeStatus.values.contains(status) ? element.siegeStatus == status : element.mazeStatus == status),
-                    ).toList().length}");
+                return Text(
+                  "${statusNames[status]}: ${state.guild.members.where(
+                        (element) => (SiegeStatus.values.contains(status) ? element.siegeStatus == status : element.mazeStatus == status),
+                      ).toList().length}",
+                  style: const TextStyle(color: Colors.black),
+                );
               },
             ),
           ),
