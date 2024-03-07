@@ -14,16 +14,13 @@ const Map<String, String> guildNames = {
   "turu_eu": "Cult of Turu (EU)"
 };
 
-const Map<SiegeStatus, String> siegeStatus = {
+const Map<dynamic, String> statusNames = {
   SiegeStatus.above: "Above",
   SiegeStatus.below: "Below",
   SiegeStatus.noScore: "No Score",
   SiegeStatus.notClear: "Not Clear",
   SiegeStatus.pardoned: "Pardoned",
   SiegeStatus.newMember: "New",
-};
-
-const Map<MazeStatus, String> mazeStatus = {
   MazeStatus.unknown: "Unknown",
   MazeStatus.safe: "Safe",
   MazeStatus.overcap: "Overcap",

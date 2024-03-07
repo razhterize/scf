@@ -15,6 +15,7 @@ class Views extends StatefulWidget {
 }
 
 class _ViewsState extends State<Views> {
+  dynamic selectedFilter;
   List<Member> selectedMembers = [];
 
   @override
@@ -24,10 +25,10 @@ class _ViewsState extends State<Views> {
         topBar(),
         Expanded(
           child: BlocBuilder<GuildBloc, GuildState>(
-            builder: (context, state) {
+            builder: (context, guildState) {
               return ListView.builder(
-                itemCount: state.guild.members.length,
-                itemBuilder: (context, index) => memberDetails(state.guild.members[index]),
+                itemCount: guildState.guild.members.length,
+                itemBuilder: (context, index) => memberDetails(guildState.guild.members[index]),
               );
             },
           ),
@@ -59,7 +60,7 @@ class _ViewsState extends State<Views> {
                 Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: ChoiceChip(
-                      label: Text(siegeStatus[status] ?? status.name),
+                      label: Text(statusNames[status] ?? status.name),
                       selected: member.siegeStatus == status,
                       onSelected: (value) {
                         member.siegeStatus = status;
@@ -72,7 +73,7 @@ class _ViewsState extends State<Views> {
                 Padding(
                   padding: const EdgeInsets.all(2.0),
                   child: ChoiceChip(
-                    label: Text(mazeStatus[status] ?? status.name),
+                    label: Text(statusNames[status] ?? status.name),
                     selected: member.mazeStatus == status,
                     onSelected: (value) {
                       member.mazeStatus = status;
@@ -89,39 +90,32 @@ class _ViewsState extends State<Views> {
       builder: (context, state) {
         if (state.mode == ManagementMode.siege) {
           return Row(
-            children: [
-              for (var status in SiegeStatus.values)
-                Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: MaterialButton(
-                    onPressed: () {},
-                    color: statusColors[status],
-                    child: Text(
-                      "${siegeStatus[status]}: ${context.read<GuildBloc>().state.guild.members.where((element) => element.siegeStatus == status).toList().length}",
-                    ),
-                  ),
-                )
-            ],
+            children: filterButtons(SiegeStatus.values),
           );
         } else if (state.mode == ManagementMode.maze) {
           return Row(
-            children: [
-              for (var status in MazeStatus.values)
-                Padding(
-                  padding: const EdgeInsets.all(2.0),
-                  child: MaterialButton(
-                    onPressed: () {},
-                    child: Text(
-                      "${mazeStatus[status]}: ${context.read<GuildBloc>().state.guild.members.where((element) => element.mazeStatus == status).toList().length}",
-                    ),
-                  ),
-                )
-            ],
+            children: filterButtons(MazeStatus.values),
           );
         }
         return Container();
       },
     );
+  }
+
+  List<Widget> filterButtons(List statuses) {
+    return [
+      for (var status in statuses)
+        Padding(
+          padding: const EdgeInsets.all(2),
+          child: MaterialButton(
+            onPressed: () => setState(() => selectedFilter != status ? selectedFilter = status : selectedFilter = null),
+            // I fucking bet this text below will become a bug in counter
+            child: Text("${statusNames[status]}: ${context.read<GuildBloc>().state.guild.members.where(
+                  (element) => element.mazeStatus == status || element.siegeStatus == status,
+                ).toList().length}"),
+          ),
+        )
+    ];
   }
 
   Widget pStatusSelection() {
