@@ -19,7 +19,7 @@ class StatusCounts extends StatelessWidget {
                   for (var status in SiegeStatus.values)
                     MaterialButton(
                       onPressed: () {},
-                      child: Text("${siegeStatus[status]}: ${state.guild.members.where((element) => element.siegeStatus == status).length}"),
+                      child: Text("${statusNames[status]}: ${state.guild.members.where((element) => element.siegeStatus == status).length}"),
                     )
                 ],
               );
@@ -32,7 +32,7 @@ class StatusCounts extends StatelessWidget {
                   for (var status in MazeStatus.values)
                     MaterialButton(
                       onPressed: () {},
-                      child: Text("${mazeStatus[status]}: ${state.guild.members.where((element) => element.mazeStatus == status).length}"),
+                      child: Text("${statusNames[status]}: ${state.guild.members.where((element) => element.mazeStatus == status).length}"),
                     )
                 ],
               );
