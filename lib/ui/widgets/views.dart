@@ -87,7 +87,7 @@ class _ViewsState extends State<Views> {
 
   Widget topBar() {
     return Container(
-      margin:const EdgeInsets.fromLTRB(4, 0, 4, 0),
+      margin: const EdgeInsets.fromLTRB(4, 0, 4, 0),
       child: BlocBuilder<SwitchCubit, SwitchState>(
         builder: (context, state) {
           if (state.mode == ManagementMode.siege) {
@@ -113,15 +113,20 @@ class _ViewsState extends State<Views> {
           child: MaterialButton(
             color: statusColors[status],
             onPressed: () => setState(() => selectedFilter != status ? selectedFilter = status : selectedFilter = null),
-            child: BlocBuilder<GuildBloc, GuildState>(
-              builder: (context, state) {
-                return Text(
-                  "${statusNames[status]}: ${state.guild.members.where(
-                        (element) => (SiegeStatus.values.contains(status) ? element.siegeStatus == status : element.mazeStatus == status),
-                      ).toList().length}",
-                  style: const TextStyle(color: Colors.black),
-                );
-              },
+            child: Row(
+              children: [
+                selectedFilter == status ? const Icon(Icons.check_sharp) : Container(),
+                BlocBuilder<GuildBloc, GuildState>(
+                  builder: (context, state) {
+                    return Text(
+                      "${statusNames[status]}: ${state.guild.members.where(
+                            (element) => (SiegeStatus.values.contains(status) ? element.siegeStatus == status : element.mazeStatus == status),
+                          ).toList().length}",
+                      style: const TextStyle(color: Colors.black),
+                    );
+                  },
+                ),
+              ],
             ),
           ),
         )
