@@ -108,11 +108,15 @@ class _ViewsState extends State<Views> {
         Padding(
           padding: const EdgeInsets.all(2),
           child: MaterialButton(
+            color: statusColors[status],
             onPressed: () => setState(() => selectedFilter != status ? selectedFilter = status : selectedFilter = null),
-            // I fucking bet this text below will become a bug in counter
-            child: Text("${statusNames[status]}: ${context.read<GuildBloc>().state.guild.members.where(
-                  (element) => element.mazeStatus == status || element.siegeStatus == status,
-                ).toList().length}"),
+            child: BlocBuilder<GuildBloc, GuildState>(
+              builder: (context, state) {
+                return Text("${statusNames[status]}: ${state.guild.members.where(
+                      (element) => (SiegeStatus.values.contains(status) ? element.siegeStatus == status : element.mazeStatus == status),
+                    ).toList().length}");
+              },
+            ),
           ),
         )
     ];
