@@ -28,8 +28,10 @@ class _DetailWidgetState extends State<DetailWidget> {
         body: Stack(
           children: [
             Center(
-                child:
-                    BlocBuilder<GuildBloc, GuildState>(builder: (context, state) => state.busy ? _loading() : Container())),
+              child: BlocBuilder<GuildBloc, GuildState>(
+                builder: (context, state) => state.busy ? _loading() : Container(),
+              ),
+            ),
             BlocBuilder<SwitchCubit, SwitchState>(
               builder: (context, state) => const Views(),
             ),
@@ -45,13 +47,10 @@ class _DetailWidgetState extends State<DetailWidget> {
       centerTitle: true,
       leading: IconButton(
         icon: const Icon(Icons.person),
-        onPressed: () {
-        },
+        onPressed: () {},
       ),
     );
   }
-
-
 
   Widget _loading() => LoadingAnimationWidget.hexagonDots(color: Colors.cyanAccent, size: 40);
 }
