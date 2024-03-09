@@ -20,13 +20,13 @@ class _MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return BlocBuilder<LoginBloc, LoginState>(
       builder: (context, loginState) {
-        if (!loginState.authStore.isValid) return Center(child: LoadingAnimationWidget.threeRotatingDots(color: Colors.white, size: 50));
+        if (!loginState.authStore.isValid) {
+          return Center(child: LoadingAnimationWidget.threeRotatingDots(color: Colors.white, size: 50));
+        }
         return BlocProvider(
           create: (context) => SwitchCubit(),
           child: Builder(builder: (context) {
-            return const Scaffold(
-              body: DetailWidget(),
-            );
+            return const DetailWidget();
           }),
         );
       },
