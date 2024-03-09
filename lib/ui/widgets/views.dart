@@ -25,23 +25,24 @@ class _ViewsState extends State<Views> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        topBar(),
-        Expanded(
-          child: BlocBuilder<GuildBloc, GuildState>(
-            builder: (context, guildState) {
-              if (filteredMembers.isEmpty && searchController.text.isEmpty && selectedFilter == null) {
-                filteredMembers = guildState.guild.members;
-              }
-              return ListView.builder(
+    return BlocBuilder<GuildBloc, GuildState>(
+      builder: (context, state) {
+        if (filteredMembers.isEmpty && searchController.text.isEmpty && selectedFilter == null) {
+          filteredMembers = state.guild.members;
+        }
+        return Column(
+          children: [
+            state.busy ? Container():topBar(),
+            // topBar(),
+            Expanded(
+              child: ListView.builder(
                 itemCount: filteredMembers.length,
                 itemBuilder: (context, index) => memberDetails(filteredMembers[index]),
-              );
-            },
-          ),
-        ),
-      ],
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
