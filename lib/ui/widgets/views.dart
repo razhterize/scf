@@ -7,6 +7,8 @@ import '../../enums.dart';
 import '../../blocs/guild_bloc.dart';
 import '../../models/member_model.dart';
 
+import 'package:logging/logging.dart';
+
 class Views extends StatefulWidget {
   const Views({super.key});
 
@@ -15,8 +17,11 @@ class Views extends StatefulWidget {
 }
 
 class _ViewsState extends State<Views> {
+  final logger = Logger("views");
   dynamic selectedFilter;
   List<Member> selectedMembers = [];
+  List<Member> filteredMembers = [];
+  final TextEditingController searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +31,12 @@ class _ViewsState extends State<Views> {
         Expanded(
           child: BlocBuilder<GuildBloc, GuildState>(
             builder: (context, guildState) {
+              if (filteredMembers.isEmpty && searchController.text.isEmpty && selectedFilter == null) {
+                filteredMembers = guildState.guild.members;
+              }
               return ListView.builder(
-                itemCount: guildState.guild.members.length,
-                itemBuilder: (context, index) => memberDetails(guildState.guild.members[index]),
+                itemCount: filteredMembers.length,
+                itemBuilder: (context, index) => memberDetails(filteredMembers[index]),
               );
             },
           ),
@@ -59,19 +67,21 @@ class _ViewsState extends State<Views> {
   Widget topBar() {
     return Container(
       decoration: BoxDecoration(
-        border: Border.all(color: const Color.fromARGB(255, 97, 255, 215)),
-        borderRadius: BorderRadius.circular(5)
+        border: Border.all(
+          color: const Color.fromARGB(50, 97, 255, 215),
+        ),
+        borderRadius: BorderRadius.circular(5),
       ),
       margin: const EdgeInsets.fromLTRB(4, 0, 4, 0),
       child: BlocBuilder<SwitchCubit, SwitchState>(
         builder: (context, state) {
           if (state.mode == ManagementMode.siege) {
             return Row(
-              children: filterButtons(SiegeStatus.values),
+              children: filters(SiegeStatus.values),
             );
           } else if (state.mode == ManagementMode.maze) {
             return Row(
-              children: filterButtons(MazeStatus.values),
+              children: filters(MazeStatus.values),
             );
           }
           return Container();
@@ -80,14 +90,55 @@ class _ViewsState extends State<Views> {
     );
   }
 
-  List<Widget> filterButtons(List statuses) {
+  List<Widget> filters(List statuses) {
     return [
+      Expanded(
+        child: Row(
+          children: [
+            IconButton(
+              onPressed: () => setState(() => searchController.clear()),
+              icon: searchController.text.isEmpty ? const Icon(Icons.search) : const Icon(Icons.close),
+            ),
+            Expanded(
+              child: BlocBuilder<GuildBloc, GuildState>(
+                builder: (context, state) {
+                  return TextField(
+                    decoration: const InputDecoration(label: Text("Name or PGR ID"), border: InputBorder.none),
+                    controller: searchController,
+                    onChanged: (value) {
+                      setState(() {
+                        filteredMembers = state.guild.members
+                            .where((element) =>
+                                element.name.toLowerCase().contains(value.toLowerCase()) ||
+                                element.pgrId.toString().contains(value))
+                            .toList();
+                      });
+                    },
+                  );
+                },
+              ),
+            )
+          ],
+        ),
+      ),
       for (var status in statuses)
         Padding(
           padding: const EdgeInsets.all(2),
           child: MaterialButton(
             color: statusColors[status],
-            onPressed: () => setState(() => selectedFilter != status ? selectedFilter = status : selectedFilter = null),
+            onPressed: () => setState(() {
+              selectedFilter != status ? selectedFilter = status : selectedFilter = null;
+              logger.fine("Status: $status | Filter: $selectedFilter");
+              if (SiegeStatus.values.contains(selectedFilter)) {
+                filteredMembers =
+                    context.read<GuildBloc>().state.guild.members.where((element) => element.siegeStatus == status).toList();
+              } else if (MazeStatus.values.contains(selectedFilter)) {
+                filteredMembers =
+                    context.read<GuildBloc>().state.guild.members.where((element) => element.mazeStatus == status).toList();
+              } else if (selectedFilter == null) {
+                filteredMembers = context.read<GuildBloc>().state.guild.members;
+              }
+            }),
             child: Row(
               children: [
                 selectedFilter == status ? const Icon(Icons.check_sharp) : Container(),
