@@ -23,17 +23,35 @@ class _DetailWidgetState extends State<DetailWidget> {
         context.read<LoginBloc>().pb,
         context.read<SwitchCubit>().state.name,
       ),
-      child: Stack(
-        children: [
-          Center(child: BlocBuilder<GuildBloc, GuildState>(builder: (context, state) => state.busy ? _loading() : Container())),
-          Expanded(
-              child: BlocBuilder<SwitchCubit, SwitchState>(
-            builder: (context, state) => const Views(),
-          )),
-        ],
+      child: Scaffold(
+        appBar: _appBar(),
+        body: Stack(
+          children: [
+            Center(
+                child:
+                    BlocBuilder<GuildBloc, GuildState>(builder: (context, state) => state.busy ? _loading() : Container())),
+            BlocBuilder<SwitchCubit, SwitchState>(
+              builder: (context, state) => const Views(),
+            ),
+          ],
+        ),
       ),
     );
   }
+
+  AppBar _appBar() {
+    return AppBar(
+      title: BlocBuilder<GuildBloc, GuildState>(builder: (context, state) => Text(state.guild.fullName ?? state.guild.name)),
+      centerTitle: true,
+      leading: IconButton(
+        icon: const Icon(Icons.person),
+        onPressed: () {
+        },
+      ),
+    );
+  }
+
+
 
   Widget _loading() => LoadingAnimationWidget.hexagonDots(color: Colors.cyanAccent, size: 40);
 }
