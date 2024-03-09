@@ -2,14 +2,13 @@ import 'dart:developer';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
-// import 'package:pocketbase/pocketbase.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:logging/logging.dart';
 
+import 'configs.dart';
 import 'blocs/login_bloc.dart';
 import 'ui/screens/login_screen.dart';
 import 'ui/screens/main_screen.dart';
-
 
 void main(List<String> args) async {
   Logger.root
@@ -17,6 +16,10 @@ void main(List<String> args) async {
     ..onRecord.listen((record) {
       log('${record.level.name}: ${record.time}: ${record.message}');
     });
+
+  databaseUrl = const String.fromEnvironment("DATABASE_URL", defaultValue: "");
+  if (databaseUrl == "") throw const FormatException("Database Url is not defined");
+
   WidgetsFlutterBinding.ensureInitialized();
   HydratedBloc.storage = await HydratedStorage.build(storageDirectory: await getApplicationDocumentsDirectory());
   runApp(const App());
