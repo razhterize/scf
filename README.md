@@ -8,8 +8,8 @@ Waiting for deployment I guess
 
 ## Progress
 
-- &#x2610; New UI
-- &#x2610; Batch Select
+- &#x2611; New UI
+- &#x2611; Batch Select
 - &#x2610; Batch Status Change
 
 ## Issues
