@@ -25,9 +25,7 @@ class _MainScreenState extends State<MainScreen> {
         }
         return BlocProvider(
           create: (context) => SwitchCubit(),
-          child: Builder(builder: (context) {
-            return const DetailWidget();
-          }),
+          child: const DetailWidget(),
         );
       },
     );
