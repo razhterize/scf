@@ -21,6 +21,7 @@ class GuildBloc extends Bloc<GuildEvent, GuildState>{
   }
 
   Future<void> _init(GuildInit event, Emitter<GuildState> emit) async {
+    emit(state.copy(ready: false, busy: true));
     logger.fine("Guild Init for ${event.name}");
     var guilds = await pb.collection('guilds').getList(filter: 'name = "${event.name}"', expand: 'members');
     if (guilds.items.isNotEmpty) {
