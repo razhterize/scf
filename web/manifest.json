@@ -1,6 +1,6 @@
 {
-    "name": "scf_new",
-    "short_name": "scf_new",
+    "name": "SCF Management",
+    "short_name": "SCF Management",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
