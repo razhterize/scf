@@ -37,10 +37,13 @@ class _FiltersState extends State<Filters> {
                     : IconButton(onPressed: () => setState(() => textController.clear()), icon: const Icon(Icons.close)),
                 title: TextField(
                   controller: textController,
-                  decoration: const InputDecoration(hintText:"Name or PGR ID", border: InputBorder.none, contentPadding: EdgeInsets.all(0), isDense: true),
+                  decoration: const InputDecoration(
+                      hintText: "Name or PGR ID",
+                      border: InputBorder.none,
+                      contentPadding: EdgeInsets.all(0),
+                      isDense: true),
                   onChanged: (value) => setState(() => widget.stringFilter(value)),
                 ),
-
               ),
             ),
             for (var status in statuses) padding(statusButton(status)),
