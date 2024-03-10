@@ -36,6 +36,7 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: kIsWeb ? "SCF Management" : "",
       theme: ThemeData.dark(),
       home: Scaffold(
         body: BlocProvider(
