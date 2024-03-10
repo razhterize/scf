@@ -9,9 +9,11 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - run: flutter config --enable-web
-        shell: bash
-        working-directory: .
+      - uses: actions/checkout@v2
+      - uses: subosito/flutter@v2
+        with:
+          channel: 'stable'
+      
       - run: flutter build web --release --base-href "/scf/" --dart-define=DATABASE_URL=${{env.DATABASE_URL}}
         shell: bash
         working-directory: .
