@@ -22,19 +22,47 @@ class _MemberDetailState extends State<MemberDetail> {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-        leading: Checkbox(
-          onChanged: (value) {
-            setState(() => selected = value as bool);
-            widget.onSelect(selected);
-          },
-          value: selected,
-          // value: widget.contains(widget.member),
-        ),
-        title: Text(widget.member.name),
-        subtitle: Text("${widget.member.pgrId}"),
-        selected: false,
-        trailing: context.read<SwitchCubit>().state.mode == ManagementMode.siege
-            ? StatusSelections(member: widget.member, statuses: SiegeStatus.values)
-            : StatusSelections(member: widget.member, statuses: MazeStatus.values));
+      leading: Checkbox(
+        onChanged: (value) {
+          setState(() => selected = value as bool);
+          widget.onSelect(selected);
+        },
+        value: selected,
+      ),
+      title: Text(widget.member.name),
+      selectedTileColor: Color.fromARGB(121, 0, 94, 255),
+      onTap: context.read<SwitchCubit>().state.mode == ManagementMode.members
+          ? () => openEditWindow()
+          : () => setState(() {
+                selected = !selected;
+                widget.onSelect(selected);
+              }),
+      selected: selected,
+      subtitle: Text("${widget.member.pgrId}"),
+      trailing: BlocBuilder<SwitchCubit, SwitchState>(
+        builder: (context, state) {
+          if (state.mode == ManagementMode.members) {
+            return SizedBox();
+          }
+          return context.read<SwitchCubit>().state.mode == ManagementMode.siege
+              ? StatusSelections(member: widget.member, statuses: SiegeStatus.values)
+              : StatusSelections(member: widget.member, statuses: MazeStatus.values);
+        },
+      ),
+      // trailing:
+    );
+  }
+
+  void openEditWindow() {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return Wrap(
+          children: [
+            Text("Dialog Window"),
+          ],
+        );
+      },
+    );
   }
 }
