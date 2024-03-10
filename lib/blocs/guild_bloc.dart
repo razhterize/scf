@@ -64,8 +64,9 @@ class GuildBloc extends Bloc<GuildEvent, GuildState>{
         }).then((record) {
           var newMember = Member.fromRecord(record);
           newMembers[newMembers.indexWhere((element) => element.id == newMember.id)] = newMember;
-          emit(state.copy(guild: state.guild.copy(members: newMembers), busy: false));
+          emit(state.copy(guild: state.guild.copy(members: newMembers)));
         });
+        emit(state.copy(busy: false));
       }
     } else if (event.mazeStatus != null) {
       var newMembers = state.guild.members;
@@ -75,9 +76,10 @@ class GuildBloc extends Bloc<GuildEvent, GuildState>{
         }).then((record) {
           var newMember = Member.fromRecord(record);
           newMembers[newMembers.indexWhere((element) => element.id == newMember.id)] = newMember;
-          emit(state.copy(guild: state.guild.copy(members: newMembers), busy: false));
+          emit(state.copy(guild: state.guild.copy(members: newMembers)));
         });
       }
+      emit(state.copy(busy: false));
     }
   }
 
