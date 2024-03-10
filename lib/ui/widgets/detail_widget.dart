@@ -23,45 +23,55 @@ class _DetailWidgetState extends State<DetailWidget> {
   @override
   Widget build(BuildContext context) {
     if (!guildNames.keys.toList().contains(context.read<SwitchCubit>().state.name)) {
+      if (context.read<LoginBloc>().state.authStore.model.data['managed_guilds'].isEmpty) {
+        return const Center(
+          child: Text(
+              "Seems like you do not have permission to manage any guilds.\nPlease contact those responsible for managing permission"),
+        );
+      }
       context.read<SwitchCubit>().switchGuild(context.read<LoginBloc>().state.authStore.model.data['managed_guilds'].first);
     }
-    return Row(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            decoration: BoxDecoration(border: Border.all()),
-            child: Column(
-              children: [
-                IconButton(
-                  onPressed: () => context.read<SwitchCubit>().switchMode(ManagementMode.siege),
-                  icon: const Icon(Icons.flag),
-                  tooltip: "Siege",
+    return BlocBuilder<LoginBloc, LoginState>(
+      builder: (context, state) {
+        return Row(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container(
+                decoration: BoxDecoration(border: Border.all()),
+                child: Column(
+                  children: [
+                    IconButton(
+                      onPressed: () => context.read<SwitchCubit>().switchMode(ManagementMode.siege),
+                      icon: const Icon(Icons.flag),
+                      tooltip: "Siege",
+                    ),
+                    IconButton(
+                      onPressed: () => context.read<SwitchCubit>().switchMode(ManagementMode.maze),
+                      icon: const Icon(Icons.bed),
+                      tooltip: "Maze",
+                    ),
+                    IconButton(
+                      onPressed: () => context.read<SwitchCubit>().switchMode(ManagementMode.members),
+                      icon: const Icon(Icons.group),
+                      tooltip: "Manage Members",
+                    ),
+                  ],
                 ),
-                IconButton(
-                  onPressed: () => context.read<SwitchCubit>().switchMode(ManagementMode.maze),
-                  icon: const Icon(Icons.bed),
-                  tooltip: "Maze",
-                ),
-                IconButton(
-                  onPressed: () => context.read<SwitchCubit>().switchMode(ManagementMode.members),
-                  icon: const Icon(Icons.group),
-                  tooltip: "Manage Members",
-                ),
-              ],
+              ),
             ),
-          ),
-        ),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Scaffold(
-              appBar: _appBar(),
-              body: const Views(),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Scaffold(
+                  appBar: _appBar(),
+                  body: const Views(),
+                ),
+              ),
             ),
-          ),
-        ),
-      ],
+          ],
+        );
+      },
     );
   }
 
