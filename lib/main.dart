@@ -18,9 +18,6 @@ void main(List<String> args) async {
       log('${record.level.name}: ${record.time}: ${record.message}');
     });
 
-  databaseUrl = const String.fromEnvironment("DATABASE_URL", defaultValue: "");
-  if (databaseUrl == "") throw const FormatException("Database Url is not defined");
-
   WidgetsFlutterBinding.ensureInitialized();
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: kIsWeb ? HydratedStorage.webStorageDirectory : await getApplicationDocumentsDirectory(),

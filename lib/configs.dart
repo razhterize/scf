@@ -1,9 +1,5 @@
 
-String? _dbUrl;
-
-set databaseUrl(String value) => _dbUrl = value;
-
-String get databaseUrl => _dbUrl ?? "";
+String get databaseUrl => "https://scf-management.pockethost.io";
 
 String get version => '1.1';
 
