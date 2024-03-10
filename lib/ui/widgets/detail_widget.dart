@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:scf_new/enums.dart';
 
 import '../../constants.dart';
 import '../../blocs/login_bloc.dart';
@@ -23,9 +25,43 @@ class _DetailWidgetState extends State<DetailWidget> {
     if (!guildNames.keys.toList().contains(context.read<SwitchCubit>().state.name)) {
       context.read<SwitchCubit>().switchGuild(context.read<LoginBloc>().state.authStore.model.data['managed_guilds'].first);
     }
-    return Scaffold(
-      appBar: _appBar(),
-      body: const Views(),
+    return Row(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Container(
+            decoration: BoxDecoration(border: Border.all()),
+            child: Column(
+              children: [
+                IconButton(
+                  onPressed: () => context.read<SwitchCubit>().switchMode(ManagementMode.siege),
+                  icon: const Icon(Icons.flag),
+                  tooltip: "Siege",
+                ),
+                IconButton(
+                  onPressed: () => context.read<SwitchCubit>().switchMode(ManagementMode.maze),
+                  icon: const Icon(Icons.bed),
+                  tooltip: "Maze",
+                ),
+                IconButton(
+                  onPressed: () => context.read<SwitchCubit>().switchMode(ManagementMode.members),
+                  icon: const Icon(Icons.group),
+                  tooltip: "Manage Members",
+                ),
+              ],
+            ),
+          ),
+        ),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Scaffold(
+              appBar: _appBar(),
+              body: const Views(),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
