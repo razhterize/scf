@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:scf_new/ui/widgets/error_popup.dart';
 
 import '../../blocs/login_bloc.dart';
 import '../../blocs/switch_cubit.dart';
@@ -14,8 +15,6 @@ class MainScreen extends StatefulWidget {
 }
 
 class _MainScreenState extends State<MainScreen> {
-  int guildIndex = 0;
-  int modeIndex = 0;
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LoginBloc, LoginState>(
@@ -23,6 +22,7 @@ class _MainScreenState extends State<MainScreen> {
         if (!loginState.authStore.isValid) {
           return Center(child: LoadingAnimationWidget.threeRotatingDots(color: Colors.white, size: 50));
         }
+
         return BlocProvider(
           create: (context) => SwitchCubit(),
           child: const DetailWidget(),
@@ -31,30 +31,3 @@ class _MainScreenState extends State<MainScreen> {
     );
   }
 }
-
-// var data =Row(
-//   mainAxisAlignment: MainAxisAlignment.center,
-//   children: [
-//     MaterialButton(
-//       onPressed: () {
-//         int guildCount = loginState.authStore.model.data['managed_guilds'].length;
-//         setState(() {
-//           if (guildIndex >= guildCount - 1) guildIndex = 0;
-//           guildIndex += 1;
-//         });
-//         context.read<SwitchCubit>().switchGuild(loginState.authStore.model.data['managed_guilds'][guildIndex]);
-//       },
-//       child: const Text("Change Guild"),
-//     ),
-//     MaterialButton(
-//       onPressed: () {
-//         setState(() {
-//           modeIndex += 1;
-//           if (modeIndex > 2) modeIndex = 0;
-//           context.read<SwitchCubit>().switchMode(ManagementMode.values[modeIndex]);
-//         });
-//       },
-//       child: const Text("Change Mode"),
-//     ),
-//   ],
-// )
