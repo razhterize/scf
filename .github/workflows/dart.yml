@@ -2,21 +2,21 @@ name: 'Deploy Flutter web app to github pages'
 
 on:
   push:
-    branches: ['master']
+    branches: ['main']
 
 jobs:
   build:
     runs-on: ubuntu-latest
     environment: web-deployment
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
           channel: 'stable'
       
       - run: echo ${{env}}
         shell: bash
-      - run: flutter build web --release --base-href "/scf/" --dart-define=DATABASE_URL="https://scf-management.pockethost.io"
+      - run: flutter build web --release --base-href "/scf/"
         shell: bash
         working-directory: .
       - run: git config user.name github-actions
