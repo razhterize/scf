@@ -26,7 +26,7 @@ class StatusSelections extends StatelessWidget {
                   color: member.mazeStatus == status || member.siegeStatus == status ? Colors.black : Colors.white,
                 ),
               ),
-              selected: member.siegeStatus == status,
+              selected: member.siegeStatus == status || member.mazeStatus == status,
               onSelected: (value) {
                 if (SiegeStatus.values.contains(status)) {
                   member.siegeStatus = status;
