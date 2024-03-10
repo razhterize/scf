@@ -22,7 +22,6 @@ class _MainScreenState extends State<MainScreen> {
         if (!loginState.authStore.isValid) {
           return Center(child: LoadingAnimationWidget.threeRotatingDots(color: Colors.white, size: 50));
         }
-
         return BlocProvider(
           create: (context) => SwitchCubit(),
           child: const DetailWidget(),
