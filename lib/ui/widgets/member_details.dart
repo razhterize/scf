@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:scf_new/ui/widgets/member_edit_widgets.dart';
 import 'package:scf_new/ui/widgets/status_selection.dart';
 
 import '../../blocs/switch_cubit.dart';
@@ -30,9 +31,9 @@ class _MemberDetailState extends State<MemberDetail> {
         value: selected,
       ),
       title: Text(widget.member.name),
-      selectedTileColor: Color.fromARGB(121, 0, 94, 255),
+      selectedTileColor: const Color.fromARGB(121, 0, 94, 255),
       onTap: context.read<SwitchCubit>().state.mode == ManagementMode.members
-          ? () => openEditWindow()
+          ? () => openEditWindow(widget.member)
           : () => setState(() {
                 selected = !selected;
                 widget.onSelect(selected);
@@ -53,15 +54,11 @@ class _MemberDetailState extends State<MemberDetail> {
     );
   }
 
-  void openEditWindow() {
+  void openEditWindow(Member member) {
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return Wrap(
-          children: [
-            Text("Dialog Window"),
-          ],
-        );
+        return EditMemberWidget(member: member);
       },
     );
   }
