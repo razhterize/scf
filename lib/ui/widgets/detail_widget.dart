@@ -24,9 +24,17 @@ class _DetailWidgetState extends State<DetailWidget> {
   Widget build(BuildContext context) {
     if (!guildNames.keys.toList().contains(context.read<SwitchCubit>().state.name)) {
       if (context.read<LoginBloc>().state.authStore.model.data['managed_guilds'].isEmpty) {
-        return const Center(
-          child: Text(
-              "Seems like you do not have permission to manage any guilds.\nPlease contact those responsible for managing permission"),
+        return Center(
+          child: Column(
+            children: [
+              const Text(
+                  "Seems like you do not have permission to manage any guilds.\nPlease contact those responsible for managing permission"),
+              MaterialButton(
+                child: const Text("Logout"),
+                onPressed: () => context.read<LoginBloc>().add(Logout()),
+              )
+            ],
+          ),
         );
       }
       context.read<SwitchCubit>().switchGuild(context.read<LoginBloc>().state.authStore.model.data['managed_guilds'].first);
