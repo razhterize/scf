@@ -3,6 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scf_new/enums.dart';
 
+import '../../blocs/guild_bloc.dart';
 import '../../constants.dart';
 import '../../blocs/login_bloc.dart';
 import '../../blocs/switch_cubit.dart';
@@ -73,7 +74,10 @@ class _DetailWidgetState extends State<DetailWidget> {
                 padding: const EdgeInsets.all(8.0),
                 child: Scaffold(
                   appBar: _appBar(),
-                  body: const Views(),
+                  body: BlocProvider(
+                    create: (context) => GuildBloc(context.read<LoginBloc>().pb, context.read<SwitchCubit>().state.name),
+                    child: const Views(),
+                  ),
                 ),
               ),
             ),

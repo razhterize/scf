@@ -27,51 +27,66 @@ class _ViewsState extends State<Views> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => GuildBloc(
-        context.read<LoginBloc>().pb,
-        context.read<SwitchCubit>().state.name,
-      ),
-      child: BlocListener<SwitchCubit, SwitchState>(
-        listener: (context, state) => context.read<GuildBloc>().add(GuildInit(state.name)),
-        child: Stack(
-          children: [
-            Center(
-              child: BlocBuilder<GuildBloc, GuildState>(
-                builder: (context, state) => state.busy ? _loading() : Container(),
-              ),
+    return BlocListener<SwitchCubit, SwitchState>(
+      listener: (context, state) => context.read<GuildBloc>().add(GuildInit(state.name)),
+      child: Stack(
+        children: [
+          Center(
+            child: BlocBuilder<GuildBloc, GuildState>(
+              builder: (context, state) => state.busy ? _loading() : Container(),
             ),
-            BlocBuilder<GuildBloc, GuildState>(
-              builder: (context, state) {
-                if (searchController.text.isEmpty && selectedFilter == null) {
-                  filteredMembers = state.guild.members;
-                } 
-                return Column(
-                  children: [
-                    state.busy && !state.ready ? Container() : topBar(),
-                    // topBar(),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: filteredMembers.length,
-                        itemBuilder: (context, index) => MemberDetail(
-                          member: filteredMembers[index],
-                          onSelect: (selected) {
-                            logger.fine("Selected ${filteredMembers[index].name}: $selected");
-                            selectedMembers.contains(filteredMembers[index])
-                                ? selectedMembers.add(filteredMembers[index])
-                                : selectedMembers.remove(filteredMembers[index]);
-                          },
-                        ),
+          ),
+          BlocBuilder<GuildBloc, GuildState>(
+            builder: (context, state) {
+              if (searchController.text.isEmpty && selectedFilter == null) {
+                filteredMembers = state.guild.members;
+              }
+              return Column(
+                children: [
+                  state.busy && !state.ready ? Container() : topBar(),
+                  Expanded(
+                    child: ListView.builder(
+                      itemCount: filteredMembers.length,
+                      itemBuilder: (context, index) => MemberDetail(
+                        member: filteredMembers[index],
+                        onSelect: (selected) {
+                          logger.fine("Selected ${filteredMembers[index].name}: $selected");
+                          selectedMembers.contains(filteredMembers[index])
+                              ? selectedMembers.add(filteredMembers[index])
+                              : selectedMembers.remove(filteredMembers[index]);
+                        },
                       ),
                     ),
-                  ],
-                );
-              },
-            ),
-          ],
-        ),
+                  ),
+                ],
+              );
+            },
+          ),
+        ],
       ),
     );
+  }
+
+  void filter() {
+    if (searchController.text.isNotEmpty) {
+      setState(() => filteredMembers = context
+          .read<GuildBloc>()
+          .state
+          .guild
+          .members
+          .where((member) =>
+              member.name.contains(searchController.text) || member.pgrId.toString().contains(searchController.text))
+          .toList());
+    }
+    if (selectedFilter != null) {
+      setState(() => filteredMembers = context
+          .read<GuildBloc>()
+          .state
+          .guild
+          .members
+          .where((member) => member.siegeStatus == selectedFilter || member.mazeStatus == selectedFilter)
+          .toList());
+    }
   }
 
   Widget topBar() {
@@ -84,8 +99,14 @@ class _ViewsState extends State<Views> {
       ),
       margin: const EdgeInsets.fromLTRB(4, 0, 4, 0),
       child: Filters(
-        stringFilter: (value) => logger.fine("Views: String filter $value"),
-        statusFilter: (value) => logger.fine("Views: Maze filter $value"),
+        stringFilter: (value) => setState(() {
+          searchController.text = value;
+          filter();
+        }),
+        statusFilter: (value) => setState(() {
+          selectedFilter = value;
+          filter();
+        }),
       ),
     );
   }
