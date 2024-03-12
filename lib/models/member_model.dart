@@ -34,15 +34,3 @@ class Member {
         'discord_username': discordUsername,
       };
 }
-
-// class MemberSiege {
-//   double currentScore;
-//   List<double> pastScores;
-//   SiegeStatus status;
-
-//   MemberSiege({this.status = SiegeStatus.zero, this.pastScores = const [], this.currentScore = 0});
-
-//   MemberSiege fromMap(Map<String, dynamic> map) => MemberSiege(status: map['status'], pastScores: map['past_scores'], currentScore: map['current_score']);
-
-//   Map<String, dynamic> toMap() => {'status': status.name, 'past_scores': pastScores, 'current_score': currentScore};
-// }
