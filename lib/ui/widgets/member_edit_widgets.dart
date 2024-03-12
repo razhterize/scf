@@ -83,14 +83,7 @@ class _EditMemberWidgetState extends State<EditMemberWidget> {
                   ),
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () {
-                        member.name = controllers[0].text;
-                        member.pgrId = int.parse(controllers[1].text);
-                        member.discordUsername = controllers[2].text;
-                        member.discordId = controllers[3].text;
-                        context.read<GuildBloc>().add(UpdateMember(member));
-                        Navigator.of(context).pop();
-                      },
+                      onPressed: () => validate(),
                       child: const Text("Submit"),
                     ),
                   ),
@@ -106,7 +99,13 @@ class _EditMemberWidgetState extends State<EditMemberWidget> {
   void validate() {
     logger.fine("Validate called");
     if (formKey.currentState!.validate()) {
-      logger.fine("Form valid");
+      logger.fine("Valid Form");
+      member.name = controllers[0].text;
+      member.pgrId = int.parse(controllers[1].text);
+      member.discordUsername = controllers[2].text;
+      member.discordId = controllers[3].text;
+      context.read<GuildBloc>().add(UpdateMember(member));
+      Navigator.of(context).pop();
       return;
     }
     logger.fine("Form invalid");
