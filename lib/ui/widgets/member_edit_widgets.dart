@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
 
+import '../../blocs/guild_bloc.dart';
 import '../../models/member_model.dart';
 
 class EditMemberWidget extends StatefulWidget {
@@ -68,6 +70,32 @@ class _EditMemberWidgetState extends State<EditMemberWidget> {
               controller: controllers[3],
               label: "Discord ID",
               onSubmit: (value) => validate(),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 12, 4, 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.pop(context),
+                      child: const Text("Cancel"),
+                    ),
+                  ),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        member.name = controllers[0].text;
+                        member.pgrId = int.parse(controllers[1].text);
+                        member.discordUsername = controllers[2].text;
+                        member.discordId = controllers[3].text;
+                        context.read<GuildBloc>().add(UpdateMember(member));
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text("Submit"),
+                    ),
+                  ),
+                ],
+              ),
             ),
           ],
         ),
