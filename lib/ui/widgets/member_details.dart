@@ -43,7 +43,7 @@ class _MemberDetailState extends State<MemberDetail> {
       trailing: BlocBuilder<SwitchCubit, SwitchState>(
         builder: (context, state) {
           if (state.mode == ManagementMode.members) {
-            return SizedBox();
+            return const SizedBox();
           }
           return context.read<SwitchCubit>().state.mode == ManagementMode.siege
               ? StatusSelections(member: widget.member, statuses: SiegeStatus.values)
