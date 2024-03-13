@@ -77,6 +77,12 @@ class _EditMemberWidgetState extends State<EditMemberWidget> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
+                      onPressed: () => context.read<GuildBloc>().add(DeleteMember(member)),
+                      child: const Text("Delete Member"),
+                    ),
+                  ),
+                  Expanded(
+                    child: ElevatedButton(
                       onPressed: () => Navigator.pop(context),
                       child: const Text("Cancel"),
                     ),
@@ -109,6 +115,11 @@ class _EditMemberWidgetState extends State<EditMemberWidget> {
       return;
     }
     logger.fine("Form invalid");
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
   }
 }
 
