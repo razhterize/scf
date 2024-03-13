@@ -75,23 +75,16 @@ class _ViewsState extends State<Views> {
 
   void filter() {
     if (searchController.text.isNotEmpty) {
-      setState(() => filteredMembers = context
-          .read<GuildBloc>()
-          .state
-          .guild
-          .members
-          .where((member) =>
-              member.name.contains(searchController.text) || member.pgrId.toString().contains(searchController.text))
-          .toList());
+      setState(() {
+        var members = context.read<GuildBloc>().state.guild.members;
+        filteredMembers = members.where((member) => containStringFilter(member)).toList();
+      });
     }
     if (selectedFilter != null) {
-      setState(() => filteredMembers = context
-          .read<GuildBloc>()
-          .state
-          .guild
-          .members
-          .where((member) => member.siegeStatus == selectedFilter || member.mazeStatus == selectedFilter)
-          .toList());
+      setState(() {
+        var members = context.read<GuildBloc>().state.guild.members;
+        filteredMembers = members.where((member) => hasStatusFilter(member)).toList();
+      });
     }
   }
 
@@ -111,6 +104,7 @@ class _ViewsState extends State<Views> {
         }),
         statusFilter: (value) => setState(() {
           selectedFilter = value;
+          logger.fine("Status Filter is $value");
           filter();
         }),
       ),
@@ -122,6 +116,10 @@ class _ViewsState extends State<Views> {
   Widget pStatusSelection() {
     return Container();
   }
+
+  bool containStringFilter(Member member) =>
+      member.name.contains(searchController.text) || member.pgrId.toString().contains(searchController.text);
+  bool hasStatusFilter(Member member) => member.siegeStatus == selectedFilter || member.mazeStatus == selectedFilter;
 
   String get mentionText => selectedMembers.map((e) => e.discordId != null ? "<@${e.discordId ?? ''}>" : "").join('\n');
 }
