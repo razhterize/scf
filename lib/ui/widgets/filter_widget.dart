@@ -56,7 +56,12 @@ class _FiltersState extends State<Filters> {
   Widget statusButton(dynamic status) {
     return MaterialButton(
       color: statusColors[status],
-      onPressed: () => widget.statusFilter(status),
+      onPressed: () {
+        setState(() {
+          selectedStatus == status ? selectedStatus = null : selectedStatus = status;
+          widget.statusFilter(selectedStatus);
+        });
+      },
       child: Row(
         children: [
           selectedStatus == status ? const Icon(Icons.check) : Container(),
