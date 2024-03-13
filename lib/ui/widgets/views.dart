@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:scf_new/enums.dart';
-import 'package:scf_new/ui/widgets/filter_widget.dart';
-import 'package:scf_new/ui/widgets/floating_buttons.dart';
-import 'package:scf_new/ui/widgets/member_details.dart';
 
+import '../../ui/widgets/filter_widget.dart';
+import '../../ui/widgets/floating_buttons.dart';
+import '../../ui/widgets/member_details.dart';
 import '../../blocs/switch_cubit.dart';
 import '../../blocs/guild_bloc.dart';
 import '../../models/member_model.dart';
