@@ -26,10 +26,8 @@ class FloatingButton extends StatelessWidget {
           builder: (context, state) {
             return IconButton.filled(
               onPressed: () {},
-              tooltip: state.mode == ManagementMode.members ? 'Add Member' : 'Select All',
-              icon: state.mode == ManagementMode.members
-                  ? const Icon(Icons.add_photo_alternate)
-                  : const Icon(Icons.select_all),
+              tooltip: state.mode == ManagementMode.members ? 'Vent Member' : 'Select All',
+              icon: state.mode == ManagementMode.members ? const Icon(Icons.person_remove) : const Icon(Icons.select_all),
             );
           },
         ),
@@ -37,8 +35,8 @@ class FloatingButton extends StatelessWidget {
           builder: (context, state) {
             return IconButton.filled(
               onPressed: () {},
-              tooltip: state.mode == ManagementMode.members ? 'Vent member' : 'Deselect All',
-              icon: state.mode == ManagementMode.members ? const Icon(Icons.remove) : const Icon(Icons.deselect),
+              tooltip: state.mode == ManagementMode.members ? 'Add Member' : 'Deselect All',
+              icon: state.mode == ManagementMode.members ? const Icon(Icons.person_add) : const Icon(Icons.deselect),
             );
           },
         ),
@@ -48,6 +46,15 @@ class FloatingButton extends StatelessWidget {
                   onPressed: () {},
                   icon: const Icon(Icons.library_add_check),
                   tooltip: "Select Range",
+                )
+              : Container(),
+        ),
+        BlocBuilder<SwitchCubit, SwitchState>(
+          builder: (context, state) => state.mode != ManagementMode.members
+              ? IconButton.filled(
+                  onPressed: () {},
+                  icon: const Icon(Icons.alternate_email),
+                  tooltip: "Copy Mention Text",
                 )
               : Container(),
         )
