@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:scf_new/enums.dart';
 import 'package:scf_new/ui/widgets/filter_widget.dart';
 import 'package:scf_new/ui/widgets/member_details.dart';
 
-import '../../blocs/login_bloc.dart';
 import '../../blocs/switch_cubit.dart';
 import '../../blocs/guild_bloc.dart';
 import '../../models/member_model.dart';
@@ -41,24 +42,28 @@ class _ViewsState extends State<Views> {
               if (searchController.text.isEmpty && selectedFilter == null) {
                 filteredMembers = state.guild.members;
               }
-              return Column(
-                children: [
-                  state.busy && !state.ready ? Container() : topBar(),
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: filteredMembers.length,
-                      itemBuilder: (context, index) => MemberDetail(
-                        member: filteredMembers[index],
-                        onSelect: (selected) {
-                          logger.fine("Selected ${filteredMembers[index].name}: $selected");
-                          selectedMembers.contains(filteredMembers[index])
-                              ? selectedMembers.add(filteredMembers[index])
-                              : selectedMembers.remove(filteredMembers[index]);
-                        },
+              return Scaffold(
+                floatingActionButtonLocation: ExpandableFab.location,
+                floatingActionButton: _floatingButtons(),
+                body: Column(
+                  children: [
+                    state.busy && !state.ready ? Container() : topBar(),
+                    Expanded(
+                      child: ListView.builder(
+                        itemCount: filteredMembers.length,
+                        itemBuilder: (context, index) => MemberDetail(
+                          member: filteredMembers[index],
+                          onSelect: (selected) {
+                            logger.fine("Selected ${filteredMembers[index].name}: $selected");
+                            selectedMembers.contains(filteredMembers[index])
+                                ? selectedMembers.add(filteredMembers[index])
+                                : selectedMembers.remove(filteredMembers[index]);
+                          },
+                        ),
                       ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               );
             },
           ),
@@ -111,9 +116,59 @@ class _ViewsState extends State<Views> {
     );
   }
 
+  // Bloc Builder below. select all/none/in-between for maze/siege. delete, and add for members
+
+  Widget _floatingButtons() {
+    return ExpandableFab(
+      openButtonBuilder: DefaultFloatingActionButtonBuilder(
+        child: const Icon(Icons.add),
+        fabSize: ExpandableFabSize.regular,
+        shape: const CircleBorder(),
+      ),
+      closeButtonBuilder: DefaultFloatingActionButtonBuilder(
+        child: const Icon(Icons.remove),
+        fabSize: ExpandableFabSize.regular,
+        shape: const CircleBorder(),
+      ),
+      children: [
+        BlocBuilder<SwitchCubit, SwitchState>(
+          builder: (context, state) {
+            return IconButton.filled(
+              onPressed: () {},
+              tooltip: state.mode == ManagementMode.members ? 'Add Member' : 'Select All',
+              icon: state.mode == ManagementMode.members
+                  ? const Icon(Icons.add_photo_alternate)
+                  : const Icon(Icons.select_all),
+            );
+          },
+        ),
+        BlocBuilder<SwitchCubit, SwitchState>(
+          builder: (context, state) {
+            return IconButton.filled(
+              onPressed: () {},
+              tooltip: state.mode == ManagementMode.members ? 'Vent member' : 'Deselect All',
+              icon: state.mode == ManagementMode.members ? const Icon(Icons.remove) : const Icon(Icons.deselect),
+            );
+          },
+        ),
+        BlocBuilder<SwitchCubit, SwitchState>(
+          builder: (context, state) => state.mode != ManagementMode.members
+              ? IconButton.filled(
+                  onPressed: () {},
+                  icon: const Icon(Icons.library_add_check),
+                  tooltip: "Select Range",
+                )
+              : Container(),
+        )
+      ],
+    );
+  }
+
   Widget _loading() => LoadingAnimationWidget.hexagonDots(color: Colors.cyanAccent, size: 40);
 
   Widget pStatusSelection() {
     return Container();
   }
+
+  String get mentionText => selectedMembers.map((e) => e.discordId != null ? "<@${e.discordId ?? ''}>" : "").join('\n');
 }
