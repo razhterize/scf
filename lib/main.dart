@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:logging/logging.dart';
-// import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb;
 
 import 'configs.dart';
 import 'blocs/login_bloc.dart';
@@ -20,8 +20,7 @@ void main(List<String> args) async {
 
   WidgetsFlutterBinding.ensureInitialized();
   HydratedBloc.storage = await HydratedStorage.build(
-    storageDirectory: await getApplicationCacheDirectory()
-    // storageDirectory: kIsWeb ? HydratedStorage.webStorageDirectory : await getApplicationDocumentsDirectory(),
+    storageDirectory: kIsWeb ? HydratedStorage.webStorageDirectory : await getApplicationDocumentsDirectory(),
   );
   runApp(const App());
 }
@@ -37,7 +36,7 @@ class _AppState extends State<App> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // title: kIsWeb ? "SCF Management" : "",
+      title: kIsWeb ? "SCF Management" : "",
       theme: ThemeData.dark(),
       home: Scaffold(
         body: BlocProvider(

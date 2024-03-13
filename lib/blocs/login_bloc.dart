@@ -1,8 +1,8 @@
 import 'dart:convert';
 
 import 'package:equatable/equatable.dart';
-// import 'package:fetch_client/fetch_client.dart';
-// import 'package:flutter/foundation.dart';
+import 'package:fetch_client/fetch_client.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:pocketbase/pocketbase.dart';
 import 'package:scf_new/configs.dart';
@@ -24,7 +24,7 @@ class LoginBloc extends HydratedBloc<LoginEvent, LoginState> {
     pb = PocketBase(
       databaseUrl,
       authStore: state.authStore,
-      // httpClientFactory: kIsWeb ? () => FetchClient(mode: RequestMode.cors) : null
+      httpClientFactory: kIsWeb ? () => FetchClient(mode: RequestMode.cors) : null
     );
     on<DiscordLogin>(loginWithDiscord);
     on<AuthRefresh>(authRefresh);
