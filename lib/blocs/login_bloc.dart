@@ -35,7 +35,7 @@ class LoginBloc extends HydratedBloc<LoginEvent, LoginState> {
 
   Future<void> authRefresh(AuthRefresh event, Emitter<LoginState> emit) async {
     await pb.collection("discord_auth").authRefresh();
-    state.copy(loginStatus: LoginStatus.success);
+    state.copy(loginStatus: LoginStatus.success, authStore: pb.authStore);
   }
 
   void logout(Logout event, Emitter<LoginState> emit) {
