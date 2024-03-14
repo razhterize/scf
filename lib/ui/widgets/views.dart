@@ -47,6 +47,11 @@ class _ViewsState extends State<Views> {
               return Scaffold(
                 floatingActionButtonLocation: ExpandableFab.location,
                 floatingActionButton: FloatingButton(
+                  onDeleteTap: () {
+                    for (var member in selectedMembers) {
+                      context.read<GuildBloc>().add(DeleteMember(member));
+                    }
+                  },
                   onSelectAllTap: () => setState(() => selectedMembers = filteredMembers),
                   onSelectNoneTap: () => setState(() => selectedMembers = []),
                   onSelectRangeTap: () => setState(() => selectRange()),
@@ -130,7 +135,7 @@ class _ViewsState extends State<Views> {
   }
 
   bool containStringFilter(Member member) =>
-      member.name.contains(searchController.text) || member.pgrId.toString().contains(searchController.text);
+      member.name.toLowerCase().contains(searchController.text.toLowerCase()) || member.pgrId.toString().contains(searchController.text);
   bool hasStatusFilter(Member member) => member.siegeStatus == selectedFilter || member.mazeStatus == selectedFilter;
 
   String get mentionText => selectedMembers.map((e) => e.discordId != "" ? "<@${e.discordId}>" : null).join('\n');
