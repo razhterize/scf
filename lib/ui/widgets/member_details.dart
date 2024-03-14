@@ -8,38 +8,39 @@ import '../../blocs/switch_cubit.dart';
 import '../../enums.dart';
 import '../../models/member_model.dart';
 
+import 'package:logging/logging.dart';
+
+final logger = Logger("MemberDetail");
+
 class MemberDetail extends StatefulWidget {
-  const MemberDetail({super.key, required this.member, required this.onSelect});
+  const MemberDetail({super.key, required this.member, required this.selectedMembers});
   final Member member;
 
-  final Function(bool selected) onSelect;
+  // final Function(bool selected) onSelect;
+  final List<Member> selectedMembers;
 
   @override
   State<MemberDetail> createState() => _MemberDetailState();
 }
 
 class _MemberDetailState extends State<MemberDetail> {
-  bool selected = false;
+  // bool selected = false;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       leading: Checkbox(
-        onChanged: (value) {
-          setState(() => selected = value as bool);
-          widget.onSelect(selected);
-        },
-        value: selected,
+        onChanged: (value) => setState(
+            () => isSelected ? widget.selectedMembers.remove(widget.member) : widget.selectedMembers.add(widget.member)),
+        value: isSelected,
       ),
       title: Text(widget.member.name),
       selectedTileColor: const Color.fromARGB(121, 0, 94, 255),
       onTap: context.read<SwitchCubit>().state.mode == ManagementMode.members
           ? () => openEditWindow(widget.member)
-          : () => setState(() {
-                selected = !selected;
-                widget.onSelect(selected);
-              }),
-      selected: selected,
+          : () => setState(
+              () => isSelected ? widget.selectedMembers.remove(widget.member) : widget.selectedMembers.add(widget.member)),
+      selected: isSelected,
       subtitle: Text("${widget.member.pgrId}"),
       trailing: BlocBuilder<SwitchCubit, SwitchState>(
         builder: (context, state) {
@@ -69,4 +70,6 @@ class _MemberDetailState extends State<MemberDetail> {
       },
     );
   }
+
+  bool get isSelected => widget.selectedMembers.contains(widget.member);
 }
