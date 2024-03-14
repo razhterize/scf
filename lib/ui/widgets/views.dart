@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
-import 'package:scf_new/enums.dart';
-import 'package:scf_new/ui/widgets/filter_widget.dart';
-import 'package:scf_new/ui/widgets/floating_buttons.dart';
-import 'package:scf_new/ui/widgets/member_details.dart';
 
+import '../../enums.dart';
+import '../../ui/widgets/filter_widget.dart';
+import '../../ui/widgets/floating_buttons.dart';
+import '../../ui/widgets/member_details.dart';
 import '../../blocs/switch_cubit.dart';
 import '../../blocs/guild_bloc.dart';
 import '../../models/member_model.dart';
@@ -45,7 +46,17 @@ class _ViewsState extends State<Views> {
               }
               return Scaffold(
                 floatingActionButtonLocation: ExpandableFab.location,
-                floatingActionButton: const FloatingButton(),
+                floatingActionButton: FloatingButton(
+                  onSelectAllTap: () => setState(() => selectedMembers = filteredMembers),
+                  onSelectNoneTap: () => setState(() => selectedMembers = []),
+                  onSelectRangeTap: () => setState(() => selectRange()),
+                  onMentionTap: () {
+                    Clipboard.setData(ClipboardData(text: mentionText));
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text("Members mention has been copied to clipboard")),
+                    );
+                  },
+                ),
                 body: Column(
                   children: [
                     state.busy && !state.ready ? Container() : topBar(),
@@ -54,12 +65,7 @@ class _ViewsState extends State<Views> {
                         itemCount: filteredMembers.length,
                         itemBuilder: (context, index) => MemberDetail(
                           member: filteredMembers[index],
-                          onSelect: (selected) {
-                            logger.fine("Selected ${filteredMembers[index].name}: $selected");
-                            selectedMembers.contains(filteredMembers[index])
-                                ? selectedMembers.add(filteredMembers[index])
-                                : selectedMembers.remove(filteredMembers[index]);
-                          },
+                          selectedMembers: selectedMembers,
                         ),
                       ),
                     ),
@@ -71,6 +77,12 @@ class _ViewsState extends State<Views> {
         ],
       ),
     );
+  }
+
+  void selectRange() {
+    int _first = filteredMembers.indexWhere((element) => element == selectedMembers.first);
+    int _last = filteredMembers.indexWhere((element) => element == selectedMembers.last);
+    selectedMembers = filteredMembers.getRange(_first, _last + 1).toList();
   }
 
   void filter() {
@@ -121,5 +133,5 @@ class _ViewsState extends State<Views> {
       member.name.contains(searchController.text) || member.pgrId.toString().contains(searchController.text);
   bool hasStatusFilter(Member member) => member.siegeStatus == selectedFilter || member.mazeStatus == selectedFilter;
 
-  String get mentionText => selectedMembers.map((e) => e.discordId != null ? "<@${e.discordId ?? ''}>" : "").join('\n');
+  String get mentionText => selectedMembers.map((e) => e.discordId != "" ? "<@${e.discordId}>" : null).join('\n');
 }
