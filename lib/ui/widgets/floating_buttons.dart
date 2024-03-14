@@ -6,8 +6,12 @@ import '../../blocs/switch_cubit.dart';
 import '../../enums.dart';
 
 class FloatingButton extends StatelessWidget {
-  const FloatingButton({super.key});
+  const FloatingButton({super.key, this.onSelectAllTap, this.onSelectNoneTap, this.onSelectRangeTap, this.onMentionTap});
 
+  final void Function()? onSelectAllTap;
+  final void Function()? onSelectNoneTap;
+  final void Function()? onSelectRangeTap;
+  final void Function()? onMentionTap;
   @override
   Widget build(BuildContext context) {
     return ExpandableFab(
@@ -25,7 +29,7 @@ class FloatingButton extends StatelessWidget {
         BlocBuilder<SwitchCubit, SwitchState>(
           builder: (context, state) {
             return IconButton.filled(
-              onPressed: () {},
+              onPressed: () => state.mode == ManagementMode.members ? () {} : onSelectAllTap!(),
               tooltip: state.mode == ManagementMode.members ? 'Vent Member' : 'Select All',
               icon: state.mode == ManagementMode.members ? const Icon(Icons.person_remove) : const Icon(Icons.select_all),
             );
@@ -34,7 +38,7 @@ class FloatingButton extends StatelessWidget {
         BlocBuilder<SwitchCubit, SwitchState>(
           builder: (context, state) {
             return IconButton.filled(
-              onPressed: () {},
+              onPressed: () => state.mode == ManagementMode.members ? () {} : onSelectNoneTap!(),
               tooltip: state.mode == ManagementMode.members ? 'Add Member' : 'Deselect All',
               icon: state.mode == ManagementMode.members ? const Icon(Icons.person_add) : const Icon(Icons.deselect),
             );
@@ -43,7 +47,7 @@ class FloatingButton extends StatelessWidget {
         BlocBuilder<SwitchCubit, SwitchState>(
           builder: (context, state) => state.mode != ManagementMode.members
               ? IconButton.filled(
-                  onPressed: () {},
+                  onPressed: () => state.mode == ManagementMode.members ? () {} : onSelectRangeTap!(),
                   icon: const Icon(Icons.library_add_check),
                   tooltip: "Select Range",
                 )
@@ -52,7 +56,7 @@ class FloatingButton extends StatelessWidget {
         BlocBuilder<SwitchCubit, SwitchState>(
           builder: (context, state) => state.mode != ManagementMode.members
               ? IconButton.filled(
-                  onPressed: () {},
+                  onPressed: () => onMentionTap == null ? null : onMentionTap!(),
                   icon: const Icon(Icons.alternate_email),
                   tooltip: "Copy Mention Text",
                 )
