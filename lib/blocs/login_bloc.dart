@@ -56,7 +56,13 @@ class LoginBloc extends HydratedBloc<LoginEvent, LoginState> {
           await launchUrl(url);
         },
         scopes: ['identify', 'guilds'],
-      ).then((value) {
+      ).then((value) async {
+        if (value.record?.data['admin']) {
+          var guilds = await pb.collection('guilds').getFullList();
+          await pb.collection('discord_auth').update(value.record!.id, body: {
+            'managed_guilds': [for (var guild in guilds) guild.data['name']]
+          });
+        }
         if (pb.authStore.isValid) {
           add(AuthRefresh());
         }
