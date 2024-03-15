@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:scf_new/blocs/selection_cubit.dart';
 
 import '../../blocs/guild_bloc.dart';
 import '../../ui/widgets/member_edit_widgets.dart';
@@ -13,46 +14,44 @@ import 'package:logging/logging.dart';
 final logger = Logger("MemberDetail");
 
 class MemberDetail extends StatefulWidget {
-  const MemberDetail({super.key, required this.member, required this.selectedMembers});
+  const MemberDetail({super.key, required this.member});
   final Member member;
-
-  // final Function(bool selected) onSelect;
-  final List<Member> selectedMembers;
 
   @override
   State<MemberDetail> createState() => _MemberDetailState();
 }
 
 class _MemberDetailState extends State<MemberDetail> {
-  // bool selected = false;
-
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Checkbox(
-        onChanged: (value) => setState(
-            () => isSelected ? widget.selectedMembers.remove(widget.member) : widget.selectedMembers.add(widget.member)),
-        value: isSelected,
-      ),
-      title: Text(widget.member.name),
-      selectedTileColor: const Color.fromARGB(121, 0, 94, 255),
-      onTap: context.read<SwitchCubit>().state.mode == ManagementMode.members
-          ? () => openEditWindow(widget.member)
-          : () => setState(
-              () => isSelected ? widget.selectedMembers.remove(widget.member) : widget.selectedMembers.add(widget.member)),
-      selected: isSelected,
-      subtitle: Text("${widget.member.pgrId}"),
-      trailing: BlocBuilder<SwitchCubit, SwitchState>(
-        builder: (context, state) {
-          if (state.mode == ManagementMode.members) {
-            return const SizedBox();
-          }
-          return context.read<SwitchCubit>().state.mode == ManagementMode.siege
-              ? StatusSelections(member: widget.member, statuses: SiegeStatus.values)
-              : StatusSelections(member: widget.member, statuses: MazeStatus.values);
-        },
-      ),
-      // trailing:
+    var selectionCubit = context.read<SelectionCubit>();
+    return BlocBuilder<SelectionCubit, List>(
+      builder: (context, state) {
+        return ListTile(
+          leading: Checkbox(
+            onChanged: (value) => selectionCubit.addToList(widget.member),
+            value: selectionCubit.isSelected(widget.member),
+          ),
+          title: Text(widget.member.name),
+          selectedTileColor: const Color.fromARGB(121, 0, 94, 255),
+          onTap: context.read<SwitchCubit>().state.mode == ManagementMode.members
+              ? () => openEditWindow(widget.member)
+              : () => selectionCubit.changeSelect(widget.member),
+          selected: selectionCubit.isSelected(widget.member),
+          subtitle: Text("${widget.member.pgrId}"),
+          trailing: BlocBuilder<SwitchCubit, SwitchState>(
+            builder: (context, state) {
+              if (state.mode == ManagementMode.members) {
+                return const SizedBox();
+              }
+              return context.read<SwitchCubit>().state.mode == ManagementMode.siege
+                  ? StatusSelections(member: widget.member, statuses: SiegeStatus.values)
+                  : StatusSelections(member: widget.member, statuses: MazeStatus.values);
+            },
+          ),
+          // trailing:
+        );
+      },
     );
   }
 
@@ -70,6 +69,4 @@ class _MemberDetailState extends State<MemberDetail> {
       },
     );
   }
-
-  bool get isSelected => widget.selectedMembers.contains(widget.member);
 }

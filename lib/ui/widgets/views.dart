@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
-import '../../enums.dart';
+import '../../blocs/filter_cubit.dart';
+import '../../blocs/selection_cubit.dart';
 import '../../ui/widgets/filter_widget.dart';
-import '../../ui/widgets/floating_buttons.dart';
 import '../../ui/widgets/member_details.dart';
-import '../../blocs/switch_cubit.dart';
 import '../../blocs/guild_bloc.dart';
 import '../../models/member_model.dart';
 
@@ -23,85 +20,39 @@ class Views extends StatefulWidget {
 
 class _ViewsState extends State<Views> {
   final logger = Logger("views");
-  dynamic selectedFilter;
-  List<Member> selectedMembers = [];
-  List<Member> filteredMembers = [];
-  final TextEditingController searchController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<SwitchCubit, SwitchState>(
-      listener: (context, state) => context.read<GuildBloc>().add(GuildInit(state.name)),
-      child: Scaffold(
-        floatingActionButtonLocation: ExpandableFab.location,
-        floatingActionButton: FloatingButton(
-          onDeleteTap: () {
-            for (var member in selectedMembers) {
-              context.read<GuildBloc>().add(DeleteMember(member));
-            }
-          },
-          onSelectAllTap: () => setState(() => selectedMembers = filteredMembers),
-          onSelectNoneTap: () => setState(() => selectedMembers = []),
-          onSelectRangeTap: () => setState(() => selectRange()),
-          onMentionTap: () {
-            Clipboard.setData(ClipboardData(text: mentionText));
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text("Members mention has been copied to clipboard")),
+    return Stack(
+      alignment: Alignment.center,
+      children: [
+        BlocBuilder<GuildBloc, GuildState>(
+          builder: (context, state) => state.busy ? _loading() : Container(),
+        ),
+        BlocBuilder<GuildBloc, GuildState>(
+          builder: (context, state) {
+            if (state.busy) return Container();
+            return Column(
+              children: [
+                topBar(),
+                Expanded(
+                  child: BlocBuilder<FilterCubit, List<Member>>(
+                    builder: (context, state) {
+                      return ListView.builder(
+                        itemCount: state.length,
+                        itemBuilder: (context, index) {
+                          return MemberDetail(member: state[index]);
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ],
             );
           },
         ),
-        body: Stack(
-          alignment: Alignment.center,
-          children: [
-            BlocBuilder<GuildBloc, GuildState>(
-              builder: (context, state) => state.busy ? _loading() : Container(),
-            ),
-            BlocBuilder<GuildBloc, GuildState>(
-              builder: (context, state) {
-                if (searchController.text.isEmpty && selectedFilter == null) {
-                  filteredMembers = state.guild.members;
-                }
-                return Column(
-                  children: [
-                    state.busy && !state.ready ? Container() : topBar(),
-                    Expanded(
-                      child: ListView.builder(
-                        itemCount: filteredMembers.length,
-                        itemBuilder: (context, index) => MemberDetail(
-                          member: filteredMembers[index],
-                          selectedMembers: selectedMembers,
-                        ),
-                      ),
-                    ),
-                  ],
-                );
-              },
-            ),
-          ],
-        ),
-      ),
+      ],
     );
-  }
-
-  void selectRange() {
-    int _first = filteredMembers.indexWhere((element) => element == selectedMembers.first);
-    int _last = filteredMembers.indexWhere((element) => element == selectedMembers.last);
-    selectedMembers = filteredMembers.getRange(_first, _last + 1).toList();
-  }
-
-  void filter() {
-    if (searchController.text.isNotEmpty) {
-      setState(() {
-        var members = context.read<GuildBloc>().state.guild.members;
-        filteredMembers = members.where((member) => containStringFilter(member)).toList();
-      });
-    }
-    if (selectedFilter != null) {
-      setState(() {
-        var members = context.read<GuildBloc>().state.guild.members;
-        filteredMembers = members.where((member) => hasStatusFilter(member)).toList();
-      });
-    }
   }
 
   Widget topBar() {
@@ -113,17 +64,7 @@ class _ViewsState extends State<Views> {
         borderRadius: BorderRadius.circular(5),
       ),
       margin: const EdgeInsets.fromLTRB(4, 0, 4, 0),
-      child: Filters(
-        stringFilter: (value) => setState(() {
-          searchController.text = value;
-          filter();
-        }),
-        statusFilter: (value) => setState(() {
-          selectedFilter = value;
-          logger.fine("Status Filter is $value");
-          filter();
-        }),
-      ),
+      child: const Filters(),
     );
   }
 
@@ -132,11 +73,4 @@ class _ViewsState extends State<Views> {
   Widget pStatusSelection() {
     return Container();
   }
-
-  bool containStringFilter(Member member) =>
-      member.name.toLowerCase().contains(searchController.text.toLowerCase()) ||
-      member.pgrId.toString().contains(searchController.text);
-  bool hasStatusFilter(Member member) => member.siegeStatus == selectedFilter || member.mazeStatus == selectedFilter;
-
-  String get mentionText => selectedMembers.map((e) => e.discordId != "" ? "<@${e.discordId}>" : null).join('\n');
 }

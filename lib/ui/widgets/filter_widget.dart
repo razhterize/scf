@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:scf_new/blocs/filter_cubit.dart';
 import 'package:scf_new/blocs/switch_cubit.dart';
 import 'package:scf_new/constants.dart';
 import 'package:scf_new/enums.dart';
@@ -7,19 +8,14 @@ import 'package:scf_new/enums.dart';
 import '../../blocs/guild_bloc.dart';
 
 class Filters extends StatefulWidget {
-  const Filters({super.key, required this.stringFilter, required this.statusFilter});
-
-  final void Function(String value) stringFilter;
-  final void Function(dynamic value) statusFilter;
+  const Filters({super.key});
 
   @override
   State<Filters> createState() => _FiltersState();
 }
 
 class _FiltersState extends State<Filters> {
-  final textController = TextEditingController();
-  dynamic selectedStatus;
-
+  var controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<SwitchCubit, SwitchState>(
@@ -32,17 +28,25 @@ class _FiltersState extends State<Filters> {
           children: [
             Expanded(
               child: ListTile(
-                leading: textController.text.isEmpty
-                    ? IconButton(onPressed: () {}, icon: const Icon(Icons.search))
-                    : IconButton(onPressed: () => setState(() => textController.clear()), icon: const Icon(Icons.close)),
-                title: TextField(
-                  controller: textController,
-                  decoration: const InputDecoration(
-                      hintText: "Name or PGR ID",
-                      border: InputBorder.none,
-                      contentPadding: EdgeInsets.all(0),
-                      isDense: true),
-                  onChanged: (value) => setState(() => widget.stringFilter(value)),
+                leading: BlocBuilder<FilterCubit, List>(
+                  builder: (context, state) => context.read<FilterCubit>().string == ''
+                      ? IconButton(onPressed: () {}, icon: const Icon(Icons.search))
+                      : IconButton(
+                          onPressed: () => context.read<FilterCubit>().stringFilter(''), icon: const Icon(Icons.close)),
+                ),
+                title: BlocBuilder<FilterCubit, List>(
+                  builder: (context, state) {
+                    controller.text = context.read<FilterCubit>().string;
+                    return TextField(
+                      decoration: const InputDecoration(
+                          hintText: "Name or PGR ID",
+                          border: InputBorder.none,
+                          contentPadding: EdgeInsets.all(0),
+                          isDense: true),
+                      controller: controller,
+                      onChanged: (value) => context.read<FilterCubit>().stringFilter(value),
+                    );
+                  },
                 ),
               ),
             ),
@@ -56,15 +60,12 @@ class _FiltersState extends State<Filters> {
   Widget statusButton(dynamic status) {
     return MaterialButton(
       color: statusColors[status],
-      onPressed: () {
-        setState(() {
-          selectedStatus == status ? selectedStatus = null : selectedStatus = status;
-          widget.statusFilter(selectedStatus);
-        });
-      },
+      onPressed: () => context.read<FilterCubit>().statusFilter(status),
       child: Row(
         children: [
-          selectedStatus == status ? const Icon(Icons.check) : Container(),
+          BlocBuilder<FilterCubit, List>(
+              builder: (context, state) =>
+                  context.read<FilterCubit>().status == status ? const Icon(Icons.check) : Container()),
           BlocBuilder<GuildBloc, GuildState>(
             builder: (context, state) => Text(
               "${statusNames[status]}: ${state.guild.members.where((element) => (SiegeStatus.values.contains(status) ? element.siegeStatus == status : element.mazeStatus == status)).toList().length}",

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 
+import '../../blocs/selection_cubit.dart';
 import '../../enums.dart';
 import '../../blocs/guild_bloc.dart';
 import '../../blocs/switch_cubit.dart';
@@ -9,18 +11,12 @@ import '../../models/member_model.dart';
 import '../../ui/widgets/member_edit_widgets.dart';
 
 class FloatingButton extends StatelessWidget {
-  const FloatingButton(
-      {super.key, this.onSelectAllTap, this.onSelectNoneTap, this.onSelectRangeTap, this.onMentionTap, this.onDeleteTap});
-
-  final void Function()? onSelectAllTap;
-  final void Function()? onSelectNoneTap;
-  final void Function()? onSelectRangeTap;
-  final void Function()? onMentionTap;
-  final void Function()? onDeleteTap;
-  // final void Function()? onAddTap;
-
+  const FloatingButton({super.key});
   @override
   Widget build(BuildContext context) {
+    var selectionCubit = context.read<SelectionCubit>();
+    var guildBloc = context.read<GuildBloc>();
+
     return ExpandableFab(
       openButtonBuilder: DefaultFloatingActionButtonBuilder(
         child: const Icon(Icons.add),
@@ -36,7 +32,9 @@ class FloatingButton extends StatelessWidget {
         BlocBuilder<SwitchCubit, SwitchState>(
           builder: (context, state) {
             return IconButton.filled(
-              onPressed: () => state.mode == ManagementMode.members ? onDeleteTap!() : onSelectAllTap!(),
+              onPressed: () => state.mode == ManagementMode.members
+                  ? selectionCubit.doSomethingAboutSelectedMembers((member) => guildBloc.add(DeleteMember(member)))
+                  : selectionCubit.selectAll(),
               tooltip: state.mode == ManagementMode.members ? 'Vent Member' : 'Select All',
               icon: state.mode == ManagementMode.members ? const Icon(Icons.person_remove) : const Icon(Icons.select_all),
             );
@@ -47,7 +45,7 @@ class FloatingButton extends StatelessWidget {
             return IconButton.filled(
               onPressed: () => state.mode == ManagementMode.members
                   ? showModalBottomSheet(context: context, builder: (_) => openNewMember(context))
-                  : onSelectNoneTap!(),
+                  : selectionCubit.clearSelections(),
               tooltip: state.mode == ManagementMode.members ? 'Add Member' : 'Deselect All',
               icon: state.mode == ManagementMode.members ? const Icon(Icons.person_add) : const Icon(Icons.deselect),
             );
@@ -56,7 +54,7 @@ class FloatingButton extends StatelessWidget {
         BlocBuilder<SwitchCubit, SwitchState>(
           builder: (context, state) => state.mode != ManagementMode.members
               ? IconButton.filled(
-                  onPressed: () => state.mode == ManagementMode.members ? () {} : onSelectRangeTap!(),
+                  onPressed: () => state.mode == ManagementMode.members ? () {} : selectionCubit.selectRange(),
                   icon: const Icon(Icons.library_add_check),
                   tooltip: "Select Range",
                 )
@@ -65,13 +63,22 @@ class FloatingButton extends StatelessWidget {
         BlocBuilder<SwitchCubit, SwitchState>(
           builder: (context, state) => state.mode != ManagementMode.members
               ? IconButton.filled(
-                  onPressed: () => onMentionTap == null ? null : onMentionTap!(),
+                  onPressed: () => copyMentionText(context),
                   icon: const Icon(Icons.alternate_email),
                   tooltip: "Copy Mention Text",
                 )
               : Container(),
         )
       ],
+    );
+  }
+
+  void copyMentionText(BuildContext context) {
+    String mentionText =
+        context.read<SelectionCubit>().state.map((e) => e.discordId != "" ? "<@${e.discordId}>" : '').join('\n');
+    Clipboard.setData(ClipboardData(text: mentionText));
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Members mention has been copied to clipboard")),
     );
   }
 
