@@ -1,5 +1,9 @@
 
-String get databaseUrl => "https://scf-management.pockethost.io";
+String _dbUrl = "";
+
+set databaseUrl(String url) => _dbUrl = url;
+
+String get databaseUrl => _dbUrl;
 
 String get version => '1.1.0+3';
 

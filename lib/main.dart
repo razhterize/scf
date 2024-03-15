@@ -6,6 +6,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:logging/logging.dart';
+import 'package:scf_new/configs.dart';
 
 import 'blocs/filter_cubit.dart';
 import 'blocs/selection_cubit.dart';
@@ -24,7 +25,9 @@ void main(List<String> args) async {
       log('${record.level.name}: ${record.message}');
     });
 
-  // WidgetsFlutterBinding.ensureInitialized();
+  const String dbUrl = String.fromEnvironment("DATABASE_URL");
+  databaseUrl = dbUrl;
+  WidgetsFlutterBinding.ensureInitialized();
 
   HydratedBloc.storage = await HydratedStorage.build(
       storageDirectory: kIsWeb ? HydratedStorage.webStorageDirectory : await getApplicationDocumentsDirectory(),
