@@ -7,6 +7,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    if: ${{ contains(github.event.head_commit.message, 'build') }}
     environment: web-deployment
     steps:
       - uses: actions/checkout@v4
