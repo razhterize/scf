@@ -2,16 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 
-import '../../blocs/switch_cubit.dart';
 import '../../enums.dart';
+import '../../blocs/guild_bloc.dart';
+import '../../blocs/switch_cubit.dart';
+import '../../models/member_model.dart';
+import '../../ui/widgets/member_edit_widgets.dart';
 
 class FloatingButton extends StatelessWidget {
-  const FloatingButton({super.key, this.onSelectAllTap, this.onSelectNoneTap, this.onSelectRangeTap, this.onMentionTap});
+  const FloatingButton(
+      {super.key, this.onSelectAllTap, this.onSelectNoneTap, this.onSelectRangeTap, this.onMentionTap, this.onDeleteTap});
 
   final void Function()? onSelectAllTap;
   final void Function()? onSelectNoneTap;
   final void Function()? onSelectRangeTap;
   final void Function()? onMentionTap;
+  final void Function()? onDeleteTap;
+  // final void Function()? onAddTap;
+
   @override
   Widget build(BuildContext context) {
     return ExpandableFab(
@@ -29,7 +36,7 @@ class FloatingButton extends StatelessWidget {
         BlocBuilder<SwitchCubit, SwitchState>(
           builder: (context, state) {
             return IconButton.filled(
-              onPressed: () => state.mode == ManagementMode.members ? () {} : onSelectAllTap!(),
+              onPressed: () => state.mode == ManagementMode.members ? onDeleteTap!() : onSelectAllTap!(),
               tooltip: state.mode == ManagementMode.members ? 'Vent Member' : 'Select All',
               icon: state.mode == ManagementMode.members ? const Icon(Icons.person_remove) : const Icon(Icons.select_all),
             );
@@ -38,7 +45,9 @@ class FloatingButton extends StatelessWidget {
         BlocBuilder<SwitchCubit, SwitchState>(
           builder: (context, state) {
             return IconButton.filled(
-              onPressed: () => state.mode == ManagementMode.members ? () {} : onSelectNoneTap!(),
+              onPressed: () => state.mode == ManagementMode.members
+                  ? showModalBottomSheet(context: context, builder: (_) => openNewMember(context))
+                  : onSelectNoneTap!(),
               tooltip: state.mode == ManagementMode.members ? 'Add Member' : 'Deselect All',
               icon: state.mode == ManagementMode.members ? const Icon(Icons.person_add) : const Icon(Icons.deselect),
             );
@@ -63,6 +72,14 @@ class FloatingButton extends StatelessWidget {
               : Container(),
         )
       ],
+    );
+  }
+
+  Widget openNewMember(BuildContext context) {
+    var newMember = Member('', '', 0, SiegeStatus.noScore, MazeStatus.unknown);
+    return BlocProvider.value(
+      value: context.read<GuildBloc>(),
+      child: EditMemberWidget(member: newMember),
     );
   }
 }
