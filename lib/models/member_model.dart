@@ -20,7 +20,7 @@ class Member {
       record.getIntValue('pgr_id'),
       SiegeStatus.values.byName(record.data['siege']['status']),
       MazeStatus.values.byName(record.data['maze']['status']),
-      discordId: record.getStringValue('discord_id', ""),
+      discordId: record.getStringValue('discord_id'),
       discordUsername: record.getStringValue('discord_username'),
     );
   }
