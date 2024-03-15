@@ -30,26 +30,23 @@ class _ViewsState extends State<Views> {
           builder: (context, state) => state.busy ? _loading() : Container(),
         ),
         BlocBuilder<GuildBloc, GuildState>(
-          builder: (context, state) {
-            if (state.busy) return Container();
-            return Column(
-              children: [
-                topBar(),
-                Expanded(
-                  child: BlocBuilder<FilterCubit, List<Member>>(
-                    builder: (context, state) {
-                      return ListView.builder(
-                        itemCount: state.length,
-                        itemBuilder: (context, index) {
-                          return MemberDetail(member: state[index]);
-                        },
-                      );
-                    },
-                  ),
+          builder: (context, state) => Column(
+            children: [
+              topBar(),
+              Expanded(
+                child: BlocBuilder<FilterCubit, List<Member>>(
+                  builder: (context, state) {
+                    return ListView.builder(
+                      itemCount: state.length,
+                      itemBuilder: (context, index) {
+                        return MemberDetail(member: state[index]);
+                      },
+                    );
+                  },
                 ),
-              ],
-            );
-          },
+              ),
+            ],
+          ),
         ),
       ],
     );
