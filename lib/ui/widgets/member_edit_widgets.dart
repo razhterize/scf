@@ -96,9 +96,6 @@ class _EditMemberWidgetState extends State<EditMemberWidget> {
     );
   }
 
-// TODO Fix AddMember
-// TODO Find out why it didnt work
-// TODO Guild Selection on New Member (Default to current guild from GuildBloc)
   void validate() {
     logger.fine("Validate called");
     if (formKey.currentState!.validate()) {
@@ -116,11 +113,6 @@ class _EditMemberWidgetState extends State<EditMemberWidget> {
       return;
     }
     logger.fine("Form invalid");
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
   }
 }
 
