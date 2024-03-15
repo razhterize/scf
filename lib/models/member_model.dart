@@ -7,7 +7,6 @@ class Member {
   int pgrId;
   String? discordId;
   String? discordUsername;
-  // MemberSiege siege;
   SiegeStatus siegeStatus;
   MazeStatus mazeStatus;
 
@@ -25,12 +24,13 @@ class Member {
     );
   }
 
-  Map<String, dynamic> toMap() => {
-        'name': name,
-        'pgr_id': pgrId,
+  Map<String, dynamic> toMap({String? name, int? pgrId, String? discordId, String? discordUsername, String? guild}) => {
+        'name': name ?? this.name,
+        'pgr_id': pgrId ?? this.pgrId,
         'siege': {'status': siegeStatus.name},
         'maze': {'status': mazeStatus.name},
-        'discord_id': discordId,
-        'discord_username': discordUsername,
+        'discord_id': discordId??this.discordId,
+        'discord_username': discordUsername??this.discordUsername,
+        'guild': guild ?? "",
       };
 }
