@@ -95,6 +95,7 @@ class _EditMemberWidgetState extends State<EditMemberWidget> {
       ),
     );
   }
+
 // TODO Fix AddMember
 // TODO Find out why it didnt work
 // TODO Guild Selection on New Member (Default to current guild from GuildBloc)
@@ -108,8 +109,8 @@ class _EditMemberWidgetState extends State<EditMemberWidget> {
       member.discordId = controllers[3].text;
       if (member.id != '') {
         context.read<GuildBloc>().add(UpdateMember(member));
-      }else{
-        context.read<GuildBloc>().add(AddMember(member.toMap()));
+      } else {
+        context.read<GuildBloc>().add(AddMember(member.toMap(guild: context.read<GuildBloc>().state.guild.name)));
       }
       Navigator.of(context).pop();
       return;
