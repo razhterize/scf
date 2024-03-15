@@ -32,37 +32,36 @@ class _ViewsState extends State<Views> {
   Widget build(BuildContext context) {
     return BlocListener<SwitchCubit, SwitchState>(
       listener: (context, state) => context.read<GuildBloc>().add(GuildInit(state.name)),
-      child: Stack(
-        children: [
-          Center(
-            child: BlocBuilder<GuildBloc, GuildState>(
+      child: Scaffold(
+        floatingActionButtonLocation: ExpandableFab.location,
+        floatingActionButton: FloatingButton(
+          onDeleteTap: () {
+            for (var member in selectedMembers) {
+              context.read<GuildBloc>().add(DeleteMember(member));
+            }
+          },
+          onSelectAllTap: () => setState(() => selectedMembers = filteredMembers),
+          onSelectNoneTap: () => setState(() => selectedMembers = []),
+          onSelectRangeTap: () => setState(() => selectRange()),
+          onMentionTap: () {
+            Clipboard.setData(ClipboardData(text: mentionText));
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text("Members mention has been copied to clipboard")),
+            );
+          },
+        ),
+        body: Stack(
+          alignment: Alignment.center,
+          children: [
+            BlocBuilder<GuildBloc, GuildState>(
               builder: (context, state) => state.busy ? _loading() : Container(),
             ),
-          ),
-          BlocBuilder<GuildBloc, GuildState>(
-            builder: (context, state) {
-              if (searchController.text.isEmpty && selectedFilter == null) {
-                filteredMembers = state.guild.members;
-              }
-              return Scaffold(
-                floatingActionButtonLocation: ExpandableFab.location,
-                floatingActionButton: FloatingButton(
-                  onDeleteTap: () {
-                    for (var member in selectedMembers) {
-                      context.read<GuildBloc>().add(DeleteMember(member));
-                    }
-                  },
-                  onSelectAllTap: () => setState(() => selectedMembers = filteredMembers),
-                  onSelectNoneTap: () => setState(() => selectedMembers = []),
-                  onSelectRangeTap: () => setState(() => selectRange()),
-                  onMentionTap: () {
-                    Clipboard.setData(ClipboardData(text: mentionText));
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Members mention has been copied to clipboard")),
-                    );
-                  },
-                ),
-                body: Column(
+            BlocBuilder<GuildBloc, GuildState>(
+              builder: (context, state) {
+                if (searchController.text.isEmpty && selectedFilter == null) {
+                  filteredMembers = state.guild.members;
+                }
+                return Column(
                   children: [
                     state.busy && !state.ready ? Container() : topBar(),
                     Expanded(
@@ -75,11 +74,11 @@ class _ViewsState extends State<Views> {
                       ),
                     ),
                   ],
-                ),
-              );
-            },
-          ),
-        ],
+                );
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -128,14 +127,15 @@ class _ViewsState extends State<Views> {
     );
   }
 
-  Widget _loading() => LoadingAnimationWidget.hexagonDots(color: Colors.cyanAccent, size: 40);
+  Widget _loading() => LoadingAnimationWidget.staggeredDotsWave(color: Colors.white, size: 55);
 
   Widget pStatusSelection() {
     return Container();
   }
 
   bool containStringFilter(Member member) =>
-      member.name.toLowerCase().contains(searchController.text.toLowerCase()) || member.pgrId.toString().contains(searchController.text);
+      member.name.toLowerCase().contains(searchController.text.toLowerCase()) ||
+      member.pgrId.toString().contains(searchController.text);
   bool hasStatusFilter(Member member) => member.siegeStatus == selectedFilter || member.mazeStatus == selectedFilter;
 
   String get mentionText => selectedMembers.map((e) => e.discordId != "" ? "<@${e.discordId}>" : null).join('\n');
