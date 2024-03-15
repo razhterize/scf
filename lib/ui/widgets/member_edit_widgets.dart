@@ -107,7 +107,7 @@ class _EditMemberWidgetState extends State<EditMemberWidget> {
       if (member.id != '') {
         context.read<GuildBloc>().add(UpdateMember(member));
       } else {
-        context.read<GuildBloc>().add(AddMember(member.toMap(guild: context.read<GuildBloc>().state.guild.name)));
+        context.read<GuildBloc>().add(AddMember(member.toMap()));
       }
       Navigator.of(context).pop();
       return;
