@@ -77,12 +77,6 @@ class _EditMemberWidgetState extends State<EditMemberWidget> {
                 children: [
                   Expanded(
                     child: ElevatedButton(
-                      onPressed: () => context.read<GuildBloc>().add(DeleteMember(member)),
-                      child: const Text("Delete Member"),
-                    ),
-                  ),
-                  Expanded(
-                    child: ElevatedButton(
                       onPressed: () => Navigator.pop(context),
                       child: const Text("Cancel"),
                     ),
@@ -101,7 +95,9 @@ class _EditMemberWidgetState extends State<EditMemberWidget> {
       ),
     );
   }
-
+// TODO Fix AddMember
+// TODO Find out why it didnt work
+// TODO Guild Selection on New Member (Default to current guild from GuildBloc)
   void validate() {
     logger.fine("Validate called");
     if (formKey.currentState!.validate()) {
@@ -110,7 +106,11 @@ class _EditMemberWidgetState extends State<EditMemberWidget> {
       member.pgrId = int.parse(controllers[1].text);
       member.discordUsername = controllers[2].text;
       member.discordId = controllers[3].text;
-      context.read<GuildBloc>().add(UpdateMember(member));
+      if (member.id != '') {
+        context.read<GuildBloc>().add(UpdateMember(member));
+      }else{
+        context.read<GuildBloc>().add(AddMember(member.toMap()));
+      }
       Navigator.of(context).pop();
       return;
     }
