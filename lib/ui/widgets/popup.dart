@@ -8,29 +8,24 @@ class Popup extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Dialog(
-      child: Column(
-        children: [
-          Text(message),
-          Row(
-            children: [
-              const Spacer(),
-              Expanded(
-                child: MaterialButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text("Cancel"),
-                ),
-              ),
-              Expanded(
-                child: MaterialButton(
-                  onPressed: () => callback,
-                  child: const Text("DO IT!!!"),
-                ),
-              )
-            ],
-          )
-        ],
+    return AlertDialog.adaptive(
+      content: Padding(
+        padding: const EdgeInsets.all(4.0),
+        child: Text(message),
       ),
+      actions: [
+        MaterialButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text("Nah, go back"),
+        ),
+        MaterialButton(
+          onPressed: () {
+            callback != null ? callback!() : null;
+            Navigator.pop(context);
+          },
+          child: const Text("DO IT!!!"),
+        )
+      ],
     );
   }
 }
