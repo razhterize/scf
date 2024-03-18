@@ -93,7 +93,6 @@ class FloatingButton extends StatelessWidget {
           selectCubit.doSomethingAboutSelectedMembers(
             (member) => context.read<GuildBloc>().add(DeleteMember(member)),
           );
-          Navigator.pop(context);
         },
       ),
     );
