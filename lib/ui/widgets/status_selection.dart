@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:scf_new/blocs/selection_cubit.dart';
+import 'package:scf_new/ui/widgets/popup.dart';
 
 import '../../blocs/guild_bloc.dart';
 import '../../constants.dart';
@@ -7,13 +9,17 @@ import '../../enums.dart';
 import '../../models/member_model.dart';
 
 class StatusSelections extends StatelessWidget {
-  const StatusSelections(
-      {super.key, required this.member, required this.statuses});
+  const StatusSelections({
+    super.key,
+    required this.member,
+    required this.statuses,
+  });
   final Member member;
   final List statuses;
 
   @override
   Widget build(BuildContext context) {
+    final selectionCubit = context.read<SelectionCubit>();
     return Wrap(
       children: [
         for (var status in statuses)
@@ -33,16 +39,35 @@ class StatusSelections extends StatelessWidget {
               selected:
                   member.siegeStatus == status || member.mazeStatus == status,
               onSelected: (value) {
-                if (SiegeStatus.values.contains(status)) {
-                  member.siegeStatus = status;
-                } else if (MazeStatus.values.contains(status)) {
-                  member.mazeStatus = status;
+                if (selectionCubit.state.isNotEmpty) {
+                  showDialog(
+                    context: context,
+                    builder: (_) => Popup(
+                      "You're about to change ${selectionCubit.state.length} members status to ${statusNames[status]}\nDo it?",
+                      callback: () => _batchStatusChange(context, status),
+                    ),
+                  );
+                  return;
                 }
+                SiegeStatus.values.contains(status)
+                    ? member.siegeStatus = status
+                    : member.mazeStatus = status;
+
                 context.read<GuildBloc>().add(UpdateMember(member));
               },
             ),
           )
       ],
     );
+  }
+
+  void _batchStatusChange(BuildContext context, status) {
+    print("Batch Status called");
+    context.read<SelectionCubit>().doSomethingAboutSelectedMembers((member) {
+      SiegeStatus.values.contains(status)
+          ? member.siegeStatus = status
+          : member.mazeStatus = status;
+      context.read<GuildBloc>().add(UpdateMember(member));
+    });
   }
 }
