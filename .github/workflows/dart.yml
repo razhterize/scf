@@ -1,23 +1,21 @@
-name: 'Build app then push to pages'
+name: "Build app then push to pages"
 
 on:
   push:
-    branches: ['main']
+    branches: ["main"]
 
 jobs:
   build:
     runs-on: ubuntu-latest
-    if: |
-     ${{ contains(github.event.head_commit.message, 'build') }} ||
-     ${{ contains(github.event.head_commit.message, 'deploy') }}
+    if: ${{ contains(github.event.head_commit.message, 'deploy') }}
 
     environment: web-deployment
     steps:
       - uses: actions/checkout@v4
       - uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
-      
+          channel: "stable"
+
       - run: echo ${{env}}
         shell: bash
       - run: flutter build web --release --base-href "/scf/" --dart-define=DATABASE_URL=${{ secrets.DATABASE_URL }}
