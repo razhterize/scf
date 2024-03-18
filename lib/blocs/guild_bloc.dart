@@ -16,7 +16,6 @@ class GuildBloc extends Bloc<GuildEvent, GuildState> {
     on<UpdateMember>(_updateMember);
     on<AddMember>(_addMember);
     on<DeleteMember>(_deleteMember);
-    on<BatchStatusChange>(_batchStatusChange);
     add(GuildInit(name));
   }
 
@@ -56,35 +55,6 @@ class GuildBloc extends Bloc<GuildEvent, GuildState> {
     var members = state.guild.members.toList();
     members.removeWhere((element) => element.id == event.member.id);
     emit(state.copy(guild: state.guild.copy(members: members), busy: false));
-  }
-
-  Future<void> _batchStatusChange(BatchStatusChange event, Emitter<GuildState> emit) async {
-    emit(state.copy(busy: true));
-    if (event.siegeStatus != null) {
-      var newMembers = state.guild.members;
-      for (var member in event.members) {
-        await pb.collection('members').update(member.id, body: {
-          'siege': {'status': event.siegeStatus!.name}
-        }).then((record) {
-          var newMember = Member.fromRecord(record);
-          newMembers[newMembers.indexWhere((element) => element.id == newMember.id)] = newMember;
-          emit(state.copy(guild: state.guild.copy(members: newMembers)));
-        });
-        emit(state.copy(busy: false));
-      }
-    } else if (event.mazeStatus != null) {
-      var newMembers = state.guild.members;
-      for (var member in event.members) {
-        await pb.collection('members').update(member.id, body: {
-          'maze': {'status': event.mazeStatus!.name}
-        }).then((record) {
-          var newMember = Member.fromRecord(record);
-          newMembers[newMembers.indexWhere((element) => element.id == newMember.id)] = newMember;
-          emit(state.copy(guild: state.guild.copy(members: newMembers)));
-        });
-      }
-      emit(state.copy(busy: false));
-    }
   }
 
   final PocketBase pb;
@@ -127,11 +97,4 @@ final class UpdateMember extends GuildEvent {
 final class DeleteMember extends GuildEvent {
   final Member member;
   DeleteMember(this.member);
-}
-
-final class BatchStatusChange extends GuildEvent {
-  final List<Member> members;
-  final SiegeStatus? siegeStatus;
-  final MazeStatus? mazeStatus;
-  BatchStatusChange({this.members = const [], this.siegeStatus, this.mazeStatus});
 }
