@@ -48,7 +48,8 @@ class _EditMemberWidgetState extends State<EditMemberWidget> {
             InfoField(
               controller: controllers[0],
               label: "Name",
-              validator: (value) => value == "" || value == null ? "Name cannot be empty" : null,
+              validator: (value) =>
+                  value == "" || value == null ? "Name cannot be empty" : null,
               onSubmit: (value) => validate(),
             ),
             InfoField(
@@ -117,7 +118,12 @@ class _EditMemberWidgetState extends State<EditMemberWidget> {
 }
 
 class InfoField extends StatelessWidget {
-  const InfoField({super.key, required this.label, this.controller, this.validator, this.onSubmit});
+  const InfoField(
+      {super.key,
+      required this.label,
+      this.controller,
+      this.validator,
+      this.onSubmit});
 
   final String? Function(String? value)? validator;
   final void Function(String? value)? onSubmit;

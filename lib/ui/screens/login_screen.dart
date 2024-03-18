@@ -13,6 +13,7 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
+    final loginBloc = context.read<LoginBloc>();
     return BlocBuilder<LoginBloc, LoginState>(
       builder: (context, state) {
         return Center(
@@ -24,14 +25,15 @@ class _LoginScreenState extends State<LoginScreen> {
                 size: 50,
               ),
               FloatingActionButton.extended(
-                onPressed: () => BlocProvider.of<LoginBloc>(context).add(DiscordLogin()),
+                onPressed: () => loginBloc.add(DiscordLogin()),
                 icon: state.loginStatus != LoginStatus.processing
                     ? SizedBox(
                         width: 25,
                         height: 25,
                         child: Image.asset("assets/discord.png"),
                       )
-                    : LoadingAnimationWidget.newtonCradle(color: Colors.black, size: 50),
+                    : LoadingAnimationWidget.newtonCradle(
+                        color: Colors.black, size: 50),
                 label: const Text("Discord Login"),
               )
             ],

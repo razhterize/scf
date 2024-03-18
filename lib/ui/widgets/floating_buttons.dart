@@ -33,10 +33,15 @@ class FloatingButton extends StatelessWidget {
           builder: (context, state) {
             return IconButton.filled(
               onPressed: () => state.mode == ManagementMode.members
-                  ? selectionCubit.doSomethingAboutSelectedMembers((member) => guildBloc.add(DeleteMember(member)))
+                  ? selectionCubit.doSomethingAboutSelectedMembers(
+                      (member) => guildBloc.add(DeleteMember(member)))
                   : selectionCubit.selectAll(),
-              tooltip: state.mode == ManagementMode.members ? 'Vent Member' : 'Select All',
-              icon: state.mode == ManagementMode.members ? const Icon(Icons.person_remove) : const Icon(Icons.select_all),
+              tooltip: state.mode == ManagementMode.members
+                  ? 'Vent Member'
+                  : 'Select All',
+              icon: state.mode == ManagementMode.members
+                  ? const Icon(Icons.person_remove)
+                  : const Icon(Icons.select_all),
             );
           },
         ),
@@ -44,17 +49,24 @@ class FloatingButton extends StatelessWidget {
           builder: (context, state) {
             return IconButton.filled(
               onPressed: () => state.mode == ManagementMode.members
-                  ? showModalBottomSheet(context: context, builder: (_) => openNewMember(context))
+                  ? showModalBottomSheet(
+                      context: context, builder: (_) => openNewMember(context))
                   : selectionCubit.clearSelections(),
-              tooltip: state.mode == ManagementMode.members ? 'Add Member' : 'Deselect All',
-              icon: state.mode == ManagementMode.members ? const Icon(Icons.person_add) : const Icon(Icons.deselect),
+              tooltip: state.mode == ManagementMode.members
+                  ? 'Add Member'
+                  : 'Deselect All',
+              icon: state.mode == ManagementMode.members
+                  ? const Icon(Icons.person_add)
+                  : const Icon(Icons.deselect),
             );
           },
         ),
         BlocBuilder<SwitchCubit, SwitchState>(
           builder: (context, state) => state.mode != ManagementMode.members
               ? IconButton.filled(
-                  onPressed: () => state.mode == ManagementMode.members ? () {} : selectionCubit.selectRange(),
+                  onPressed: () => state.mode == ManagementMode.members
+                      ? () {}
+                      : selectionCubit.selectRange(),
                   icon: const Icon(Icons.library_add_check),
                   tooltip: "Select Range",
                 )
@@ -74,11 +86,15 @@ class FloatingButton extends StatelessWidget {
   }
 
   void copyMentionText(BuildContext context) {
-    String mentionText =
-        context.read<SelectionCubit>().state.map((e) => e.discordId != "" ? "<@${e.discordId}>" : '').join('\n');
+    String mentionText = context
+        .read<SelectionCubit>()
+        .state
+        .map((e) => e.discordId != "" ? "<@${e.discordId}>" : '')
+        .join('\n');
     Clipboard.setData(ClipboardData(text: mentionText));
     ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Members mention has been copied to clipboard")),
+      const SnackBar(
+          content: Text("Members mention has been copied to clipboard")),
     );
   }
 

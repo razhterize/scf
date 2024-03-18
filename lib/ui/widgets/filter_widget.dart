@@ -4,6 +4,7 @@ import 'package:scf_new/blocs/filter_cubit.dart';
 import 'package:scf_new/blocs/switch_cubit.dart';
 import 'package:scf_new/constants.dart';
 import 'package:scf_new/enums.dart';
+import 'package:scf_new/models/member_model.dart';
 
 import '../../blocs/guild_bloc.dart';
 
@@ -18,21 +19,23 @@ class _FiltersState extends State<Filters> {
   var controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
+    final filterCubit = context.read<FilterCubit>();
     return BlocBuilder<SwitchCubit, SwitchState>(
       builder: (context, state) {
         List statuses = [];
         if (state.mode == ManagementMode.siege) statuses = SiegeStatus.values;
         if (state.mode == ManagementMode.maze) statuses = MazeStatus.values;
         return Row(
-          // direction: Axis.horizontal,
           children: [
             Expanded(
               child: ListTile(
                 leading: BlocBuilder<FilterCubit, List>(
-                  builder: (context, state) => context.read<FilterCubit>().string == ''
-                      ? IconButton(onPressed: () {}, icon: const Icon(Icons.search))
+                  builder: (context, state) => filterCubit.string == ''
+                      ? IconButton(
+                          onPressed: () {}, icon: const Icon(Icons.search))
                       : IconButton(
-                          onPressed: () => context.read<FilterCubit>().stringFilter(''), icon: const Icon(Icons.close)),
+                          onPressed: () => filterCubit.stringFilter(''),
+                          icon: const Icon(Icons.close)),
                 ),
                 title: BlocBuilder<FilterCubit, List>(
                   builder: (context, state) {
@@ -44,7 +47,7 @@ class _FiltersState extends State<Filters> {
                           contentPadding: EdgeInsets.all(0),
                           isDense: true),
                       controller: controller,
-                      onChanged: (value) => context.read<FilterCubit>().stringFilter(value),
+                      onChanged: (value) => filterCubit.stringFilter(value),
                     );
                   },
                 ),
@@ -58,19 +61,29 @@ class _FiltersState extends State<Filters> {
   }
 
   Widget statusButton(dynamic status) {
+    final filterCubit = context.read<FilterCubit>();
     return MaterialButton(
       color: statusColors[status],
-      onPressed: () => context.read<FilterCubit>().statusFilter(status),
+      onPressed: () => filterCubit.statusFilter(status),
       child: Row(
         children: [
           BlocBuilder<FilterCubit, List>(
-              builder: (context, state) =>
-                  context.read<FilterCubit>().status == status ? const Icon(Icons.check) : Container()),
+              builder: (context, state) => filterCubit.status == status
+                  ? const Icon(Icons.check)
+                  : Container()),
           BlocBuilder<GuildBloc, GuildState>(
-            builder: (context, state) => Text(
-              "${statusNames[status]}: ${state.guild.members.where((element) => (SiegeStatus.values.contains(status) ? element.siegeStatus == status : element.mazeStatus == status)).toList().length}",
-              style: const TextStyle(color: Colors.black),
-            ),
+            builder: (context, state) {
+              int count = state.guild.members
+                  .where((element) => (SiegeStatus.values.contains(status)
+                      ? element.siegeStatus == status
+                      : element.mazeStatus == status))
+                  .toList()
+                  .length;
+              return Text(
+                "${statusNames[status]}: $count",
+                style: const TextStyle(color: Colors.black),
+              );
+            },
           )
         ],
       ),

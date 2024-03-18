@@ -7,7 +7,8 @@ import '../../enums.dart';
 import '../../models/member_model.dart';
 
 class StatusSelections extends StatelessWidget {
-  const StatusSelections({super.key, required this.member, required this.statuses});
+  const StatusSelections(
+      {super.key, required this.member, required this.statuses});
   final Member member;
   final List statuses;
 
@@ -23,10 +24,14 @@ class StatusSelections extends StatelessWidget {
               label: Text(
                 statusNames[status] ?? status.name,
                 style: TextStyle(
-                  color: member.mazeStatus == status || member.siegeStatus == status ? Colors.black : Colors.white,
+                  color: member.mazeStatus == status ||
+                          member.siegeStatus == status
+                      ? Colors.black
+                      : Colors.white,
                 ),
               ),
-              selected: member.siegeStatus == status || member.mazeStatus == status,
+              selected:
+                  member.siegeStatus == status || member.mazeStatus == status,
               onSelected: (value) {
                 if (SiegeStatus.values.contains(status)) {
                   member.siegeStatus = status;

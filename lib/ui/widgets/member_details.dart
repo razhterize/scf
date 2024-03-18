@@ -24,6 +24,7 @@ class MemberDetail extends StatefulWidget {
 class _MemberDetailState extends State<MemberDetail> {
   @override
   Widget build(BuildContext context) {
+    final switchCubit = context.read<SwitchCubit>();
     var selectionCubit = context.read<SelectionCubit>();
     return BlocBuilder<SelectionCubit, List>(
       builder: (context, state) {
@@ -34,9 +35,10 @@ class _MemberDetailState extends State<MemberDetail> {
           ),
           title: Text(widget.member.name),
           selectedTileColor: const Color.fromARGB(121, 0, 94, 255),
-          onTap: context.read<SwitchCubit>().state.mode == ManagementMode.members
+          onTap: switchCubit.state.mode == ManagementMode.members
               ? () => openEditWindow(widget.member)
               : () => selectionCubit.changeSelect(widget.member),
+              
           selected: selectionCubit.isSelected(widget.member),
           subtitle: Text("${widget.member.pgrId}"),
           trailing: BlocBuilder<SwitchCubit, SwitchState>(
@@ -44,9 +46,11 @@ class _MemberDetailState extends State<MemberDetail> {
               if (state.mode == ManagementMode.members) {
                 return const SizedBox();
               }
-              return context.read<SwitchCubit>().state.mode == ManagementMode.siege
-                  ? StatusSelections(member: widget.member, statuses: SiegeStatus.values)
-                  : StatusSelections(member: widget.member, statuses: MazeStatus.values);
+              return switchCubit.state.mode == ManagementMode.siege
+                  ? StatusSelections(
+                      member: widget.member, statuses: SiegeStatus.values)
+                  : StatusSelections(
+                      member: widget.member, statuses: MazeStatus.values);
             },
           ),
           // trailing:
@@ -59,7 +63,8 @@ class _MemberDetailState extends State<MemberDetail> {
     showModalBottomSheet(
       context: context,
       builder: (_) {
-        logger.fine("Current Guild Bloc State: ${context.read<GuildBloc>().state.guild.name}");
+        logger.fine(
+            "Current Guild Bloc State: ${context.read<GuildBloc>().state.guild.name}");
         return BlocProvider.value(
           value: context.read<GuildBloc>(),
           child: EditMemberWidget(
