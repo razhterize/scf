@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
+import 'package:scf_new/ui/widgets/floating_buttons.dart';
 
 import '../widgets/popup.dart';
 import '../widgets/views.dart';
@@ -24,6 +26,8 @@ class _MainScreenState extends State<MainScreen> {
     final guildBloc = context.read<GuildBloc>();
     return Scaffold(
       appBar: _appBar(),
+      floatingActionButtonLocation: ExpandableFab.location,
+      floatingActionButton: const FloatingButton(),
       body: BlocBuilder<LoginBloc, LoginState>(
         builder: (context, loginState) {
           if (!loginState.authStore.isValid) {
