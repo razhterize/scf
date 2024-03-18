@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:scf_new/ui/widgets/popup.dart';
 
 import '../../blocs/selection_cubit.dart';
 import '../../enums.dart';
@@ -15,8 +16,6 @@ class FloatingButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var selectionCubit = context.read<SelectionCubit>();
-    var guildBloc = context.read<GuildBloc>();
-
     return ExpandableFab(
       openButtonBuilder: DefaultFloatingActionButtonBuilder(
         child: const Icon(Icons.add),
@@ -33,8 +32,7 @@ class FloatingButton extends StatelessWidget {
           builder: (context, state) {
             return IconButton.filled(
               onPressed: () => state.mode == ManagementMode.members
-                  ? selectionCubit.doSomethingAboutSelectedMembers(
-                      (member) => guildBloc.add(DeleteMember(member)))
+                  ? deleteSelectedMembers(context)
                   : selectionCubit.selectAll(),
               tooltip: state.mode == ManagementMode.members
                   ? 'Vent Member'
@@ -82,6 +80,22 @@ class FloatingButton extends StatelessWidget {
               : Container(),
         )
       ],
+    );
+  }
+
+  void deleteSelectedMembers(BuildContext context) {
+    final selectCubit = context.read<SelectionCubit>();
+    showDialog(
+      context: context,
+      builder: (_) => Popup(
+        "You're about to vent ${selectCubit.state.length} members\nDo it?",
+        callback: () {
+          selectCubit.doSomethingAboutSelectedMembers(
+            (member) => context.read<GuildBloc>().add(DeleteMember(member)),
+          );
+          Navigator.pop(context);
+        },
+      ),
     );
   }
 
