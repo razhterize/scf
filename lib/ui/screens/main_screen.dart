@@ -80,59 +80,19 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
   }
+
   AppBar _appBar() {
     return AppBar(
       title: BlocBuilder<SwitchCubit, SwitchState>(
         builder: (context, state) => Text(guildNames[state.name] ?? state.name),
       ),
       centerTitle: true,
-      leading: BlocBuilder<LoginBloc, LoginState>(
-        builder: (context, state) {
-          return IconButton(
-            icon: const Icon(Icons.person),
-            onPressed: () {
-              showMenu(
-                context: context,
-                position: const RelativeRect.fromLTRB(50, 0, 100, 100),
-                items: [
-                  for (var guild in context
-                      .read<LoginBloc>()
-                      .state
-                      .authStore
-                      .model
-                      .data['managed_guilds'])
-                    PopupMenuItem(
-                      child: MaterialButton(
-                        child: Row(
-                          children: [
-                            const Icon(Icons.group),
-                            const Text('   '),
-                            Text(guildNames[guild] ?? guild)
-                          ],
-                        ),
-                        onPressed: () =>
-                            context.read<SwitchCubit>().switchGuild(guild),
-                      ),
-                    ),
-                  PopupMenuItem(
-                    child: MaterialButton(
-                      child: const Row(
-                        children: [Icon(Icons.logout), Text("Logout")],
-                      ),
-                      onPressed: () => context.read<LoginBloc>().add(Logout()),
-                    ),
-                  ),
-                ],
-              );
-            },
-          );
-        },
-      ),
       actions: [
         IconButton(
           onPressed: () => showDialog(
             context: context,
-            builder: (_) => const Popup("Whoa my guy, you're about to vent 50 members. You sure?"),
+            builder: (_) => const Popup(
+                "Whoa my guy, you're about to vent 50 members. You sure?"),
           ),
           icon: const Icon(Icons.menu),
         )
