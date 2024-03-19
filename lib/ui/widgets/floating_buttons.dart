@@ -17,6 +17,8 @@ class FloatingButton extends StatelessWidget {
   Widget build(BuildContext context) {
     var selectionCubit = context.read<SelectionCubit>();
     return ExpandableFab(
+      type: ExpandableFabType.side,
+      childrenOffset: const Offset(0, 15),
       openButtonBuilder: DefaultFloatingActionButtonBuilder(
         child: const Icon(Icons.add),
         fabSize: ExpandableFabSize.regular,
@@ -106,7 +108,9 @@ class FloatingButton extends StatelessWidget {
         .join('\n');
     Clipboard.setData(ClipboardData(text: mentionText));
     ScaffoldMessenger.of(context).showSnackBar(
+      
       const SnackBar(
+        duration: Duration(milliseconds: 1500),
           content: Text("Members mention has been copied to clipboard")),
     );
   }
