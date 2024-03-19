@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:scf_new/ui/widgets/floating_buttons.dart';
+import 'package:scf_new/ui/widgets/sidebar.dart';
 
 import '../widgets/popup.dart';
 import '../widgets/views.dart';
@@ -45,10 +46,10 @@ class _MainScreenState extends State<MainScreen> {
                 switchCubit.switchGuild(
                     loginState.authStore.model.data['managed_guilds'].first);
               }
-              return Row(
+              return const Row(
                 children: [
-                  sidebar(),
-                  const Expanded(
+                  Sidebar(),
+                  Expanded(
                     child: Padding(
                       padding: EdgeInsets.all(8.0),
                       child: Views(),
@@ -79,36 +80,6 @@ class _MainScreenState extends State<MainScreen> {
       ),
     );
   }
-
-  Widget sidebar() {
-    final switchCubit = context.read<SwitchCubit>();
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        decoration: BoxDecoration(border: Border.all()),
-        child: Column(
-          children: [
-            IconButton(
-              onPressed: () => switchCubit.switchMode(ManagementMode.siege),
-              icon: const Icon(Icons.flag),
-              tooltip: "Siege",
-            ),
-            IconButton(
-              onPressed: () => switchCubit.switchMode(ManagementMode.maze),
-              icon: const Icon(Icons.bed),
-              tooltip: "Maze",
-            ),
-            IconButton(
-              onPressed: () => switchCubit.switchMode(ManagementMode.members),
-              icon: const Icon(Icons.group),
-              tooltip: "Manage Members",
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
   AppBar _appBar() {
     return AppBar(
       title: BlocBuilder<SwitchCubit, SwitchState>(
