@@ -25,56 +25,59 @@ class _SidebarState extends State<Sidebar> {
     return AnimatedSize(
         onEnd: () => setState(() => _expanded = true),
         duration: const Duration(milliseconds: 500),
-        child: SizedBox(
-          width: _expanded ? MediaQuery.of(context).size.width / 5 : 0,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                SidebarItem(
-                  icon: Icons.flag_rounded,
-                  label: "Guilds",
-                  isExpanded: _expanded,
-                  onTap: () {},
-                  subMenuWidgets: [
-                    for (var guild in loginBloc
-                        .state.authStore.model.data['managed_guilds'])
-                      Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: ElevatedButton.icon(
-                            icon: const Icon(Icons.group),
-                            label: Text(guildNames[guild] ?? guild),
-                            onPressed: () => switchCubit.switchGuild(guild)),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              SidebarItem(
+                icon: Icons.flag_rounded,
+                label: "Guilds",
+                isExpanded: _expanded,
+                onTap: () {},
+                subMenuWidgets: [
+                  for (var guild in loginBloc
+                      .state.authStore.model.data['managed_guilds'])
+                    Padding(
+                      padding: const EdgeInsets.all(4.0),
+                      child: ElevatedButton.icon(
+                          icon: const Icon(Icons.group),
+                          label: Text(guildNames[guild] ?? guild),
+                          onPressed: () => switchCubit.switchGuild(guild)),
+                    ),
+                ],
+              ),
+              SidebarItem(
+                icon: Icons.settings,
+                label: "Mode",
+                subMenuWidgets: [
+                  for (var mode in ManagementMode.values)
+                    Padding(
+                      padding: const EdgeInsets.fromLTRB(10, 4, 2, 4),
+                      child: ElevatedButton.icon(
+                        onPressed: () => switchCubit.switchMode(mode),
+                        icon: const Icon(Icons.flag),
+                        label: Text(mode.name),
                       ),
-                  ],
-                ),
-                SidebarItem(
-                  icon: Icons.settings,
-                  label: "Mode",
-                  subMenuWidgets: [
-                    for (var mode in ManagementMode.values)
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(10, 4, 2, 4),
-                        child: ElevatedButton.icon(
-                          onPressed: () => switchCubit.switchMode(mode),
-                          icon: const Icon(Icons.flag),
-                          label: Text(mode.name),
-                        ),
-                      )
-                  ],
-                  isExpanded: _expanded,
-                ),
-                const Spacer(),
-                SidebarItem(
-                  icon: _expanded
-                      ? Icons.arrow_left_rounded
-                      : Icons.arrow_right_rounded,
-                  label: "",
-                  isExpanded: _expanded,
-                ),
-              ],
-            ),
+                    )
+                ],
+                isExpanded: _expanded,
+              ),
+              const Spacer(),
+              SidebarItem(
+                icon: Icons.logout,
+                label: "Logout",
+                onTap: () => loginBloc.add(Logout()),
+              ),
+              SidebarItem(
+                icon: _expanded
+                    ? Icons.arrow_left_rounded
+                    : Icons.arrow_right_rounded,
+                label: '',
+                onTap: () => _toggleExpanded(),
+                isExpanded: _expanded,
+              ),
+            ],
           ),
         ));
   }
