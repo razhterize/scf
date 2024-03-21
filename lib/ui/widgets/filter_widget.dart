@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:scf_new/blocs/filter_cubit.dart';
-import 'package:scf_new/blocs/switch_cubit.dart';
-import 'package:scf_new/constants.dart';
-import 'package:scf_new/enums.dart';
-import 'package:scf_new/models/member_model.dart';
 
-import '../../blocs/guild_bloc.dart';
+import '../../blocs/filter_cubit.dart';
+import '../../blocs/switch_cubit.dart';
+import '../../constants.dart';
+import '../../enums.dart';
+import '../../blocs/guild_cubit.dart';
 
 class Filters extends StatefulWidget {
   const Filters({super.key});
@@ -71,7 +70,7 @@ class _FiltersState extends State<Filters> {
               builder: (context, state) => filterCubit.status == status
                   ? const Icon(Icons.check)
                   : Container()),
-          BlocBuilder<GuildBloc, GuildState>(
+          BlocBuilder<GuildCubit, GuildState>(
             builder: (context, state) {
               int count = state.guild.members
                   .where((element) => (SiegeStatus.values.contains(status)

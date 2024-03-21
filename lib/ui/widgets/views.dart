@@ -2,11 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loading_animation_widget/loading_animation_widget.dart';
 
+import '../../blocs/guild_cubit.dart';
 import '../../blocs/filter_cubit.dart';
-import '../../blocs/selection_cubit.dart';
 import '../../ui/widgets/filter_widget.dart';
 import '../../ui/widgets/member_details.dart';
-import '../../blocs/guild_bloc.dart';
 import '../../models/member_model.dart';
 
 import 'package:logging/logging.dart';
@@ -26,10 +25,10 @@ class _ViewsState extends State<Views> {
     return Stack(
       alignment: Alignment.center,
       children: [
-        BlocBuilder<GuildBloc, GuildState>(
+        BlocBuilder<GuildCubit, GuildState>(
           builder: (context, state) => state.busy ? _loading() : Container(),
         ),
-        BlocBuilder<GuildBloc, GuildState>(
+        BlocBuilder<GuildCubit, GuildState>(
           builder: (context, state) => Column(
             children: [
               topBar(),

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:scf_new/blocs/selection_cubit.dart';
 
-import '../../blocs/guild_bloc.dart';
+import '../../blocs/guild_cubit.dart';
+import '../../blocs/selection_cubit.dart';
 import '../../ui/widgets/member_edit_widgets.dart';
 import '../../ui/widgets/status_selection.dart';
 import '../../blocs/switch_cubit.dart';
@@ -64,9 +64,9 @@ class _MemberDetailState extends State<MemberDetail> {
       context: context,
       builder: (_) {
         logger.fine(
-            "Current Guild Bloc State: ${context.read<GuildBloc>().state.guild.name}");
+            "Current Guild Bloc State: ${context.read<GuildCubit>().state.guild.name}");
         return BlocProvider.value(
-          value: context.read<GuildBloc>(),
+          value: context.read<GuildCubit>(),
           child: EditMemberWidget(
             member: member,
           ),

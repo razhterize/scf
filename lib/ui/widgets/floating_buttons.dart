@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_expandable_fab/flutter_expandable_fab.dart';
+import 'package:scf_new/blocs/guild_cubit.dart';
 import 'package:scf_new/ui/widgets/popup.dart';
 
 import '../../blocs/selection_cubit.dart';
 import '../../enums.dart';
-import '../../blocs/guild_bloc.dart';
+// import '../../blocs/guild_bloc.dart';
 import '../../blocs/switch_cubit.dart';
 import '../../models/member_model.dart';
 import '../../ui/widgets/member_edit_widgets.dart';
@@ -93,7 +94,7 @@ class FloatingButton extends StatelessWidget {
         "You're about to vent ${selectCubit.state.length} members\nDo it?",
         callback: () {
           selectCubit.doSomethingAboutSelectedMembers(
-            (member) => context.read<GuildBloc>().add(DeleteMember(member)),
+            (member) => context.read<GuildCubit>().deleteMember(member),
           );
         },
       ),
@@ -108,9 +109,8 @@ class FloatingButton extends StatelessWidget {
         .join('\n');
     Clipboard.setData(ClipboardData(text: mentionText));
     ScaffoldMessenger.of(context).showSnackBar(
-      
       const SnackBar(
-        duration: Duration(milliseconds: 1500),
+          duration: Duration(milliseconds: 1500),
           content: Text("Members mention has been copied to clipboard")),
     );
   }
@@ -118,7 +118,7 @@ class FloatingButton extends StatelessWidget {
   Widget openNewMember(BuildContext context) {
     var newMember = Member('', '', 0, SiegeStatus.noScore, MazeStatus.unknown);
     return BlocProvider.value(
-      value: context.read<GuildBloc>(),
+      value: context.read<GuildCubit>(),
       child: EditMemberWidget(member: newMember),
     );
   }

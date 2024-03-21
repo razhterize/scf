@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:logging/logging.dart';
 
-import '../../blocs/guild_bloc.dart';
+import '../../blocs/guild_cubit.dart';
 import '../../models/member_model.dart';
 
 class EditMemberWidget extends StatefulWidget {
@@ -106,9 +106,9 @@ class _EditMemberWidgetState extends State<EditMemberWidget> {
       member.discordUsername = controllers[2].text;
       member.discordId = controllers[3].text;
       if (member.id != '') {
-        context.read<GuildBloc>().add(UpdateMember(member));
+        context.read<GuildCubit>().updateMember(member);
       } else {
-        context.read<GuildBloc>().add(AddMember(member.toMap()));
+        context.read<GuildCubit>().addMember(member);
       }
       Navigator.of(context).pop();
       return;

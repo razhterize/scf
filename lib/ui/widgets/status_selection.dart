@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:scf_new/blocs/selection_cubit.dart';
-import 'package:scf_new/ui/widgets/popup.dart';
 
-import '../../blocs/guild_bloc.dart';
 import '../../constants.dart';
 import '../../enums.dart';
+import '../../blocs/guild_cubit.dart';
+import '../../blocs/selection_cubit.dart';
 import '../../models/member_model.dart';
+import '../../ui/widgets/popup.dart';
 
 class StatusSelections extends StatelessWidget {
   const StatusSelections({
@@ -53,7 +53,7 @@ class StatusSelections extends StatelessWidget {
                     ? member.siegeStatus = status
                     : member.mazeStatus = status;
 
-                context.read<GuildBloc>().add(UpdateMember(member));
+                context.read<GuildCubit>().updateMember(member);
               },
             ),
           )
@@ -67,7 +67,7 @@ class StatusSelections extends StatelessWidget {
       SiegeStatus.values.contains(status)
           ? member.siegeStatus = status
           : member.mazeStatus = status;
-      context.read<GuildBloc>().add(UpdateMember(member));
+      context.read<GuildCubit>().updateMember(member);
     });
   }
 }

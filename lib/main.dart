@@ -6,11 +6,11 @@ import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:logging/logging.dart';
 
+import 'blocs/guild_cubit.dart';
 import 'configs.dart';
 import 'blocs/filter_cubit.dart';
 import 'blocs/selection_cubit.dart';
 import 'blocs/switch_cubit.dart';
-import 'blocs/guild_bloc.dart';
 import 'blocs/login_bloc.dart';
 import 'ui/screens/main_screen.dart';
 
@@ -48,22 +48,22 @@ class _AppState extends State<App> {
         BlocProvider(create: (context) => SwitchCubit()),
       ],
       child: BlocProvider(
-        create: (context) => GuildBloc(
+        create: (context) => GuildCubit(
           context.read<LoginBloc>().pb,
           context.read<SwitchCubit>().state.name,
         ),
         child: MultiBlocProvider(
           providers: [
             BlocProvider(
-              create: (context) =>
-                  SelectionCubit(context.read<GuildBloc>().state.guild.members),
+              create: (context) => SelectionCubit(
+                  context.read<GuildCubit>().state.guild.members),
             ),
             BlocProvider(
               create: (context) =>
-                  FilterCubit(context.read<GuildBloc>().state.guild.members),
+                  FilterCubit(context.read<GuildCubit>().state.guild.members),
             ),
           ],
-          child: BlocListener<GuildBloc, GuildState>(
+          child: BlocListener<GuildCubit, GuildState>(
             listener: (context, state) {
               context.read<SelectionCubit>().members = state.guild.members;
               context.read<FilterCubit>().members = state.guild.members;

@@ -7,7 +7,8 @@ import 'package:scf_new/ui/widgets/sidebar.dart';
 
 import '../widgets/popup.dart';
 import '../widgets/views.dart';
-import '../../blocs/guild_bloc.dart';
+// import '../../blocs/guild_bloc.dart';
+import '../../blocs/guild_cubit.dart';
 import '../../blocs/login_bloc.dart';
 import '../../blocs/switch_cubit.dart';
 import '../../constants.dart';
@@ -24,7 +25,7 @@ class _MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     final switchCubit = context.read<SwitchCubit>();
-    final guildBloc = context.read<GuildBloc>();
+    final guildBloc = context.read<GuildCubit>();
     return Scaffold(
       appBar: _appBar(),
       floatingActionButtonLocation: ExpandableFab.location,
@@ -37,7 +38,7 @@ class _MainScreenState extends State<MainScreen> {
                     color: Colors.white, size: 50));
           }
           return BlocConsumer<SwitchCubit, SwitchState>(
-            listener: (context, state) => guildBloc.add(GuildInit(state.name)),
+            listener: (context, state) => guildBloc.init(state.name),
             builder: (context, switchState) {
               if (!guildNames.keys.toList().contains(switchState.name)) {
                 if (loginState.authStore.model.data['managed_guilds'].isEmpty) {
