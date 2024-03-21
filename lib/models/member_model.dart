@@ -48,13 +48,13 @@ class MazeData {
 
   factory MazeData.fromMap(Map<String, dynamic> data) {
     return MazeData(
-        status: MazeStatus.values.byName(data['status']) ?? MazeStatus.unknown,
+        status: MazeStatus.values.byName(data['status']),
         hidden: data['hidden'],
         energyDamage: data['energy_damage'],);
   }
 
   Map<String, dynamic> toMap() => {
-        'status': status?.name ?? MazeStatus.unknown.name,
+        'status': status.name,
         'hidden': hidden,
         'energy_damage': energyDamage
       };
