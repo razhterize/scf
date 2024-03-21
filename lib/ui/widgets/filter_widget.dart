@@ -75,7 +75,7 @@ class _FiltersState extends State<Filters> {
               int count = state.guild.members
                   .where((element) => (SiegeStatus.values.contains(status)
                       ? element.siegeStatus == status
-                      : element.mazeStatus == status))
+                      : element.mazeData.status == status))
                   .toList()
                   .length;
               return Text(

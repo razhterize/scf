@@ -24,7 +24,7 @@ class FilterCubit extends Cubit<List<Member>> {
   void statusFilter(dynamic status) {
     _status == status ? _status = null : _status = status;
     if (_status == null) return emit(_allMembers);
-    emit(_allMembers.where((element) => element.siegeStatus == _status || element.mazeStatus == _status).toList());
+    emit(_allMembers.where((element) => element.siegeStatus == _status || element.mazeData.status == _status).toList());
   }
 
   void stringFilter(String value) {

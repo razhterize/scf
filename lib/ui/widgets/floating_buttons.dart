@@ -116,7 +116,8 @@ class FloatingButton extends StatelessWidget {
   }
 
   Widget openNewMember(BuildContext context) {
-    var newMember = Member('', '', 0, SiegeStatus.noScore, MazeStatus.unknown);
+    var newMember = Member('', '', 0, SiegeStatus.noScore,
+        MazeData(status: MazeStatus.unknown, energyDamage: 0, hidden: false));
     return BlocProvider.value(
       value: context.read<GuildCubit>(),
       child: EditMemberWidget(member: newMember),
