@@ -1,45 +1,60 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:loading_animation_widget/loading_animation_widget.dart';
-import '../../blocs/login_bloc.dart';
+import 'package:scf_new/blocs/login_bloc.dart';
+import 'package:scf_new/ui/common/loading.dart';
 
-class LoginScreen extends StatefulWidget {
+class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  Widget build(BuildContext context) {
+    final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
+
+    return Scaffold(
+        body: Center(
+            child: isSmallScreen
+                ? const _Logo()
+                : Container(
+                    padding: const EdgeInsets.all(32.0),
+                    constraints: const BoxConstraints(maxWidth: 800),
+                    child: const Expanded(child: const _Logo()),
+                  )));
+  }
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _Logo extends StatelessWidget {
+  const _Logo();
+
   @override
   Widget build(BuildContext context) {
-    final loginBloc = context.read<LoginBloc>();
-    return BlocBuilder<LoginBloc, LoginState>(
-      builder: (context, state) {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Icon(
-                Icons.people,
-                size: 50,
-              ),
-              FloatingActionButton.extended(
-                onPressed: () => loginBloc.add(DiscordLogin()),
-                icon: state.loginStatus != LoginStatus.processing
-                    ? SizedBox(
-                        width: 25,
-                        height: 25,
-                        child: Image.asset("assets/discord.png"),
-                      )
-                    : LoadingAnimationWidget.newtonCradle(
-                        color: Colors.black, size: 50),
-                label: const Text("Discord Login"),
-              )
-            ],
+    final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        const LoadingIndicator(),
+        // Image.asset("assets/discord.png"),
+        ImageIcon(const AssetImage("assets/discord.png"),
+            size: isSmallScreen ? 100 : 200),
+        // FlutterLogo(size: isSmallScreen ? 100 : 200),
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: MaterialButton(
+            color: Theme.of(context).buttonTheme.colorScheme?.inversePrimary,
+            onPressed: () => context.read<LoginBloc>().add(DiscordLogin()),
+            child: Text(
+              "Login with Discord",
+              textAlign: TextAlign.center,
+              style: isSmallScreen
+                  ? Theme.of(context).textTheme.headlineSmall
+                  : Theme.of(context)
+                      .textTheme
+                      .headlineMedium
+                      ?.copyWith(color: Colors.black),
+            ),
           ),
-        );
-      },
+        )
+      ],
     );
   }
 }
