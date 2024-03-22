@@ -3,8 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
+// import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:logging/logging.dart';
+import 'package:scf_new/ui/screens/guild_screen.dart';
+import 'package:scf_new/ui/screens/login_screen.dart';
+import 'package:scf_new/ui/screens/test_screens.dart';
+import 'package:scf_new/ui/themes.dart';
 
 import 'blocs/guild_cubit.dart';
 import 'configs.dart';
@@ -12,7 +16,7 @@ import 'blocs/filter_cubit.dart';
 import 'blocs/selection_cubit.dart';
 import 'blocs/switch_cubit.dart';
 import 'blocs/login_bloc.dart';
-import 'ui/screens/main_screen.dart';
+import 'ui/common/animations/change_screen.dart';
 
 void main(List<String> args) async {
   Logger.root
@@ -26,7 +30,8 @@ void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   HydratedBloc.storage = await HydratedStorage.build(
-      storageDirectory: kIsWeb ? HydratedStorage.webStorageDirectory : await getApplicationDocumentsDirectory(),
+      storageDirectory: await getApplicationCacheDirectory()
+      // storageDirectory: kIsWeb ? HydratedStorage.webStorageDirectory : await getApplicationDocumentsDirectory(),
       );
 
   runApp(const App());
@@ -40,6 +45,15 @@ class App extends StatefulWidget {
 }
 
 class _AppState extends State<App> {
+  bool first = false;
+  late final bool themeBrighness;
+  late final Color themeSeed;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -68,11 +82,27 @@ class _AppState extends State<App> {
               context.read<SelectionCubit>().members = state.guild.members;
               context.read<FilterCubit>().members = state.guild.members;
             },
-            child: MaterialApp(
-              debugShowCheckedModeBanner: false,
-              title: kIsWeb ? "SCF Management" : "",
-              theme: ThemeData.dark(),
-              home: const MainScreen(),
+            child: BlocListener<SwitchCubit, SwitchState>(
+              listener: (context, state) =>
+                  state.name != context.read<GuildCubit>().state.guild.name
+                      ? context.read<GuildCubit>().init(state.name)
+                      : null,
+              child: MaterialApp(
+                debugShowCheckedModeBanner: false,
+                // title: kIsWeb ? "SCF Management" : "",
+                theme: customTheme(brightness: Brightness.dark),
+                home: Scaffold(
+                  floatingActionButton: FloatingActionButton(
+                    onPressed: () => setState(() => first = !first),
+                    child: const Icon(Icons.add),
+                  ),
+                  body: ScreenChangeAnimation(
+                    child:
+                        first ? const GuildScreen() : const SecondTestScreen(),
+                  ),
+                  // home: const MainScreen(),
+                ),
+              ),
             ),
           ),
         ),
