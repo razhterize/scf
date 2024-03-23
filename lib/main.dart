@@ -5,6 +5,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 // import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:logging/logging.dart';
+import 'package:scf_new/ui/common/bottom_bar.dart';
 import 'package:scf_new/ui/screens/guild_screen.dart';
 import 'package:scf_new/ui/screens/login_screen.dart';
 import 'package:scf_new/ui/screens/test_screens.dart';
@@ -16,7 +17,7 @@ import 'blocs/filter_cubit.dart';
 import 'blocs/selection_cubit.dart';
 import 'blocs/switch_cubit.dart';
 import 'blocs/login_bloc.dart';
-import 'ui/common/animations/change_screen.dart';
+import 'ui/common/animations/sliding_fade_transition.dart';
 
 void main(List<String> args) async {
   Logger.root
@@ -96,11 +97,8 @@ class _AppState extends State<App> {
                     onPressed: () => setState(() => first = !first),
                     child: const Icon(Icons.add),
                   ),
-                  body: ScreenChangeAnimation(
-                    child:
-                        first ? const GuildScreen() : const SecondTestScreen(),
-                  ),
-                  // home: const MainScreen(),
+                  body: const GuildScreen(),
+                  bottomNavigationBar: BottomBar()
                 ),
               ),
             ),
