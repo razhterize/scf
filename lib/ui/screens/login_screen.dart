@@ -11,14 +11,18 @@ class LoginScreen extends StatelessWidget {
     final bool isSmallScreen = MediaQuery.of(context).size.width < 600;
 
     return Scaffold(
-        body: Center(
-            child: isSmallScreen
-                ? const _Logo()
-                : Container(
-                    padding: const EdgeInsets.all(32.0),
-                    constraints: const BoxConstraints(maxWidth: 800),
-                    child: const Expanded(child: const _Logo()),
-                  )));
+      body: Center(
+        child: isSmallScreen
+            ? const _Logo()
+            : Container(
+                padding: const EdgeInsets.all(32.0),
+                constraints: const BoxConstraints(maxWidth: 800),
+                child: const Expanded(
+                  child: _Logo(),
+                ),
+              ),
+      ),
+    );
   }
 }
 
