@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scf_new/blocs/login_bloc.dart';
 import 'package:scf_new/blocs/switch_cubit.dart';
@@ -8,6 +9,10 @@ import 'package:scf_new/enums.dart';
 import 'package:scf_new/ui/common/animations/change_screen.dart';
 import 'package:scf_new/ui/common/animations/scaled_widget.dart';
 import 'package:scf_new/ui/common/member_list_view.dart';
+
+import 'package:logging/logging.dart';
+
+final logger = Logger("GuildScreen");
 
 class GuildScreen extends StatefulWidget {
   const GuildScreen({super.key});
@@ -18,15 +23,7 @@ class GuildScreen extends StatefulWidget {
 
 class _GuildScreenState extends State<GuildScreen>
     with SingleTickerProviderStateMixin {
-  late final TabController tabController;
-
-  // final tabs = ["Siege", "Maze", "Members"];
-  int tabIndex = 0;
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  Color? color;
 
   @override
   Widget build(BuildContext context) {
@@ -59,34 +56,49 @@ class _GuildScreenState extends State<GuildScreen>
         ),
         child: Row(
           children: ManagementMode.values
-              .map(
-                (e) => Expanded(
-                  child: BlocBuilder<SwitchCubit, SwitchState>(
-                    builder: (context, state) {
-                      return AnimatedContainer(
-                        color: context.read<SwitchCubit>().state.mode == e
-                            ? Theme.of(context).buttonTheme.colorScheme?.primary
-                            : Theme.of(context).secondaryHeaderColor,
-                        duration: const Duration(milliseconds: 200),
-                        child: MaterialButton(
-                          onPressed: () =>
-                              context.read<SwitchCubit>().switchMode(e),
-                          onLongPress: () {
-                            showMenu(
-                              context: context,
-                              position: const RelativeRect.fromLTRB(0, 0, 0, 0),
-                              items: showGuildSwitcher(context),
-                            );
-                          },
-                          child: Text(e.name.toUpperCase(), style: Theme.of(context).textTheme.bodyMedium,),
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              )
+              .map((e) => modeButtonContainer(e, child: modeButton(e)))
               .toList(),
         ),
+      ),
+    );
+  }
+
+  Widget modeButtonContainer(ManagementMode mode, {required Widget child}) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(4, 2, 4, 2),
+        child: BlocBuilder<SwitchCubit, SwitchState>(
+          builder: (context, state) {
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 750),
+              decoration: BoxDecoration(
+                color: context.read<SwitchCubit>().state.mode == mode
+                    ? Theme.of(context).buttonTheme.colorScheme?.primary
+                    : Theme.of(context).secondaryHeaderColor,
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+              child: child,
+            );
+          },
+        ),
+      ),
+    );
+  }
+
+  Widget modeButton(ManagementMode mode) {
+    return MaterialButton(
+      padding: const EdgeInsets.all(2),
+      onPressed: () => context.read<SwitchCubit>().switchMode(mode),
+      onLongPress: () {
+        showMenu(
+          context: context,
+          position: const RelativeRect.fromLTRB(0, 0, 0, 0),
+          items: showGuildSwitcher(context),
+        );
+      },
+      child: Text(
+        mode.name.toUpperCase(),
+        style: Theme.of(context).textTheme.bodyMedium,
       ),
     );
   }
