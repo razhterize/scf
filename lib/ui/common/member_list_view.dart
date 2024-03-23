@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scf_new/blocs/guild_cubit.dart';
-import 'package:scf_new/ui/common/animations/change_screen.dart';
+import 'package:scf_new/ui/common/animations/sliding_fade_transition.dart';
 import 'package:scf_new/ui/common/loading.dart';
 import 'package:scf_new/ui/common/member_info.dart';
 
@@ -27,9 +27,7 @@ class _MemberListViewState extends State<MemberListView> {
           builder: (context, state) {
             return ListView(
               children: state.guild.members
-                  .map(
-                    (member) => MemberInfo(member),
-                  )
+                  .map((member) => MemberInfo(member))
                   .toList(),
             );
           },
