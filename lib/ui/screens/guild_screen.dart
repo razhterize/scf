@@ -6,7 +6,7 @@ import 'package:scf_new/blocs/login_bloc.dart';
 import 'package:scf_new/blocs/switch_cubit.dart';
 import 'package:scf_new/constants.dart';
 import 'package:scf_new/enums.dart';
-import 'package:scf_new/ui/common/animations/change_screen.dart';
+import 'package:scf_new/ui/common/animations/sliding_fade_transition.dart';
 import 'package:scf_new/ui/common/animations/scaled_widget.dart';
 import 'package:scf_new/ui/common/member_list_view.dart';
 
@@ -30,16 +30,8 @@ class _GuildScreenState extends State<GuildScreen>
     return Column(
       children: [
         tabBar(),
-        Expanded(
-          child: BlocBuilder<SwitchCubit, SwitchState>(
-            builder: (context, state) {
-              return ScreenChangeAnimation(
-                child: MemberListView(
-                  key: ValueKey<ManagementMode>(state.mode),
-                ),
-              );
-            },
-          ),
+        const Expanded(
+          child: MemberListView(),
         ),
       ],
     );
