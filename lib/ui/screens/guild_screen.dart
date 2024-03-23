@@ -42,8 +42,9 @@ class _GuildScreenState extends State<GuildScreen>
         height: kToolbarHeight * 0.65,
         decoration: BoxDecoration(
           color: Theme.of(context).secondaryHeaderColor,
-          borderRadius: BorderRadius.circular(8.0),
+          borderRadius: BorderRadius.circular(10.0),
         ),
+        padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
         child: Row(
           children: ManagementMode.values
               .map((e) => modeButtonContainer(e, child: modeButton(e)))
@@ -55,7 +56,7 @@ class _GuildScreenState extends State<GuildScreen>
 
   Widget modeButtonContainer(ManagementMode mode, {required Widget child}) {
     return Expanded(
-      child: Padding(
+      child: Container(
         padding: const EdgeInsets.fromLTRB(4, 2, 4, 2),
         child: BlocBuilder<SwitchCubit, SwitchState>(
           builder: (context, state) {
@@ -65,7 +66,7 @@ class _GuildScreenState extends State<GuildScreen>
                 color: context.read<SwitchCubit>().state.mode == mode
                     ? Theme.of(context).buttonTheme.colorScheme?.primary
                     : Theme.of(context).secondaryHeaderColor,
-                borderRadius: BorderRadius.circular(20.0),
+                borderRadius: BorderRadius.circular(10.0),
               ),
               child: child,
             );
