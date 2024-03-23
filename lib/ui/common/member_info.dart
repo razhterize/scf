@@ -4,11 +4,10 @@ import 'package:scf_new/blocs/selection_cubit.dart';
 import 'package:scf_new/blocs/switch_cubit.dart';
 import 'package:scf_new/constants.dart';
 import 'package:scf_new/enums.dart';
-import 'package:scf_new/ui/common/animations/sliding_fade_transition.dart';
-import 'package:scf_new/ui/common/animations/scaled_widget.dart';
 import 'package:scf_new/ui/common/member_status_selection.dart';
 
 import '../../models/member_model.dart';
+import 'animations.dart';
 
 class MemberInfo extends StatelessWidget {
   const MemberInfo(this.member, {super.key});

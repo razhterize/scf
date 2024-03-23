@@ -6,7 +6,7 @@ import 'package:scf_new/constants.dart';
 import 'package:scf_new/enums.dart';
 
 import '../../models/member_model.dart';
-import 'animations/sliding_fade_transition.dart';
+import 'animations.dart';
 
 class MemberStatusSelection extends StatelessWidget {
   const MemberStatusSelection(this.member, {super.key});

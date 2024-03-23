@@ -17,7 +17,6 @@ import 'blocs/filter_cubit.dart';
 import 'blocs/selection_cubit.dart';
 import 'blocs/switch_cubit.dart';
 import 'blocs/login_bloc.dart';
-import 'ui/common/animations/sliding_fade_transition.dart';
 
 void main(List<String> args) async {
   Logger.root
