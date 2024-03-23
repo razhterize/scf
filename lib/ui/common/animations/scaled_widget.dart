@@ -4,7 +4,7 @@ class ScaledAnimation extends StatefulWidget {
   const ScaledAnimation({
     super.key,
     required this.child,
-    this.duration = const Duration(seconds: 1),
+    this.duration = const Duration(milliseconds: 1500),
   });
 
   final Widget child;
@@ -25,7 +25,7 @@ class _ScaledAnimationState extends State<ScaledAnimation>
     return ScaleTransition(
       scale: CurvedAnimation(
         parent: animationController,
-        curve: Curves.fastLinearToSlowEaseIn,
+        curve: Curves.ease,
       ),
       child: widget.child,
     );
