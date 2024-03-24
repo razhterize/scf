@@ -42,6 +42,14 @@ class _FilterBarState extends State<FilterBar> {
           ),
           Expanded(
             child: AnimatedSwitcher(
+              transitionBuilder: (child, animation) {
+                return SizeTransition(
+                  axisAlignment: BorderSide.strokeAlignInside,
+                  axis: Axis.horizontal,
+                  sizeFactor: animation,
+                  child: child,
+                );
+              },
               duration: duration,
               child: isSearch ? searchBar() : _filterStatuses(),
             ),
@@ -63,7 +71,7 @@ class _FilterBarState extends State<FilterBar> {
     return BlocBuilder<SwitchCubit, SwitchState>(
       builder: (context, state) {
         return SlidingFadeTransition(
-          duration: const Duration(milliseconds: 500),
+          duration: duration,
           offsetBegin: const Offset(0.1, 0),
           child: ListView(
             key: ValueKey<ManagementMode>(state.mode),
