@@ -36,10 +36,14 @@ class SlidingFadeTransition extends StatefulWidget {
     super.key,
     required this.child,
     this.duration = const Duration(seconds: 1),
+    this.offsetBegin = const Offset(1, 0),
+    this.offsetEnd = Offset.zero,
   });
 
   final Widget child;
   final Duration duration;
+  final Offset offsetBegin;
+  final Offset offsetEnd;
 
   @override
   State<SlidingFadeTransition> createState() => _SlidingFadeTransitionState();
@@ -64,8 +68,8 @@ class _SlidingFadeTransitionState extends State<SlidingFadeTransition>
       transitionBuilder: (child, animation) {
         return SlideTransition(
           position: Tween<Offset>(
-            begin: const Offset(1, 0),
-            end: Offset.zero,
+            begin: widget.offsetBegin,
+            end: widget.offsetEnd,
           ).animate(animation),
           child: FadeTransition(
             opacity: animation,
