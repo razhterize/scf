@@ -35,10 +35,7 @@ class MemberInfo extends StatelessWidget {
             },
           ),
           // TODO: think of something to change this trailing with each different SwitchState
-          trailing: SlidingFadeTransition(
-            duration: const Duration(seconds: 2),
-            child: MemberStatusSelection(member),
-          ),
+          trailing: MemberStatusSelection(member),
         );
       },
     );
