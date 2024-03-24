@@ -1,6 +1,9 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:scf_new/blocs/selection_cubit.dart';
 
 class ActionBar extends StatelessWidget {
   ActionBar({super.key});
@@ -9,6 +12,7 @@ class ActionBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final selectCubit = context.read<SelectionCubit>();
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
@@ -26,31 +30,40 @@ class ActionBar extends StatelessWidget {
             icon: const Icon(Icons.alternate_email),
           ),
           const Spacer(),
-          IconButton(
-            onPressed: () {},
-            tooltip: "Select All",
-            icon: const Icon(Icons.select_all_outlined),
+          BlocBuilder<SelectionCubit, List>(
+            builder: (context, state) {
+              return AnimatedSwitcher(
+                duration: const Duration(milliseconds: 500),
+                child: selectCubit.allSelected
+                    ? IconButton(
+                        onPressed: () => selectCubit.clearSelections(),
+                        tooltip: "Remove All Selection",
+                        icon: const Icon(Icons.deselect_outlined),
+                      )
+                    : IconButton(
+                        onPressed: () => selectCubit.selectAll(),
+                        tooltip: "Select All",
+                        icon: const Icon(Icons.select_all_outlined),
+                      ),
+              );
+            },
           ),
           const Spacer(),
           IconButton(
-            onPressed: () {},
-            tooltip: "Remove All Selection",
-            icon: const Icon(Icons.deselect_outlined),
-          ),
-          const Spacer(),
-          IconButton(
-            onPressed: () {},
+            onPressed: () => selectCubit.selectRange(),
             tooltip: "Select Range",
             icon: const Icon(Icons.library_add_check_outlined),
           ),
           const Spacer(),
           IconButton(
+            // TODO: New member dialog
             onPressed: () {},
             tooltip: "Add Member",
             icon: const Icon(Icons.person_add_alt_1),
           ),
           const Spacer(),
           IconButton(
+            // TODO: Remove Member. Show dialog confirmation
             onPressed: () {},
             tooltip: "Remove Member",
             icon: const Icon(Icons.person_remove_alt_1),
