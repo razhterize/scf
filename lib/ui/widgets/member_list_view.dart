@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scf_new/blocs/guild_cubit.dart';
 import 'package:scf_new/ui/common/animations.dart';
-import 'package:scf_new/ui/common/loading.dart';
-import 'package:scf_new/ui/common/member_info.dart';
+import 'package:scf_new/ui/widgets/loading.dart';
+import 'package:scf_new/ui/widgets/member_info.dart';
 
 class MemberListView extends StatefulWidget {
   const MemberListView({super.key});

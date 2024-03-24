@@ -6,8 +6,8 @@ import 'package:scf_new/blocs/login_bloc.dart';
 import 'package:scf_new/blocs/switch_cubit.dart';
 import 'package:scf_new/constants.dart';
 import 'package:scf_new/enums.dart';
-import 'package:scf_new/ui/common/filter_bar.dart';
-import 'package:scf_new/ui/common/member_list_view.dart';
+import 'package:scf_new/ui/widgets/filter_bar.dart';
+import 'package:scf_new/ui/widgets/member_list_view.dart';
 
 import 'package:logging/logging.dart';
 

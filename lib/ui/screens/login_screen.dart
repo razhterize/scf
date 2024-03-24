@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scf_new/blocs/login_bloc.dart';
-import 'package:scf_new/ui/common/loading.dart';
+import 'package:scf_new/ui/widgets/loading.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
