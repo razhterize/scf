@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:scf_new/blocs/filter_cubit.dart';
 import 'package:scf_new/blocs/guild_cubit.dart';
 import 'package:scf_new/ui/common/animations.dart';
 import 'package:scf_new/ui/widgets/loading.dart';
 import 'package:scf_new/ui/widgets/member_info.dart';
+
+import '../../models/member_model.dart';
 
 class MemberListView extends StatefulWidget {
   const MemberListView({super.key});
@@ -23,12 +26,12 @@ class _MemberListViewState extends State<MemberListView> {
                 state.busy ? const LoadingIndicator() : const SizedBox(),
           ),
         ),
-        BlocBuilder<GuildCubit, GuildState>(
+        BlocBuilder<FilterCubit, List<Member>>(
           builder: (context, state) {
             return SlidingFadeTransition(
-              child: !state.busy
+              child: !context.read<GuildCubit>().state.busy
                   ? ListView(
-                      children: state.guild.members
+                      children: state
                           .map((member) => MemberInfo(member))
                           .toList())
                   : const SizedBox(),
