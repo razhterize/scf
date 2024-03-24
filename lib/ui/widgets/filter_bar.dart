@@ -6,6 +6,7 @@ import 'package:scf_new/blocs/guild_cubit.dart';
 import 'package:scf_new/blocs/switch_cubit.dart';
 import 'package:scf_new/constants.dart';
 import 'package:scf_new/enums.dart';
+import 'package:scf_new/ui/common/animations.dart';
 
 import '../../blocs/filter_cubit.dart';
 
@@ -59,15 +60,23 @@ class _FilterBarState extends State<FilterBar> {
   }
 
   Widget _filterStatuses() {
-    final mode = context.read<SwitchCubit>().state.mode;
-    return ListView(
-      scrollDirection: Axis.horizontal,
-      children: switch (mode) {
-        ManagementMode.siege =>
-          SiegeStatus.values.map((e) => statusButton(e)).toList(),
-        ManagementMode.maze =>
-          MazeStatus.values.map((e) => statusButton(e)).toList(),
-        _ => [],
+    return BlocBuilder<SwitchCubit, SwitchState>(
+      builder: (context, state) {
+        return SlidingFadeTransition(
+          duration: const Duration(milliseconds: 500),
+          offsetBegin: const Offset(0.1, 0),
+          child: ListView(
+            key: ValueKey<ManagementMode>(state.mode),
+            scrollDirection: Axis.horizontal,
+            children: switch (state.mode) {
+              ManagementMode.siege =>
+                SiegeStatus.values.map((e) => statusButton(e)).toList(),
+              ManagementMode.maze =>
+                MazeStatus.values.map((e) => statusButton(e)).toList(),
+              _ => [],
+            },
+          ),
+        );
       },
     );
   }
