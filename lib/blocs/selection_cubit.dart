@@ -9,12 +9,9 @@ class SelectionCubit extends Cubit<List<Member>> {
     _allMembers = members;
   }
 
-  // @override
-  // void onChange(Change<List<Member>> change){
-  //   super.onChange(change);
-  // }
-
   List<Member> _allMembers = [];
+
+
 
   set members(List<Member> members) {
     _allMembers = members;
@@ -35,5 +32,6 @@ class SelectionCubit extends Cubit<List<Member>> {
   }
 
   bool isSelected(Member member) => state.contains(member);
+  bool get allSelected => state.length == _allMembers.length;
   int index(Member member) => _allMembers.indexWhere((element) => element.id == member.id);
 }
