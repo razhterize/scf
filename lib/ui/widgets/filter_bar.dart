@@ -45,8 +45,8 @@ class _FilterBarState extends State<FilterBar> {
             toggle();
           },
           icon: isSearch
-              ? const Icon(Icons.close)
-              : const Icon(Icons.search_outlined),
+              ? const Icon(Icons.toggle_off)
+              : const Icon(Icons.toggle_on),
           tooltip: "Chage Filter Type",
         ),
         Expanded(
@@ -80,19 +80,24 @@ class _FilterBarState extends State<FilterBar> {
     return Row(
       children: [
         BlocBuilder<FilterCubit, List>(
-          builder: (context, state) {
-            return LayoutBuilder(builder: (context, constraints) {
-              return constraints.maxWidth > 720
-                  ? IconButton(
-                      onPressed: () => context.read<FilterCubit>().string != ""
-                          ? searchController.clear()
-                          : null,
-                      icon: context.read<FilterCubit>().string != ""
-                          ? const Icon(Icons.close)
-                          : const Icon(Icons.search_outlined),
-                    )
-                  : Container();
-            });
+          builder: (context, _) {
+            return LayoutBuilder(
+              builder: (context, constraints) {
+                return constraints.maxWidth > 720
+                    ? IconButton(
+                        onPressed: () {
+                          context.read<FilterCubit>().string != ""
+                              ? searchController.clear()
+                              : null;
+                          context.read<FilterCubit>().stringFilter("");
+                        },
+                        icon: context.read<FilterCubit>().string != ""
+                            ? const Icon(Icons.close)
+                            : const Icon(Icons.search_outlined),
+                      )
+                    : const SizedBox();
+              },
+            );
           },
         ),
         Expanded(
