@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:scf_new/blocs/guild_cubit.dart';
 import 'package:scf_new/blocs/selection_cubit.dart';
 import 'package:scf_new/ui/widgets/member_status_selection.dart';
 
 import '../../models/member_model.dart';
+import 'member_edit.dart';
 
 class MemberInfo extends StatelessWidget {
   const MemberInfo(this.member, {super.key});
@@ -20,6 +22,17 @@ class MemberInfo extends StatelessWidget {
           selectedColor: Theme.of(context).textSelectionTheme.cursorColor,
           subtitle: Text(member.pgrId.toString()),
           onTap: () => context.read<SelectionCubit>().changeSelect(member),
+          onLongPress: () {
+            showBottomSheet(
+              context: context,
+              builder: (_) {
+                return BlocProvider.value(
+                  value: context.read<GuildCubit>(),
+                  child: MemberEdit(member: member),
+                );
+              },
+            );
+          },
           leading: BlocBuilder<SelectionCubit, List<Member>>(
             builder: (context, state) {
               return Checkbox(
