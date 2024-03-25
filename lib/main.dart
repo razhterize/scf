@@ -91,9 +91,20 @@ class _AppState extends State<App> {
                 theme: ThemeData.from(colorScheme: darkColorScheme),
                 // theme: customTheme(brightness: Brightness.dark),
                 home: Scaffold(
-                    
-                    body: const GuildScreen(),
-                    bottomNavigationBar: ActionBar()),
+                  body: LayoutBuilder(
+                    builder: (_, constrain) {
+                      return Flex(
+                        direction: constrain.maxWidth < 720
+                            ? Axis.vertical
+                            : Axis.horizontal,
+                        children: [
+                          const Expanded(child: GuildScreen()),
+                          ActionBar(),
+                        ],
+                      );
+                    },
+                  ),
+                ),
               ),
             ),
           ),
