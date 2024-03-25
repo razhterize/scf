@@ -24,14 +24,17 @@ class _GuildScreenState extends State<GuildScreen>
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: [
-        tabBar(),
-        const FilterBar(),
-        const Expanded(
-          child: MemberListView(),
-        ),
-      ],
+    return LayoutBuilder(
+      builder: (context, constraints) => Flex(
+        direction: constraints.maxWidth < 720 ? Axis.vertical : Axis.horizontal,
+        children: [
+          tabBar(),
+          const FilterBar(),
+          const Expanded(
+            child: MemberListView(),
+          ),
+        ],
+      ),
     );
   }
 
@@ -64,7 +67,10 @@ class _GuildScreenState extends State<GuildScreen>
               duration: const Duration(milliseconds: 750),
               decoration: BoxDecoration(
                 color: context.read<SwitchCubit>().state.mode == mode
-                    ? Theme.of(context).buttonTheme.colorScheme?.primaryContainer
+                    ? Theme.of(context)
+                        .buttonTheme
+                        .colorScheme
+                        ?.primaryContainer
                     : Theme.of(context).splashColor,
                 borderRadius: BorderRadius.circular(10.0),
               ),
