@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scf_new/blocs/guild_cubit.dart';
 import 'package:scf_new/blocs/switch_cubit.dart';
@@ -22,46 +23,90 @@ class _FilterBarState extends State<FilterBar> {
 
   @override
   Widget build(BuildContext context) {
-    return AnimatedContainer(
-      height: 40,
-      duration: duration,
-      margin: const EdgeInsets.fromLTRB(8, 2, 8, 2),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          IconButton(
-            onPressed: () {
-              if (isSearch) searchController.clear();
-              toggle();
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return AnimatedContainer(
+          height: 40,
+          duration: duration,
+          margin: const EdgeInsets.fromLTRB(8, 2, 8, 2),
+          child: constraints.maxWidth < 700 ? _smallWidth() : _largeWidth(),
+        );
+      },
+    );
+  }
+
+  Widget _smallWidth() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        IconButton(
+          onPressed: () {
+            if (isSearch) searchController.clear();
+            toggle();
+          },
+          icon: isSearch
+              ? const Icon(Icons.close)
+              : const Icon(Icons.search_outlined),
+          tooltip: "Chage Filter Type",
+        ),
+        Expanded(
+          child: AnimatedSwitcher(
+            transitionBuilder: (child, animation) {
+              return SizeTransition(
+                axisAlignment: BorderSide.strokeAlignInside,
+                axis: Axis.horizontal,
+                sizeFactor: animation,
+                child: child,
+              );
             },
-            icon: isSearch
-                ? const Icon(Icons.close)
-                : const Icon(Icons.search_outlined),
+            duration: duration,
+            child: isSearch ? searchBar() : _filterStatuses(),
           ),
-          Expanded(
-            child: AnimatedSwitcher(
-              transitionBuilder: (child, animation) {
-                return SizeTransition(
-                  axisAlignment: BorderSide.strokeAlignInside,
-                  axis: Axis.horizontal,
-                  sizeFactor: animation,
-                  child: child,
-                );
-              },
-              duration: duration,
-              child: isSearch ? searchBar() : _filterStatuses(),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
+    );
+  }
+
+  Widget _largeWidth() {
+    return Row(
+      children: [
+        Expanded(child: searchBar()),
+        Expanded(child: _filterStatuses()),
+      ],
     );
   }
 
   Widget searchBar() {
-    return TextField(
-      decoration:
-          const InputDecoration(hintText: "Name or PGR ID", isDense: true),
-      controller: searchController,
+    return Row(
+      children: [
+        BlocBuilder<FilterCubit, List>(
+          builder: (context, state) {
+            return LayoutBuilder(builder: (context, constraints) {
+              return constraints.maxWidth > 720
+                  ? IconButton(
+                      onPressed: () => context.read<FilterCubit>().string != ""
+                          ? searchController.clear()
+                          : null,
+                      icon: context.read<FilterCubit>().string != ""
+                          ? const Icon(Icons.close)
+                          : const Icon(Icons.search_outlined),
+                    )
+                  : Container();
+            });
+          },
+        ),
+        Expanded(
+          child: TextField(
+            decoration: const InputDecoration(
+              hintText: "Name or PGR ID",
+              isDense: true,
+            ),
+            onChanged: (value) =>
+                context.read<FilterCubit>().stringFilter(value),
+            controller: searchController,
+          ),
+        ),
+      ],
     );
   }
 
