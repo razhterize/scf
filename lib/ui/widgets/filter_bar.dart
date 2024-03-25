@@ -90,9 +90,11 @@ class _FilterBarState extends State<FilterBar> {
   Widget statusButton(dynamic status) => MaterialButton(
         onPressed: () => context.read<FilterCubit>().statusFilter(status),
         child: Text(
-            "${statusNames[status]}: ${context.read<GuildCubit>().state.guild.members.where(
-                  (m) => m.siegeStatus == status || m.mazeData.status == status,
-                ).length}"),
+          "${statusNames[status]}: ${context.read<GuildCubit>().state.guild.members.where(
+                (m) => m.siegeStatus == status || m.mazeData.status == status,
+              ).length}",
+          style: TextStyle(color: statusColors[status]),
+        ),
       );
 
   void toggle() => setState(() => isSearch = !isSearch);
