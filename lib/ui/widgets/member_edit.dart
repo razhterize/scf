@@ -78,7 +78,11 @@ class _MemberEditState extends State<MemberEdit> {
       member.pgrId = int.parse(controllers[1].text);
       member.discordUsername = controllers[2].text;
       member.discordId = controllers[3].text;
-      context.read<GuildCubit>().updateMember(member);
+      if (member.id != "") {
+        context.read<GuildCubit>().updateMember(member);
+      } else {
+        context.read<GuildCubit>().addMember(member);
+      }
       Navigator.pop(context);
     }
   }
