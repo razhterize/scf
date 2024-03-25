@@ -5,10 +5,8 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 // import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:logging/logging.dart';
-import 'package:scf_new/ui/common/confirm_popup.dart';
 import 'package:scf_new/ui/widgets/action_bar.dart';
 import 'package:scf_new/ui/screens/guild_screen.dart';
-import 'package:scf_new/ui/screens/login_screen.dart';
 import 'package:scf_new/ui/themes.dart';
 
 import 'blocs/guild_cubit.dart';
