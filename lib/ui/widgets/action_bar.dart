@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:scf_new/blocs/guild_cubit.dart';
 import 'package:scf_new/blocs/selection_cubit.dart';
 import 'package:scf_new/ui/common/confirm_popup.dart';
 
@@ -65,7 +66,19 @@ class ActionBar extends StatelessWidget {
           const Spacer(),
           IconButton(
             // TODO: Remove Member. Show dialog confirmation
-            onPressed: () {},
+            onPressed: () {
+              if (selectCubit.state.isNotEmpty) {
+                showDialog(
+                    context: context,
+                    builder: (context) => ConfirmationPopup(
+                          "Are you sure you want to vent selected (${selectCubit.state.length}) members?",
+                          callback: () =>
+                              selectCubit.doSomethingAboutSelectedMembers(
+                            context.read<GuildCubit>().deleteMember,
+                          ),
+                        ));
+              }
+            },
             tooltip: "Remove Member",
             icon: const Icon(Icons.person_remove_alt_1),
           ),
