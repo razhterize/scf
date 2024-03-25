@@ -4,6 +4,7 @@ import 'package:scf_new/blocs/guild_cubit.dart';
 import 'package:scf_new/blocs/switch_cubit.dart';
 import 'package:scf_new/constants.dart';
 import 'package:scf_new/enums.dart';
+import 'package:scf_new/ui/widgets/member_edit.dart';
 
 import '../../models/member_model.dart';
 import '../common/animations.dart';
@@ -48,7 +49,13 @@ class MemberStatusSelection extends StatelessWidget {
             },
           ),
         _ => IconButton(
-            onPressed: () {},
+            onPressed: () {
+              showModalBottomSheet(
+                  context: context,
+                  builder: (_) {
+                    return MemberEdit(member: member);
+                  });
+            },
             icon: const Icon(Icons.edit),
           ),
       },
