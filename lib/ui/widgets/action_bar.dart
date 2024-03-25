@@ -5,7 +5,10 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scf_new/blocs/guild_cubit.dart';
 import 'package:scf_new/blocs/selection_cubit.dart';
+import 'package:scf_new/enums.dart';
+import 'package:scf_new/models/member_model.dart';
 import 'package:scf_new/ui/common/confirm_popup.dart';
+import 'package:scf_new/ui/widgets/member_edit.dart';
 
 class ActionBar extends StatelessWidget {
   ActionBar({super.key});
@@ -59,13 +62,28 @@ class ActionBar extends StatelessWidget {
           const Spacer(),
           IconButton(
             // TODO: New member dialog
-            onPressed: () {},
+            onPressed: () {
+              Member newMember = Member(
+                  "",
+                  '',
+                  0,
+                  discordId: '',
+                  discordUsername: '',
+                  SiegeStatus.newMember,
+                  MazeData(status: MazeStatus.unknown));
+              showModalBottomSheet(
+                context: context,
+                builder: (_) => BlocProvider.value(
+                  value: context.read<GuildCubit>(),
+                  child: MemberEdit(member: newMember),
+                ),
+              );
+            },
             tooltip: "Add Member",
             icon: const Icon(Icons.person_add_alt_1),
           ),
           const Spacer(),
           IconButton(
-            // TODO: Remove Member. Show dialog confirmation
             onPressed: () {
               if (selectCubit.state.isNotEmpty) {
                 showDialog(
