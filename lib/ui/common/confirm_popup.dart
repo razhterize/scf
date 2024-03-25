@@ -12,11 +12,11 @@ class ConfirmationPopup extends StatelessWidget {
   Widget build(BuildContext context) {
     return Dialog(
       child: Container(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(16.0),
         child: Wrap(
           children: [
-            Center(child: Text(content)),
-            const SizedBox(height: 8.0),
+            Center(child: Text(content, textAlign: TextAlign.center,)),
+            const SizedBox(height: 50.0),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
@@ -29,8 +29,8 @@ class ConfirmationPopup extends StatelessWidget {
                 Expanded(
                   child: TextButton(
                     onPressed: () {
-                      Navigator.of(context).pop();
                       callback?.call();
+                      Navigator.of(context).pop();
                     },
                     child: const Text("DO IT!!"),
                   ),
