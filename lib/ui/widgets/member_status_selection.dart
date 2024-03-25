@@ -26,7 +26,10 @@ class MemberStatusSelection extends StatelessWidget {
               for (var s in SiegeStatus.values)
                 DropdownMenuItem(
                   value: s,
-                  child: Text(statusNames[s] ?? s.name),
+                  child: Text(
+                    statusNames[s] ?? s.name,
+                    style: textStyle(s),
+                  ),
                 )
             ],
             onChanged: (value) {
@@ -40,7 +43,10 @@ class MemberStatusSelection extends StatelessWidget {
               for (var m in MazeStatus.values)
                 DropdownMenuItem(
                   value: m,
-                  child: Text(statusNames[m] ?? m.name),
+                  child: Text(
+                    statusNames[m] ?? m.name,
+                    style: textStyle(m),
+                  ),
                 )
             ],
             onChanged: (value) {
@@ -61,6 +67,8 @@ class MemberStatusSelection extends StatelessWidget {
       },
     );
   }
+
+  TextStyle textStyle(dynamic status) => TextStyle(color: statusColors[status]);
 
   bool isSiege(status) => SiegeStatus.values.contains(status);
 }
