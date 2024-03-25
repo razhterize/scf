@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scf_new/blocs/guild_cubit.dart';
 
@@ -66,6 +67,21 @@ class _MemberEditState extends State<MemberEdit> {
               decoration: const InputDecoration(labelText: "Discord ID"),
               onFieldSubmitted: (_) => validate(),
             ),
+
+            Padding(
+              padding: const EdgeInsets.all(12.0),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: MaterialButton(
+                      color: Theme.of(context).buttonTheme.colorScheme?.inversePrimary,
+                      onPressed: () => validate(),
+                      child: const Text("Save"),
+                    ),
+                  ),
+                ],
+              ),
+            )
           ],
         ),
       ),
