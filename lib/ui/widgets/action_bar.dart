@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scf_new/blocs/selection_cubit.dart';
+import 'package:scf_new/ui/common/confirm_popup.dart';
 
 class ActionBar extends StatelessWidget {
   ActionBar({super.key});
@@ -16,7 +17,7 @@ class ActionBar extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: Theme.of(context).buttonTheme.colorScheme?.primary,
+        color: Theme.of(context).buttonTheme.colorScheme?.primaryContainer,
         borderRadius: BorderRadius.circular(8.0),
       ),
       margin: const EdgeInsets.all(6),

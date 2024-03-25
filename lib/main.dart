@@ -5,6 +5,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 // import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:logging/logging.dart';
+import 'package:scf_new/ui/common/confirm_popup.dart';
 import 'package:scf_new/ui/widgets/action_bar.dart';
 import 'package:scf_new/ui/screens/guild_screen.dart';
 import 'package:scf_new/ui/screens/login_screen.dart';
@@ -89,16 +90,12 @@ class _AppState extends State<App> {
               child: MaterialApp(
                 debugShowCheckedModeBanner: false,
                 // title: kIsWeb ? "SCF Management" : "",
-                theme: darkTheme,
+                theme: ThemeData.from(colorScheme: darkColorScheme),
                 // theme: customTheme(brightness: Brightness.dark),
                 home: Scaffold(
-                  floatingActionButton: FloatingActionButton(
-                    onPressed: () => setState(() => first = !first),
-                    child: const Icon(Icons.add),
-                  ),
-                  body: const GuildScreen(),
-                  bottomNavigationBar: ActionBar()
-                ),
+                    
+                    body: const GuildScreen(),
+                    bottomNavigationBar: ActionBar()),
               ),
             ),
           ),

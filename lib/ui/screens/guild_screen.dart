@@ -43,7 +43,7 @@ class _GuildScreenState extends State<GuildScreen>
       child: Container(
         height: kToolbarHeight * 0.65,
         decoration: BoxDecoration(
-          color: Theme.of(context).secondaryHeaderColor,
+          color: Theme.of(context).highlightColor,
           borderRadius: BorderRadius.circular(10.0),
         ),
         padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
@@ -66,8 +66,8 @@ class _GuildScreenState extends State<GuildScreen>
               duration: const Duration(milliseconds: 750),
               decoration: BoxDecoration(
                 color: context.read<SwitchCubit>().state.mode == mode
-                    ? Theme.of(context).buttonTheme.colorScheme?.primary
-                    : Theme.of(context).secondaryHeaderColor,
+                    ? Theme.of(context).buttonTheme.colorScheme?.primaryContainer
+                    : Theme.of(context).splashColor,
                 borderRadius: BorderRadius.circular(10.0),
               ),
               child: child,

@@ -7,7 +7,6 @@ import 'package:scf_new/enums.dart';
 import 'package:scf_new/ui/widgets/member_status_selection.dart';
 
 import '../../models/member_model.dart';
-import '../common/animations.dart';
 
 class MemberInfo extends StatelessWidget {
   const MemberInfo(this.member, {super.key});
@@ -21,8 +20,7 @@ class MemberInfo extends StatelessWidget {
         return ListTile(
           selected: context.read<SelectionCubit>().isSelected(member),
           title: Text(member.name),
-          selectedColor: Colors.orangeAccent,
-          // tileColor: statusColors[member.siegeStatus],
+          selectedColor: Theme.of(context).textSelectionTheme.cursorColor,
           subtitle: Text(member.pgrId.toString()),
           onTap: () => context.read<SelectionCubit>().changeSelect(member),
           leading: BlocBuilder<SelectionCubit, List<Member>>(
@@ -34,7 +32,6 @@ class MemberInfo extends StatelessWidget {
               );
             },
           ),
-          // TODO: think of something to change this trailing with each different SwitchState
           trailing: MemberStatusSelection(member),
         );
       },
