@@ -24,17 +24,16 @@ class _GuildScreenState extends State<GuildScreen>
 
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) => Flex(
-        direction: constraints.maxWidth < 720 ? Axis.vertical : Axis.horizontal,
-        children: [
-          tabBar(),
-          const FilterBar(),
-          const Expanded(
-            child: MemberListView(),
-          ),
-        ],
-      ),
+    return Flex(
+      direction: Axis.vertical,
+      // direction: constraints.maxWidth < 720 ? Axis.vertical : Axis.horizontal,
+      children: [
+        tabBar(),
+        const FilterBar(),
+        const Expanded(
+          child: MemberListView(),
+        ),
+      ],
     );
   }
 
