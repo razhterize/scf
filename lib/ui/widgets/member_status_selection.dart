@@ -17,8 +17,23 @@ class MemberStatusSelection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SlidingFadeTransition(
-        duration: const Duration(milliseconds: 500),
-        child: _statusSelection(context));
+      duration: const Duration(milliseconds: 500),
+      child: _statusSelection(context),
+    );
+  }
+
+  Widget _additionalInfo(BuildContext context) {
+    return switch (context.watch<SwitchCubit>().state.mode) {
+      ManagementMode.siege => Text(
+        "Siege Status: ${member.siegeStatus.name}",
+        style: textStyle(member.siegeStatus),
+      ),
+      ManagementMode.maze => Text(
+        "Maze Status: ${member.mazeData.status.name}",
+        style: textStyle(member.mazeData.status),
+      ),
+      _ => Container(),
+    };
   }
 
   Widget _statusSelection(BuildContext context) {
