@@ -69,7 +69,7 @@ class ActionBar extends StatelessWidget {
                     discordId: '',
                     discordUsername: '',
                     SiegeStatus.newMember,
-                    MazeData(status: MazeStatus.unknown));
+                    MazeData());
                 showModalBottomSheet(
                   context: context,
                   builder: (_) => BlocProvider.value(

@@ -42,20 +42,22 @@ class Member {
 
 class MazeData {
   MazeStatus status;
-  bool? hidden;
-  int? energyDamage;
-  MazeData({required this.status, this.hidden, this.energyDamage});
+  bool hidden;
+  int energyDamage;
+  MazeData({
+    this.status = MazeStatus.unknown,
+    this.hidden = false,
+    this.energyDamage = 0,
+  });
 
   factory MazeData.fromMap(Map<String, dynamic> data) {
     return MazeData(
-        status: MazeStatus.values.byName(data['status']),
-        hidden: data['hidden'],
-        energyDamage: data['energy_damage'],);
+      status: MazeStatus.values.byName(data['status']),
+      hidden: data['hidden'] ?? false,
+      energyDamage: data['energy_damage'] ?? 0,
+    );
   }
 
-  Map<String, dynamic> toMap() => {
-        'status': status.name,
-        'hidden': hidden,
-        'energy_damage': energyDamage
-      };
+  Map<String, dynamic> toMap() =>
+      {'status': status.name, 'hidden': hidden, 'energy_damage': energyDamage};
 }

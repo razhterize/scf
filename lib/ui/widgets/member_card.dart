@@ -90,7 +90,7 @@ class _MemberCardState extends State<MemberCard> {
                         ),
                         enabled: state.mode != ManagementMode.siege,
                         onSubmitted: (value) {
-                          member.mazeData.energyDamage = int.tryParse(value);
+                          member.mazeData.energyDamage = int.tryParse(value) ?? 0;
                           context.read<GuildCubit>().updateMember(member);
                         },
                       ),

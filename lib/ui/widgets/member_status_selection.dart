@@ -33,9 +33,6 @@ class MemberStatusSelection extends StatelessWidget {
   }
 
   Widget _additionalInfo(BuildContext context) {
-    final controller = TextEditingController(
-      text: "${member.mazeData.energyDamage ?? 0}",
-    );
     return switch (context.watch<SwitchCubit>().state.mode) {
       ManagementMode.siege => const SizedBox(),
       ManagementMode.maze => BlocBuilder<GuildCubit, GuildState>(
@@ -44,14 +41,14 @@ class MemberStatusSelection extends StatelessWidget {
               child: AnimatedContainer(
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: member.mazeData.hidden! ? Colors.red : Colors.green,
+                  color: member.mazeData.hidden ? Colors.red : Colors.green,
                 ),
                 duration: const Duration(milliseconds: 500),
                 padding: const EdgeInsets.all(8),
                 child: const Text("Hidden"),
               ),
               onPressed: () {
-                member.mazeData.hidden = !member.mazeData.hidden!;
+                member.mazeData.hidden = !member.mazeData.hidden;
                 context.read<GuildCubit>().updateMember(member);
               },
             );
