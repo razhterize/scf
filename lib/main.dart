@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
-// import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:logging/logging.dart';
 import 'package:scf_new/ui/widgets/action_bar.dart';
 import 'package:scf_new/ui/screens/guild_screen.dart';
@@ -28,8 +28,7 @@ void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   HydratedBloc.storage = await HydratedStorage.build(
-      storageDirectory: await getApplicationCacheDirectory()
-      // storageDirectory: kIsWeb ? HydratedStorage.webStorageDirectory : await getApplicationDocumentsDirectory(),
+      storageDirectory: kIsWeb ? HydratedStorage.webStorageDirectory : await getApplicationDocumentsDirectory(),
       );
 
   runApp(const App());
@@ -87,7 +86,7 @@ class _AppState extends State<App> {
                       : null,
               child: MaterialApp(
                 debugShowCheckedModeBanner: false,
-                // title: kIsWeb ? "SCF Management" : "",
+                title: kIsWeb ? "SCF Management" : "",
                 theme: ThemeData.from(colorScheme: darkColorScheme),
                 // theme: customTheme(brightness: Brightness.dark),
                 home: Scaffold(
