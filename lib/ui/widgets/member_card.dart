@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:scf_new/blocs/guild_cubit.dart';
 import 'package:scf_new/blocs/switch_cubit.dart';
 import 'package:scf_new/enums.dart';
+import 'package:scf_new/ui/common/animations.dart';
 import 'package:scf_new/ui/widgets/member_status_selection.dart';
 
 import '../../blocs/selection_cubit.dart';
@@ -18,30 +20,37 @@ class MemberCard extends StatefulWidget {
 
 class _MemberCardState extends State<MemberCard> {
   bool isExpanded = false;
+  late Member member;
+
+  final subtitleController = TextEditingController();
+
+  @override
+  void initState() {
+    member = widget.member;
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     final selectCubit = context.read<SelectionCubit>();
-    final switchCubit = context.read<SwitchCubit>();
+    // final switchCubit = context.read<SwitchCubit>();
     return Card(
       child: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: BlocBuilder<SelectionCubit, List>(
           builder: (context, state) {
             return ListTile(
-              selected: selectCubit.isSelected(widget.member),
-              selectedColor: Theme.of(context)
-                  .textSelectionTheme
-                  .selectionHandleColor,
+              selected: selectCubit.isSelected(member),
+              selectedColor:
+                  Theme.of(context).textSelectionTheme.selectionHandleColor,
               title: _nameIdText(),
               subtitle: _subtitle(),
-              onTap: () => selectCubit.changeSelect(widget.member),
+              onTap: () => selectCubit.changeSelect(member),
               leading: Checkbox(
-                value: selectCubit.isSelected(widget.member),
-                onChanged: (_) =>
-                    selectCubit.changeSelect(widget.member),
+                value: selectCubit.isSelected(member),
+                onChanged: (_) => selectCubit.changeSelect(member),
               ),
-              trailing: MemberStatusSelection(widget.member),
+              trailing: MemberStatusSelection(member),
             );
           },
         ),
@@ -57,20 +66,34 @@ class _MemberCardState extends State<MemberCard> {
         Expanded(
           child: BlocBuilder<SwitchCubit, SwitchState>(
             builder: (context, state) {
-              if (state.mode == ManagementMode.members) return const SizedBox();
-              return TextField(
-                style: Theme.of(context).textTheme.bodyMedium,
-                decoration: InputDecoration(
-                  contentPadding: EdgeInsets.zero,
-                  isDense: true,
-                  border: InputBorder.none,
-                  labelText: state.mode == ManagementMode.siege
-                      ? "Siege Score"
-                      : state.mode == ManagementMode.maze
-                          ? "Maze Energy Damage"
-                          : "",
-                ),
-                onChanged: (value) {},
+              subtitleController.text =
+                  context.read<SwitchCubit>().state.mode == ManagementMode.maze
+                      ? member.mazeData.energyDamage.toString()
+                      : "";
+              return SlidingFadeTransition(
+                duration: const Duration(milliseconds: 500),
+                child: state.mode == ManagementMode.members
+                    ? const SizedBox()
+                    : TextField(
+                        key: ValueKey<ManagementMode>(state.mode),
+                        style: Theme.of(context).textTheme.bodyMedium,
+                        controller: subtitleController,
+                        decoration: InputDecoration(
+                          contentPadding: EdgeInsets.zero,
+                          isDense: true,
+                          border: InputBorder.none,
+                          labelText: state.mode == ManagementMode.siege
+                              ? "Siege Score (WIP)"
+                              : state.mode == ManagementMode.maze
+                                  ? "Maze Energy Damage"
+                                  : "",
+                        ),
+                        enabled: state.mode != ManagementMode.siege,
+                        onSubmitted: (value) {
+                          member.mazeData.energyDamage = int.tryParse(value);
+                          context.read<GuildCubit>().updateMember(member);
+                        },
+                      ),
               );
             },
           ),
@@ -82,11 +105,11 @@ class _MemberCardState extends State<MemberCard> {
   RichText _nameIdText() {
     return RichText(
       text: TextSpan(
-        text: widget.member.name,
+        text: member.name,
         style: Theme.of(context).textTheme.titleMedium,
         children: [
           TextSpan(
-              text: "\n${widget.member.pgrId}",
+              text: "\n${member.pgrId}",
               style: Theme.of(context).textTheme.bodySmall),
         ],
       ),
