@@ -30,12 +30,14 @@ class _MemberListViewState extends State<MemberListView> {
         BlocBuilder<FilterCubit, List<Member>>(
           builder: (context, state) {
             return SlidingFadeTransition(
+              offsetBegin: const Offset(0.5, 0),
               child: !context.read<GuildCubit>().state.busy
                   ? ListView(
-                      children: state
-                          .map((member) => MemberCard(member))
-                          // .map((member) => MemberInfo(member))
-                          .toList())
+                    key: ValueKey<int>(state.length),
+                      children: [
+                        for (var member in state) MemberCard(member)
+                      ],
+                    )
                   : const SizedBox(),
             );
           },
