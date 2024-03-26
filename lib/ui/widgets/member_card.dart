@@ -70,7 +70,7 @@ class _MemberCardState extends State<MemberCard> {
                   context.read<SwitchCubit>().state.mode == ManagementMode.maze
                       ? member.mazeData.energyDamage.toString()
                       : "";
-              return SlidingFadeTransition(
+              return AnimatedSwitcher(
                 duration: const Duration(milliseconds: 500),
                 child: state.mode == ManagementMode.members
                     ? const SizedBox()
