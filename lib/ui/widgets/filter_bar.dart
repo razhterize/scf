@@ -45,8 +45,8 @@ class _FilterBarState extends State<FilterBar> {
             toggle();
           },
           icon: isSearch
-              ? const Icon(Icons.toggle_off)
-              : const Icon(Icons.toggle_on),
+              ? const Icon(Icons.search)
+              : const Icon(Icons.arrow_circle_down_outlined),
           tooltip: "Chage Filter Type",
         ),
         Expanded(
@@ -68,8 +68,16 @@ class _FilterBarState extends State<FilterBar> {
   }
 
   Widget _largeWidth() {
+    final _cubit = context.read<FilterCubit>();
     return Row(
       children: [
+        BlocBuilder<FilterCubit, List>(
+          builder: (context, state) => IconButton(
+              onPressed: () => _cubit.stringFilter(""),
+              icon: _cubit.string != ""
+                  ? const Icon(Icons.close)
+                  : const Icon(Icons.search)),
+        ),
         Expanded(child: searchBar()),
         Expanded(child: _filterStatuses()),
       ],
@@ -77,41 +85,13 @@ class _FilterBarState extends State<FilterBar> {
   }
 
   Widget searchBar() {
-    return Row(
-      children: [
-        BlocBuilder<FilterCubit, List>(
-          builder: (context, _) {
-            return LayoutBuilder(
-              builder: (context, constraints) {
-                return constraints.maxWidth > 720
-                    ? IconButton(
-                        onPressed: () {
-                          context.read<FilterCubit>().string != ""
-                              ? searchController.clear()
-                              : null;
-                          context.read<FilterCubit>().stringFilter("");
-                        },
-                        icon: context.read<FilterCubit>().string != ""
-                            ? const Icon(Icons.close)
-                            : const Icon(Icons.search_outlined),
-                      )
-                    : const SizedBox();
-              },
-            );
-          },
-        ),
-        Expanded(
-          child: TextField(
-            decoration: const InputDecoration(
-              hintText: "Name or PGR ID",
-              isDense: true,
-            ),
-            onChanged: (value) =>
-                context.read<FilterCubit>().stringFilter(value),
-            controller: searchController,
-          ),
-        ),
-      ],
+    return TextField(
+      decoration: const InputDecoration(
+        hintText: "Name or PGR ID",
+        isDense: true,
+      ),
+      onChanged: (value) => context.read<FilterCubit>().stringFilter(value),
+      controller: searchController,
     );
   }
 
