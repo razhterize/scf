@@ -5,7 +5,6 @@ import 'package:scf_new/blocs/guild_cubit.dart';
 import 'package:scf_new/ui/common/animations.dart';
 import 'package:scf_new/ui/widgets/loading.dart';
 import 'package:scf_new/ui/widgets/member_card.dart';
-import 'package:scf_new/ui/widgets/member_info.dart';
 
 import '../../models/member_model.dart';
 
