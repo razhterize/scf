@@ -57,7 +57,7 @@ class MemberStatusSelection extends StatelessWidget {
             );
           },
         ),
-      _ => Container(),
+      _ => const SizedBox(),
     };
   }
 
