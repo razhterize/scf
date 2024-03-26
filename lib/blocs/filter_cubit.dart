@@ -24,17 +24,25 @@ class FilterCubit extends Cubit<List<Member>> {
   void statusFilter(dynamic status) {
     _status == status ? _status = null : _status = status;
     if (_status == null) return emit(_allMembers);
-    emit(_allMembers.where((element) => element.siegeStatus == _status || element.mazeData.status == _status).toList());
+    emit(_allMembers
+        .where((element) =>
+            element.siegeStatus == _status ||
+            element.mazeData.status == _status)
+        .toList());
   }
 
   void stringFilter(String value) {
-    logger.fine("String Filter: $value");
     _string = value;
-    emit(_allMembers.where((element) => _nameContains(element) || _pgrIdContains(element)).toList());
+    emit(_allMembers
+        .where((e) => _nameContains(e) || _pgrIdContains(e))
+        .toList());
+    // logger.fine("String Filter: $value | Members : ${state.map((e) => e.name).join(',')}");
   }
 
-  bool _nameContains(Member member) => member.name.toLowerCase().contains(_string);
-  bool _pgrIdContains(Member member) => member.pgrId.toString().contains(_string);
+  bool _nameContains(Member member) =>
+      member.name.toLowerCase().contains(_string);
+  bool _pgrIdContains(Member member) =>
+      member.pgrId.toString().contains(_string);
 
   void clearFilter() => emit(_allMembers);
 }
