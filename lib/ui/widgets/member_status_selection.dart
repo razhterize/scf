@@ -18,20 +18,45 @@ class MemberStatusSelection extends StatelessWidget {
   Widget build(BuildContext context) {
     return SlidingFadeTransition(
       duration: const Duration(milliseconds: 500),
-      child: _statusSelection(context),
+      child: Wrap(
+        crossAxisAlignment: WrapCrossAlignment.center,
+        alignment: WrapAlignment.end,
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: _additionalInfo(context),
+          ),
+          _statusSelection(context),
+        ],
+      ),
     );
   }
 
   Widget _additionalInfo(BuildContext context) {
+    final controller = TextEditingController(
+      text: "${member.mazeData.energyDamage ?? 0}",
+    );
     return switch (context.watch<SwitchCubit>().state.mode) {
-      ManagementMode.siege => Text(
-        "Siege Status: ${member.siegeStatus.name}",
-        style: textStyle(member.siegeStatus),
-      ),
-      ManagementMode.maze => Text(
-        "Maze Status: ${member.mazeData.status.name}",
-        style: textStyle(member.mazeData.status),
-      ),
+      ManagementMode.siege => const SizedBox(),
+      ManagementMode.maze => BlocBuilder<GuildCubit, GuildState>(
+          builder: (context, state) {
+            return MaterialButton(
+              child: AnimatedContainer(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(10),
+                  color: member.mazeData.hidden! ? Colors.red : Colors.green,
+                ),
+                duration: const Duration(milliseconds: 500),
+                padding: const EdgeInsets.all(8),
+                child: const Text("Hidden"),
+              ),
+              onPressed: () {
+                member.mazeData.hidden = !member.mazeData.hidden!;
+                context.read<GuildCubit>().updateMember(member);
+              },
+            );
+          },
+        ),
       _ => Container(),
     };
   }
