@@ -4,6 +4,7 @@ import 'package:scf_new/blocs/filter_cubit.dart';
 import 'package:scf_new/blocs/guild_cubit.dart';
 import 'package:scf_new/ui/common/animations.dart';
 import 'package:scf_new/ui/widgets/loading.dart';
+import 'package:scf_new/ui/widgets/member_card.dart';
 import 'package:scf_new/ui/widgets/member_info.dart';
 
 import '../../models/member_model.dart';
@@ -32,7 +33,8 @@ class _MemberListViewState extends State<MemberListView> {
               child: !context.read<GuildCubit>().state.busy
                   ? ListView(
                       children: state
-                          .map((member) => MemberInfo(member))
+                          .map((member) => MemberCard(member))
+                          // .map((member) => MemberInfo(member))
                           .toList())
                   : const SizedBox(),
             );
