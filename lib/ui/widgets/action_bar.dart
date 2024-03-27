@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scf_new/blocs/guild_cubit.dart';
 import 'package:scf_new/blocs/selection_cubit.dart';
@@ -18,7 +19,7 @@ class ActionBar extends StatelessWidget {
     return LayoutBuilder(builder: (context, constraints) {
       return Container(
         padding: const EdgeInsets.all(4),
-        height: constraints.maxWidth < 720 ?  null : 400,
+        height: constraints.maxWidth < 720 ? null : 400,
         decoration: BoxDecoration(
           color: Theme.of(context).buttonTheme.colorScheme?.primaryContainer,
           borderRadius: BorderRadius.circular(8.0),
@@ -30,7 +31,20 @@ class ActionBar extends StatelessWidget {
           children: [
             const Spacer(),
             IconButton(
-              onPressed: () {},
+              onPressed: () {
+                String mentionText = selectCubit.state
+                    .map((e) => e.discordId != null
+                        ? "<@${e.discordId}>"
+                        : e.discordUsername != null
+                            ? "@${e.discordUsername}"
+                            : e.name)
+                    .join("\n");
+                Clipboard.setData(ClipboardData(text: mentionText));
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text("Mention has been copied to clipboard"),
+                  duration: Duration(seconds: 3),
+                ));
+              },
               tooltip: "Copy mention text",
               icon: const Icon(Icons.alternate_email),
             ),
