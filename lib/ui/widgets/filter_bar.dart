@@ -97,19 +97,23 @@ class _FilterBarState extends State<FilterBar> {
 
   Widget _filterStatuses() {
     return BlocBuilder<SwitchCubit, SwitchState>(
-      builder: (context, state) {
+      builder: (context, switchState) {
         return SlidingFadeTransition(
           duration: duration,
           offsetBegin: const Offset(0.1, 0),
-          child: ListView(
-            key: ValueKey<ManagementMode>(state.mode),
-            scrollDirection: Axis.horizontal,
-            children: switch (state.mode) {
-              ManagementMode.siege =>
-                SiegeStatus.values.map((e) => statusButton(e)).toList(),
-              ManagementMode.maze =>
-                MazeStatus.values.map((e) => statusButton(e)).toList(),
-              _ => [],
+          child: BlocBuilder<GuildCubit, GuildState>(
+            builder: (context, guildState) {
+              return ListView(
+                key: ValueKey<ManagementMode>(switchState.mode),
+                scrollDirection: Axis.horizontal,
+                children: switch (switchState.mode) {
+                  ManagementMode.siege =>
+                    SiegeStatus.values.map((e) => statusButton(e)).toList(),
+                  ManagementMode.maze =>
+                    MazeStatus.values.map((e) => statusButton(e)).toList(),
+                  _ => [],
+                },
+              );
             },
           ),
         );
