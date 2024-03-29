@@ -33,7 +33,6 @@ class _MemberCardState extends State<MemberCard> {
   @override
   Widget build(BuildContext context) {
     final selectCubit = context.read<SelectionCubit>();
-    // final switchCubit = context.read<SwitchCubit>();
     return Card(
       child: SizedBox(
         width: MediaQuery.of(context).size.width,
@@ -66,13 +65,13 @@ class _MemberCardState extends State<MemberCard> {
         Expanded(
           child: BlocBuilder<SwitchCubit, SwitchState>(
             builder: (context, state) {
-              subtitleController.text =
-                  context.read<SwitchCubit>().state.mode == ManagementMode.maze
-                      ? member.mazeData.energyDamage.toString()
-                      : "";
+              subtitleController.text = state.mode == ManagementMode.maze
+                  ? member.mazeData.energyDamage.toString()
+                  : "";
               return AnimatedSwitcher(
-                duration: const Duration(milliseconds: 500),
-                child: state.mode == ManagementMode.members
+                duration: const Duration(milliseconds: 600),
+                child: context.read<SwitchCubit>().state.mode ==
+                        ManagementMode.members
                     ? const SizedBox()
                     : TextField(
                         key: ValueKey<ManagementMode>(state.mode),
@@ -90,7 +89,8 @@ class _MemberCardState extends State<MemberCard> {
                         ),
                         enabled: state.mode != ManagementMode.siege,
                         onSubmitted: (value) {
-                          member.mazeData.energyDamage = int.tryParse(value) ?? 0;
+                          member.mazeData.energyDamage =
+                              int.tryParse(value) ?? 0;
                           context.read<GuildCubit>().updateMember(member);
                         },
                       ),
