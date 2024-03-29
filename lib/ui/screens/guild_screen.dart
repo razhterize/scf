@@ -48,9 +48,20 @@ class _GuildScreenState extends State<GuildScreen>
         ),
         padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
         child: Row(
-          children: ManagementMode.values
-              .map((e) => modeButtonContainer(e, child: modeButton(e)))
-              .toList(),
+          children: [
+            IconButton(
+              onPressed: () {
+                showMenu(
+                  context: context,
+                  position: const RelativeRect.fromLTRB(0, 0, 0, 0),
+                  items: showGuildSwitcher(context),
+                );
+              },
+              icon: const Icon(Icons.menu),
+            ),
+            ...ManagementMode.values
+                .map((e) => modeButtonContainer(e, child: modeButton(e)))
+          ],
         ),
       ),
     );
