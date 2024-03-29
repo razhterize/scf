@@ -22,22 +22,26 @@ class _MemberListViewState extends State<MemberListView> {
       children: [
         Center(
           child: BlocBuilder<GuildCubit, GuildState>(
-            builder: (context, state) =>
+            builder: (_, state) =>
                 state.busy ? const LoadingIndicator() : const SizedBox(),
           ),
         ),
-        BlocBuilder<FilterCubit, List<Member>>(
-          builder: (context, state) {
-            return SlidingFadeTransition(
-              offsetBegin: const Offset(0.5, 0),
-              child: !context.read<GuildCubit>().state.busy
-                  ? ListView(
-                    key: ValueKey<int>(state.length),
-                      children: [
-                        for (var member in state) MemberCard(member)
-                      ],
-                    )
-                  : const SizedBox(),
+        BlocBuilder<GuildCubit, GuildState>(
+          builder: (_, guildState) {
+            return BlocBuilder<FilterCubit, List>(
+              builder: (_, filterState) {
+                return SlidingFadeTransition(
+                  duration: const Duration(milliseconds: 400),
+                  offsetBegin: const Offset(0.1, 0),
+                  child: !guildState.busy
+                      ? ListView(
+                          key: ValueKey<int>(filterState.length),
+                          children:
+                              filterState.map((e) => MemberCard(e)).toList(),
+                        )
+                      : const SizedBox(),
+                );
+              },
             );
           },
         ),
