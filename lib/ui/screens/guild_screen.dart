@@ -51,10 +51,9 @@ class _GuildScreenState extends State<GuildScreen>
           children: [
             IconButton(
               onPressed: () {
-                showMenu(
+                showDialog(
                   context: context,
-                  position: const RelativeRect.fromLTRB(0, 0, 0, 0),
-                  items: showGuildSwitcher(context),
+                  builder: (_) => guildSwitchDialog(),
                 );
               },
               icon: const Icon(Icons.menu),
@@ -97,10 +96,11 @@ class _GuildScreenState extends State<GuildScreen>
       padding: const EdgeInsets.all(2),
       onPressed: () => context.read<SwitchCubit>().switchMode(mode),
       onLongPress: () {
-        showMenu(
+        showDialog(
           context: context,
-          position: const RelativeRect.fromLTRB(0, 0, 0, 0),
-          items: showGuildSwitcher(context),
+          builder: (_) {
+            return guildSwitchDialog();
+          },
         );
       },
       child: Text(
@@ -110,16 +110,22 @@ class _GuildScreenState extends State<GuildScreen>
     );
   }
 
-  List<PopupMenuItem> showGuildSwitcher(BuildContext context) {
-    final loginBloc = context.read<LoginBloc>();
-    final managedGuilds =
-        loginBloc.state.authStore.model.data['managed_guilds'];
-    return [
-      for (var guild in managedGuilds)
-        PopupMenuItem(
-          child: Text(guildNames[guild] ?? guild),
-          onTap: () => context.read<SwitchCubit>().switchGuild(guild),
-        )
-    ];
+  Dialog guildSwitchDialog() {
+    return Dialog(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (var guild in guildNames.keys)
+              TextButton(
+                onPressed: () => context.read<SwitchCubit>().switchGuild(guild),
+                child: Text(guildNames[guild] ?? guild),
+              ),
+              const SizedBox()
+          ],
+        ),
+      ),
+    );
   }
 }
