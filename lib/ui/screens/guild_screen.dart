@@ -50,35 +50,40 @@ class _GuildScreenState extends State<GuildScreen>
         padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
         child: Row(
           children: [
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: BlocBuilder<SwitchCubit, SwitchState>(
-                builder: (_, state) {
-                  return DropdownButton<String>(
-                    value: state.name,
-                    isDense: true,
-                    items: [
-                      for (var guild in context
-                          .read<LoginBloc>()
-                          .state
-                          .authStore
-                          .model
-                          .data['managed_guilds'])
-                        DropdownMenuItem<String>(
-                          value: guild,
-                          child: Text(guildNames[guild] ?? guild),
-                        ),
-                    ],
-                    onChanged: (value) => context
-                        .read<SwitchCubit>()
-                        .switchGuild(value ?? ""),
-                  );
-                },
-              ),
-            ),
+            guildSwitcher(),
             ...ManagementMode.values
                 .map((e) => modeButtonContainer(e, child: modeButton(e)))
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget guildSwitcher() {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: BlocBuilder<SwitchCubit, SwitchState>(
+          builder: (_, state) {
+            return DropdownButton<String>(
+              value: state.name,
+              isDense: true,
+              items: [
+                for (var guild in context
+                    .read<LoginBloc>()
+                    .state
+                    .authStore
+                    .model
+                    .data['managed_guilds'])
+                  DropdownMenuItem<String>(
+                    value: guild,
+                    child: Text(guildNames[guild] ?? guild),
+                  ),
+              ],
+              onChanged: (value) =>
+                  context.read<SwitchCubit>().switchGuild(value ?? ""),
+            );
+          },
         ),
       ),
     );
