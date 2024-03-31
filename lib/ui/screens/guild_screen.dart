@@ -1,3 +1,4 @@
+import 'package:animations/animations.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scf_new/blocs/login_bloc.dart';
@@ -51,7 +52,7 @@ class _GuildScreenState extends State<GuildScreen>
           children: [
             IconButton(
               onPressed: () {
-                showDialog(
+                showModalBottomSheet(
                   context: context,
                   builder: (_) => BlocProvider.value(
                     value: context.read<SwitchCubit>(),
@@ -99,7 +100,7 @@ class _GuildScreenState extends State<GuildScreen>
       padding: const EdgeInsets.all(2),
       onPressed: () => context.read<SwitchCubit>().switchMode(mode),
       onLongPress: () {
-        showDialog(
+        showModalBottomSheet(
           context: context,
           builder: (_) => BlocProvider.value(
             value: context.read<SwitchCubit>(),
@@ -114,28 +115,26 @@ class _GuildScreenState extends State<GuildScreen>
     );
   }
 
-  Dialog guildSwitchDialog() {
-    return Dialog(
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            for (var guild in context
-                .read<LoginBloc>()
-                .state
-                .authStore
-                .model
-                .data['managed_guilds'])
-              TextButton(
-                onPressed: () {
-                  context.read<SwitchCubit>().switchGuild(guild);
-                  Navigator.pop(context);
-                },
-                child: Text(guildNames[guild] ?? guild),
-              ),
-          ],
-        ),
+  Widget guildSwitchDialog() {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+      child: Wrap(
+        // mainAxisSize: MainAxisSize.min,
+        children: [
+          for (var guild in context
+              .read<LoginBloc>()
+              .state
+              .authStore
+              .model
+              .data['managed_guilds'])
+            TextButton(
+              onPressed: () {
+                context.read<SwitchCubit>().switchGuild(guild);
+                Navigator.pop(context);
+              },
+              child: Text(guildNames[guild] ?? guild),
+            ),
+        ],
       ),
     );
   }
