@@ -53,7 +53,10 @@ class _GuildScreenState extends State<GuildScreen>
               onPressed: () {
                 showDialog(
                   context: context,
-                  builder: (_) => guildSwitchDialog(context),
+                  builder: (_) => BlocProvider.value(
+                    value: context.read<SwitchCubit>(),
+                    child: guildSwitchDialog(),
+                  ),
                 );
               },
               icon: const Icon(Icons.menu),
@@ -98,9 +101,10 @@ class _GuildScreenState extends State<GuildScreen>
       onLongPress: () {
         showDialog(
           context: context,
-          builder: (_) {
-            return guildSwitchDialog(context);
-          },
+          builder: (_) => BlocProvider.value(
+            value: context.read<SwitchCubit>(),
+            child: guildSwitchDialog(),
+          ),
         );
       },
       child: Text(
@@ -110,7 +114,7 @@ class _GuildScreenState extends State<GuildScreen>
     );
   }
 
-  Dialog guildSwitchDialog(BuildContext context) {
+  Dialog guildSwitchDialog() {
     return Dialog(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -124,7 +128,10 @@ class _GuildScreenState extends State<GuildScreen>
                 .model
                 .data['managed_guilds'])
               TextButton(
-                onPressed: () => context.read<SwitchCubit>().switchGuild(guild),
+                onPressed: () {
+                  context.read<SwitchCubit>().switchGuild(guild);
+                  Navigator.pop(context);
+                },
                 child: Text(guildNames[guild] ?? guild),
               ),
           ],
