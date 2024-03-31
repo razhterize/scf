@@ -50,17 +50,31 @@ class _GuildScreenState extends State<GuildScreen>
         padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
         child: Row(
           children: [
-            IconButton(
-              onPressed: () {
-                showModalBottomSheet(
-                  context: context,
-                  builder: (_) => BlocProvider.value(
-                    value: context.read<SwitchCubit>(),
-                    child: guildSwitchDialog(),
-                  ),
-                );
-              },
-              icon: const Icon(Icons.menu),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: BlocBuilder<SwitchCubit, SwitchState>(
+                builder: (_, state) {
+                  return DropdownButton<String>(
+                    value: state.name,
+                    isDense: true,
+                    items: [
+                      for (var guild in context
+                          .read<LoginBloc>()
+                          .state
+                          .authStore
+                          .model
+                          .data['managed_guilds'])
+                        DropdownMenuItem<String>(
+                          value: guild,
+                          child: Text(guildNames[guild] ?? guild),
+                        ),
+                    ],
+                    onChanged: (value) => context
+                        .read<SwitchCubit>()
+                        .switchGuild(value ?? ""),
+                  );
+                },
+              ),
             ),
             ...ManagementMode.values
                 .map((e) => modeButtonContainer(e, child: modeButton(e)))
@@ -99,42 +113,9 @@ class _GuildScreenState extends State<GuildScreen>
     return MaterialButton(
       padding: const EdgeInsets.all(2),
       onPressed: () => context.read<SwitchCubit>().switchMode(mode),
-      onLongPress: () {
-        showModalBottomSheet(
-          context: context,
-          builder: (_) => BlocProvider.value(
-            value: context.read<SwitchCubit>(),
-            child: guildSwitchDialog(),
-          ),
-        );
-      },
       child: Text(
         mode.name.toUpperCase(),
         style: Theme.of(context).textTheme.bodyMedium,
-      ),
-    );
-  }
-
-  Widget guildSwitchDialog() {
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-      child: Wrap(
-        // mainAxisSize: MainAxisSize.min,
-        children: [
-          for (var guild in context
-              .read<LoginBloc>()
-              .state
-              .authStore
-              .model
-              .data['managed_guilds'])
-            TextButton(
-              onPressed: () {
-                context.read<SwitchCubit>().switchGuild(guild);
-                Navigator.pop(context);
-              },
-              child: Text(guildNames[guild] ?? guild),
-            ),
-        ],
       ),
     );
   }
