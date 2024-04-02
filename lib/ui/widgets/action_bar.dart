@@ -8,6 +8,8 @@ import 'package:scf_new/models/member_model.dart';
 import 'package:scf_new/ui/common/confirm_popup.dart';
 import 'package:scf_new/ui/widgets/member_edit.dart';
 
+import '../../blocs/login_bloc.dart';
+
 class ActionBar extends StatelessWidget {
   ActionBar({super.key});
 
@@ -19,7 +21,6 @@ class ActionBar extends StatelessWidget {
     return LayoutBuilder(builder: (context, constraints) {
       return Container(
         padding: const EdgeInsets.all(4),
-        height: constraints.maxWidth < 720 ? null : 400,
         decoration: BoxDecoration(
           color: Theme.of(context).buttonTheme.colorScheme?.primaryContainer,
           borderRadius: BorderRadius.circular(8.0),
@@ -114,6 +115,19 @@ class ActionBar extends StatelessWidget {
               icon: const Icon(Icons.person_remove_alt_1),
             ),
             const Spacer(),
+            IconButton(
+              onPressed: () {
+                showDialog(
+                    context: context,
+                    builder: (_) {
+                      return ConfirmationPopup(
+                        "Logout?",
+                        callback: () => context.read<LoginBloc>().add(Logout()),
+                      );
+                    });
+              },
+              icon: const Icon(Icons.logout),
+            )
           ],
         ),
       );
