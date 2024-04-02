@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scf_new/blocs/filter_cubit.dart';
 import 'package:scf_new/blocs/guild_cubit.dart';
+import 'package:scf_new/blocs/login_bloc.dart';
 import 'package:scf_new/ui/common/animations.dart';
 import 'package:scf_new/ui/widgets/loading.dart';
 import 'package:scf_new/ui/widgets/member_card.dart';
@@ -23,7 +24,9 @@ class _MemberListViewState extends State<MemberListView> {
         Center(
           child: BlocBuilder<GuildCubit, GuildState>(
             builder: (_, state) =>
-                state.busy ? const LoadingIndicator() : const SizedBox(),
+                state.busy && context.read<LoginBloc>().state.authStore.isValid
+                    ? const LoadingIndicator()
+                    : const SizedBox(),
           ),
         ),
         BlocBuilder<GuildCubit, GuildState>(
