@@ -50,9 +50,9 @@ class _GuildScreenState extends State<GuildScreen>
         padding: const EdgeInsets.fromLTRB(2, 0, 2, 0),
         child: Row(
           children: [
-            guildSwitcher(),
             ...ManagementMode.values
-                .map((e) => modeButtonContainer(e, child: modeButton(e)))
+                .map((e) => modeButtonContainer(e, child: modeButton(e))),
+            guildSwitcher(),
           ],
         ),
       ),
@@ -62,19 +62,15 @@ class _GuildScreenState extends State<GuildScreen>
   Widget guildSwitcher() {
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.all(8.0),
+        padding: const EdgeInsets.fromLTRB(4, 2, 4, 2),
         child: BlocBuilder<SwitchCubit, SwitchState>(
           builder: (_, state) {
             return DropdownButton<String>(
+              alignment: Alignment.center,
               value: state.name,
               isDense: true,
               items: [
-                for (var guild in context
-                    .read<LoginBloc>()
-                    .state
-                    .authStore
-                    .model
-                    .data['managed_guilds'])
+                for (var guild in context.read<LoginBloc>().state.managedGuilds)
                   DropdownMenuItem<String>(
                     value: guild,
                     child: Text(guildNames[guild] ?? guild),
