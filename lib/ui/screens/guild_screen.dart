@@ -60,6 +60,7 @@ class _GuildScreenState extends State<GuildScreen>
   }
 
   Widget guildSwitcher() {
+    var guilds = context.read<LoginBloc>().state.managedGuilds;
     return Expanded(
       child: Padding(
         padding: const EdgeInsets.fromLTRB(4, 2, 4, 2),
@@ -69,13 +70,18 @@ class _GuildScreenState extends State<GuildScreen>
               alignment: Alignment.center,
               value: state.name,
               isDense: true,
-              items: [
-                for (var guild in context.read<LoginBloc>().state.managedGuilds)
-                  DropdownMenuItem<String>(
-                    value: guild,
-                    child: Text(guildNames[guild] ?? guild),
-                  ),
-              ],
+              items: guilds.isNotEmpty
+                  ? [
+                      for (var guild in guilds)
+                        DropdownMenuItem<String>(
+                          value: guild,
+                          child: Text(guildNames[guild] ?? guild),
+                        )
+                    ]
+                  : [
+                      const DropdownMenuItem(
+                          value: "", child: Text("No Managed Guild"))
+                    ],
               onChanged: (value) =>
                   context.read<SwitchCubit>().switchGuild(value ?? ""),
             );
