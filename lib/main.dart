@@ -5,6 +5,7 @@ import 'package:hydrated_bloc/hydrated_bloc.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:logging/logging.dart';
+import 'package:scf_new/ui/screens/login_screen.dart';
 import 'package:scf_new/ui/widgets/action_bar.dart';
 import 'package:scf_new/ui/screens/guild_screen.dart';
 import 'package:scf_new/ui/themes.dart';
@@ -18,7 +19,7 @@ import 'blocs/login_bloc.dart';
 
 void main(List<String> args) async {
   Logger.root
-    ..level = Level.ALL
+    ..level = Level.OFF
     ..onRecord.listen((record) {
       log('${record.level.name}: ${record.message}');
     });
@@ -28,8 +29,10 @@ void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   HydratedBloc.storage = await HydratedStorage.build(
-      storageDirectory: kIsWeb ? HydratedStorage.webStorageDirectory : await getApplicationDocumentsDirectory(),
-      );
+    storageDirectory: kIsWeb
+        ? HydratedStorage.webStorageDirectory
+        : await getApplicationDocumentsDirectory(),
+  );
 
   runApp(const App());
 }
@@ -92,14 +95,18 @@ class _AppState extends State<App> {
                 home: Scaffold(
                   body: LayoutBuilder(
                     builder: (_, constrain) {
-                      return Flex(
-                        direction: constrain.maxWidth < 720
-                            ? Axis.vertical
-                            : Axis.horizontal,
-                        children: [
-                          const Expanded(child: GuildScreen()),
-                          ActionBar(),
-                        ],
+                      return BlocBuilder<LoginBloc, LoginState>(
+                        builder: (context, state) {
+                          return state.authStore.isValid ?Flex(
+                            direction: constrain.maxWidth < 720
+                                ? Axis.vertical
+                                : Axis.horizontal,
+                            children: [
+                              const Expanded(child: GuildScreen()),
+                              ActionBar(),
+                            ],
+                          ): const LoginScreen();
+                        },
                       );
                     },
                   ),
