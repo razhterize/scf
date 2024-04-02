@@ -14,13 +14,13 @@ class LoginScreen extends StatelessWidget {
       body: Center(
         child: isSmallScreen
             ? const _Logo()
-            : Container(
+            : Expanded(
+              child: Container(
                 padding: const EdgeInsets.all(32.0),
                 constraints: const BoxConstraints(maxWidth: 800),
-                child: const Expanded(
-                  child: _Logo(),
-                ),
+                child: _Logo(),
               ),
+            ),
       ),
     );
   }
@@ -44,20 +44,26 @@ class _Logo extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.all(16.0),
           child: MaterialButton(
-            color: Theme.of(context).buttonTheme.colorScheme?.inversePrimary,
             onPressed: () => context.read<LoginBloc>().add(DiscordLogin()),
-            child: Text(
-              "Login with Discord",
-              textAlign: TextAlign.center,
-              style: isSmallScreen
-                  ? Theme.of(context).textTheme.headlineSmall
-                  : Theme.of(context)
-                      .textTheme
-                      .headlineMedium
-                      ?.copyWith(color: Colors.black),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Theme.of(context).buttonTheme.colorScheme?.inversePrimary,
+                borderRadius: BorderRadius.circular(16.0),
+              ),
+              padding: const EdgeInsets.all(16.0),
+              child: Text(
+                "Login with Discord",
+                textAlign: TextAlign.center,
+                style: isSmallScreen
+                    ? Theme.of(context).textTheme.headlineSmall
+                    : Theme.of(context)
+                        .textTheme
+                        .headlineMedium
+                        ?.copyWith(color: Colors.black),
+              ),
             ),
           ),
-        )
+        ),
       ],
     );
   }
