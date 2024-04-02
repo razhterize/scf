@@ -96,6 +96,8 @@ class LoginState extends Equatable {
   final LoginStatus loginStatus;
   final AuthStore authStore;
 
+  List get managedGuilds => authStore.model.data['managed_guilds'] ?? [];
+
   LoginState copy({LoginStatus? loginStatus, AuthStore? authStore}) {
     return LoginState(
       loginStatus: loginStatus ?? this.loginStatus,
