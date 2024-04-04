@@ -19,7 +19,7 @@ import 'blocs/login_bloc.dart';
 
 void main(List<String> args) async {
   Logger.root
-    ..level = Level.OFF
+    ..level = Level.FINE
     ..onRecord.listen((record) {
       log('${record.level.name}: ${record.message}');
     });
@@ -29,10 +29,10 @@ void main(List<String> args) async {
   WidgetsFlutterBinding.ensureInitialized();
 
   HydratedBloc.storage = await HydratedStorage.build(
-    storageDirectory: kIsWeb
-        ? HydratedStorage.webStorageDirectory
-        : await getApplicationDocumentsDirectory(),
-  );
+      storageDirectory: kIsWeb
+          ? HydratedStorage.webStorageDirectory
+          : await getApplicationDocumentsDirectory(),
+      );
 
   runApp(const App());
 }
@@ -96,16 +96,19 @@ class _AppState extends State<App> {
                   body: LayoutBuilder(
                     builder: (_, constrain) {
                       return BlocBuilder<LoginBloc, LoginState>(
-                        builder: (context, state) {
-                          return state.authStore.isValid ?Flex(
-                            direction: constrain.maxWidth < 720
-                                ? Axis.vertical
-                                : Axis.horizontal,
-                            children: [
-                              const Expanded(child: GuildScreen()),
-                              ActionBar(),
-                            ],
-                          ): const LoginScreen();
+                        builder: (__, state) {
+                          if (state.loginStatus == LoginStatus.success) {
+                            return Flex(
+                              direction: constrain.maxWidth < 720
+                                  ? Axis.vertical
+                                  : Axis.horizontal,
+                              children: [
+                                const Expanded(child: GuildScreen()),
+                                ActionBar(),
+                              ],
+                            );
+                          }
+                          return const LoginScreen();
                         },
                       );
                     },
