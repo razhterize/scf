@@ -8,13 +8,13 @@ import 'package:pocketbase/pocketbase.dart';
 import 'package:scf_new/configs.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-enum LoginStatus { success, failed, unknown, processing }
+enum LoginStatus { success, failed,  processing }
 
 class LoginBloc extends HydratedBloc<LoginEvent, LoginState> {
   LoginBloc()
       : super(
           LoginState(
-            loginStatus: LoginStatus.unknown,
+            loginStatus: LoginStatus.failed,
             authStore: AsyncAuthStore(
               save: (data) => HydratedBloc.storage.write('hydrate_login_auth_store', data),
               initial: HydratedBloc.storage.read('hydrate_login_auth_store'),
@@ -35,7 +35,7 @@ class LoginBloc extends HydratedBloc<LoginEvent, LoginState> {
 
   Future<void> authRefresh(AuthRefresh event, Emitter<LoginState> emit) async {
     await pb.collection("discord_auth").authRefresh();
-    state.copy(loginStatus: LoginStatus.success, authStore: pb.authStore);
+    emit(state.copy(loginStatus: LoginStatus.success, authStore: pb.authStore));
   }
 
   void logout(Logout event, Emitter<LoginState> emit) {
