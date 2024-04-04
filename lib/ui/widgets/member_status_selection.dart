@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:scf_new/blocs/guild_cubit.dart';
+import 'package:scf_new/blocs/selection_cubit.dart';
 import 'package:scf_new/blocs/switch_cubit.dart';
 import 'package:scf_new/constants.dart';
 import 'package:scf_new/enums.dart';
@@ -60,6 +61,7 @@ class MemberStatusSelection extends StatelessWidget {
 
   Widget _statusSelection(BuildContext context) {
     final mode = context.watch<SwitchCubit>().state.mode;
+    final selectCubit = context.read<SelectionCubit>();
     return switch (mode) {
       ManagementMode.siege => DropdownButton<SiegeStatus>(
           value: member.siegeStatus,
@@ -74,6 +76,13 @@ class MemberStatusSelection extends StatelessWidget {
               )
           ],
           onChanged: (value) {
+            if (selectCubit.state.isNotEmpty) {
+              selectCubit.doSomethingAboutSelectedMembers((member) {
+                member.siegeStatus = value!;
+                context.read<GuildCubit>().updateMember(member);
+              });
+              return;
+            }
             member.siegeStatus = value!;
             context.read<GuildCubit>().updateMember(member);
           },
