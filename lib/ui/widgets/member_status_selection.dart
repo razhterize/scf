@@ -77,9 +77,9 @@ class MemberStatusSelection extends StatelessWidget {
           ],
           onChanged: (value) {
             if (selectCubit.state.isNotEmpty) {
-              selectCubit.doSomethingAboutSelectedMembers((member) {
-                member.siegeStatus = value!;
-                context.read<GuildCubit>().updateMember(member);
+              selectCubit.doSomethingAboutSelectedMembers((m) {
+                m.siegeStatus = value!;
+                context.read<GuildCubit>().updateMember(m);
               });
               return;
             }
