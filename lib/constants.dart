@@ -26,7 +26,7 @@ const Map<dynamic, String> statusNames = {
   MazeStatus.overcap: "Overcap",
 };
 
-const Map statusColors = {
+const Map<dynamic, Color> statusColors = {
   SiegeStatus.above: Colors.blueAccent,
   SiegeStatus.below: Colors.yellow,
   SiegeStatus.pardoned: Colors.purple,
