@@ -34,7 +34,7 @@ class ActionBar extends StatelessWidget {
             IconButton(
               onPressed: () {
                 String mentionText = selectCubit.state
-                    .map((e) => e.discordId != null
+                    .map((e) => e.discordId != null && e.discordId != ""
                         ? "<@${e.discordId}>"
                         : e.discordUsername != null
                             ? "@${e.discordUsername}"
