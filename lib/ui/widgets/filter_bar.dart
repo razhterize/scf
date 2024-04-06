@@ -96,38 +96,37 @@ class _FilterBarState extends State<FilterBar> {
   }
 
   Widget _filterStatuses() {
-    return BlocBuilder<SwitchCubit, SwitchState>(
-      builder: (context, switchState) {
-        return SlidingFadeTransition(
-          duration: duration,
-          offsetBegin: const Offset(0.1, 0),
-          child: BlocBuilder<GuildCubit, GuildState>(
-            builder: (context, guildState) {
-              return ListView(
-                key: ValueKey<ManagementMode>(switchState.mode),
-                scrollDirection: Axis.horizontal,
-                children: switch (switchState.mode) {
-                  ManagementMode.siege =>
-                    SiegeStatus.values.map((e) => statusButton(e)).toList(),
-                  ManagementMode.maze =>
-                    MazeStatus.values.map((e) => statusButton(e)).toList(),
-                  _ => [],
-                },
-              );
-            },
-          ),
-        );
-      },
+    return AnimatedSwitcher(
+      duration: duration,
+      child: ListView(
+        key: ValueKey<ManagementMode>(context.read<SwitchCubit>().state.mode),
+        scrollDirection: Axis.horizontal,
+        children: switch (context.read<SwitchCubit>().state.mode) {
+          ManagementMode.siege =>
+            SiegeStatus.values.map((e) => statusButton(e)).toList(),
+          ManagementMode.maze =>
+            MazeStatus.values.map((e) => statusButton(e)).toList(),
+          _ => [],
+        },
+      ),
     );
   }
 
   Widget statusButton(dynamic status) => MaterialButton(
+        color: context.watch<FilterCubit>().status == status
+            ? Color(statusColors[status]!.value).withOpacity(0.4)
+            : null,
         onPressed: () => context.read<FilterCubit>().statusFilter(status),
-        child: Text(
-          "${statusNames[status]}: ${context.read<GuildCubit>().state.guild.members.where(
-                (m) => m.siegeStatus == status || m.mazeData.status == status,
-              ).length}",
-          style: TextStyle(color: statusColors[status]),
+        child: BlocBuilder<GuildCubit, GuildState>(
+          builder: (_, state) {
+            return Text(
+              "${statusNames[status]}: ${state.guild.members.where(
+                    (m) =>
+                        m.siegeStatus == status || m.mazeData.status == status,
+                  ).length}",
+              style: TextStyle(color: statusColors[status]),
+            );
+          },
         ),
       );
 
