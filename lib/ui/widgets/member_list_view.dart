@@ -30,6 +30,7 @@ class _MemberListViewState extends State<MemberListView> {
           ),
         ),
         BlocBuilder<GuildCubit, GuildState>(
+          buildWhen: (previous, current) => previous.ready != current.ready,
           builder: (_, guildState) {
             return BlocBuilder<FilterCubit, List>(
               builder: (_, filterState) {
