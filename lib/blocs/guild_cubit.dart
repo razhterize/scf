@@ -11,21 +11,32 @@ final logger = Logger("Guild Cubit");
 
 class GuildCubit extends Cubit<GuildState> {
   GuildCubit(this.pb, String name)
-      : super(GuildState(busy: false, guild: GuildModel('', '', []))) {
+      : super(GuildState(
+            ready: false,
+            busy: false,
+            guild: GuildModel(
+              '',
+              '',
+              [],
+            ))) {
     init(name);
   }
 
   final PocketBase pb;
 
   void init(String name) async {
-    emit(state.copy(busy: true, guild: GuildModel('', '', [])));
+    emit(state.copy(ready: false, busy: true, guild: GuildModel('', '', [])));
     logger.fine("Guild Init for $name");
     var guilds = await pb
         .collection('guilds')
         .getList(filter: 'name = "$name"', expand: 'members');
     if (guilds.items.isNotEmpty) {
       var guild = guilds.items.first;
-      return emit(state.copy(busy: false, guild: GuildModel.fromRecord(guild)));
+      return emit(state.copy(
+        ready: true,
+        busy: false,
+        guild: GuildModel.fromRecord(guild),
+      ));
     }
   }
 
@@ -70,13 +81,19 @@ class GuildCubit extends Cubit<GuildState> {
 }
 
 class GuildState extends Equatable {
+  final bool ready;
   final bool busy;
   final GuildModel guild;
 
-  const GuildState({required this.busy, required this.guild});
+  const GuildState(
+      {required this.ready, required this.busy, required this.guild});
 
-  GuildState copy({bool? busy, GuildModel? guild}) {
-    return GuildState(busy: busy ?? this.busy, guild: guild ?? this.guild);
+  GuildState copy({bool? ready, bool? busy, GuildModel? guild}) {
+    return GuildState(
+      ready: ready ?? this.ready,
+      busy: busy ?? this.busy,
+      guild: guild ?? this.guild,
+    );
   }
 
   @override
