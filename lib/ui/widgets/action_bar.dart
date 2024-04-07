@@ -83,6 +83,7 @@ class ActionBar extends StatelessWidget {
                     0,
                     discordId: '',
                     discordUsername: '',
+                    [context.read<GuildCubit>().state.guild.name],
                     SiegeStatus.newMember,
                     MazeData());
                 showModalBottomSheet(
